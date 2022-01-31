@@ -1,9 +1,9 @@
 name: "cars"
 output_dir: "docs"
 navbar:
-  title: "Cars"
+  title: "Spread of Conflict"
   left:
     - text: "Home"
       href: index.html
-    - text: "Speed and Distance"
+    - text: "Introduction"
       href: introduction.html
