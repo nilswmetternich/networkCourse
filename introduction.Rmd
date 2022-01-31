@@ -1,5 +1,5 @@
 ---
-title: "introduction"
+title: "Introduction to R"
 ---
 
 
@@ -8,16 +8,34 @@ title: "introduction"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown   
+## First steps  
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Initially we will us the R console for some very simple operations. It will allow you to familiarize yourself with the software and quickly make you a confident user.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+### Console window
 
-```{r cars}
-summary(cars)
+For this exercise simply open up R. All you will see is the **R Console** window. Initially you can think of R as a very powerful calculator. So let us try a couple of things. Just type 4+4 and then enter
+
+```{r }
+4+4
+
 ```
 
+I hope that you got the same result as above. Let us try another task:
+
+```{r }
+4*4
+
+```
+
+Okay, now you see that R can calculate numbers, but let us look at some functions. E.g. let us take the square root of 9.
+
+```{r }
+sqrt(9)
+
+```
+
+This is already a small example of running a function (in this case sqrt). Functions will become important as we go along. 
 ## Including Plots
 
 You can also embed plots, for example:
