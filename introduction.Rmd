@@ -28,20 +28,146 @@ I hope that you got the same result as above. Let us try another task:
 
 ```
 
-Okay, now you see that R can calculate numbers, but let us look at some functions. E.g. let us take the square root of 9.
+Okay, now you see that R can calculate numbers, but let us look at some functions. E.g. let us take the square root of 9. This is already a small example of running a function (in this case sqrt). Functions will become important as we go along. 
 
 ```{r }
 sqrt(9)
 
 ```
 
-This is already a small example of running a function (in this case sqrt). Functions will become important as we go along. 
-## Including Plots
+Another feature that is important in R, is the ability to generate numbers. This can be used for simulations or estimation. Sometimes it might just be useful to illustrate some theoretical concept. Let us consider two examples. First, let us randomly draw 20 values from a normal distribution, 20 values from a uniform distribution, and then 20 values from a binomial distribution:
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r }
+rnorm(20, mean=0, sd=1)
+runif(20, min=0, max=1)
+rbinom(20,size=1, prob=0.5)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### Assignment
+R is an object oriented programming languages. This means there is a focus on creating and manipulating objects. So let us go back to the examples above, but storing results as objects.
+
+Let us start with 4+4 and assign the result to the variable x.
+
+```{r }
+x <- 4 + 4
+```
+
+We can then simply ask what is x?
+```{r }
+x
+```
+
+And manipulate x again:
+```{r }
+x/2
+```
+
+And create another variable y:
+```{r }
+y <- x/2
+```
+
+Here another example:
+
+```{r }
+random.draw <- rnorm(20, mean=0, sd=1)
+random.draw
+```
+We can of course also just input our own data. Let us imagine we have seven countries:
+
+```{r }
+country.names <- c("A","B","C","D","E")
+country.names
+```
+And imagine each country has a democracy score between 0 and 10
+
+```{r }
+country.democracy <- c(9,7,4,2,8)
+country.democracy
+```
+
+And some countries have been in war and some have not:
+
+```{r }
+country.war <- c(0,0,1,1,0)
+country.war
+```
+
+We could now put this information into a new dataframe:
+```{r }
+country.data <- data.frame(country.names,country.democracy,country.war)
+country.data
+```
+Great! We have created our first dataframe!
+
+
+### Plotting a variable
+
+A great feature of R is its plotting abilities. This will be particularly  important for plotting networks. But let us first start with some simple examples. Remember that above we drew from distributions. Now let us plot how this actually looks like. That is if we, e.g. randomly draw 20 times from a normal distribution, what does this distribution look like using a histogram:
+
+```{r }
+random.draw <- rnorm(20, mean=0, sd=1)
+hist(random.draw)
+```
+
+When you run this code a few times, you will sometimes get distributions that look pretty normal, but sometimes they certainly don't. We can now test what happens when we draw more often from the normal distribution. In the example below, you will draw 1,000,000 times, but you can play with the code and see when you slowly increase this number.
+```{r }
+random.draw <- rnorm(1000000, mean=0, sd=1)
+hist(random.draw)
+```
+
+### Plotting two variables
+Remember the country.data we created above. This is a mock version of a very typical dataset. Imagine we wanted to plot the relationship between country.democracy and country.war. For example, we want to know whether a higher democracy score leads to more or less war.
+
+```{r }
+country.data
+```
+
+In a dataframe we can call a variable by using the $ sign.
+```{r }
+country.data$country.democracy
+country.data$country.war
+```
+
+We can now plot these two variables by stating:
+```{r }
+plot(country.data$country.democracy,country.data$country.war)
+```
+
+### My first network
+We will go through this in week 6 in much more detail, but I already wanted to highlight that one way to store network information is through matrices. Each entry in a matrix indicates whether or two which degree two units are connected. Imagine we again have our five countries "A","B","C","D","E" and wanted to represent, which country fought with each other. Let us imagine 0 stands for peace and 1 stands for war.
+
+Let us first create a peaceful network through a matrix of filled of 0s. Because we have 5 countries it needs to have 5 rows and 5 columns. We also want to give the colums and rows names according to the countries.
+```{r }
+conflict.matrix <- matrix(data=0,nrow=5,ncol=5)
+conflict.matrix
+colnames(conflict.matrix) <- c("A","B","C","D","E")
+rownames(conflict.matrix) <- c("A","B","C","D","E")
+conflict.matrix
+```
+Okay, so far very peaceful (all zeros). Let us create some entries that indicate war. Let us imagine that A and B, B and D, and A and D have been in war with each other. We can manipulate individual values in a matrix by selecting row and column number (matrix[row,column]) and assigning a new value:
+
+```{r }
+#A<-B
+conflict.matrix[1,2] <- 1
+#B<-A
+conflict.matrix[2,1] <- 1
+conflict.matrix
+#B<-D
+conflict.matrix[2,4] <- 1
+#D<-B
+conflict.matrix[4,2] <- 1
+conflict.matrix
+#A<-D
+conflict.matrix[1,4] <- 1
+#D<-A
+conflict.matrix[4,1] <- 1
+conflict.matrix
+```
+
+
+
+
+
+
+

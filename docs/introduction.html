@@ -275,13 +275,151 @@ $(document).ready(function () {
 <p>I hope that you got the same result as above. Let us try another task:</p>
 <pre class="r"><code>4*4</code></pre>
 <pre><code>## [1] 16</code></pre>
-<p>Okay, now you see that R can calculate numbers, but let us look at some functions. E.g. let us take the square root of 9.</p>
+<p>Okay, now you see that R can calculate numbers, but let us look at some functions. E.g. let us take the square root of 9. This is already a small example of running a function (in this case sqrt). Functions will become important as we go along.</p>
 <pre class="r"><code>sqrt(9)</code></pre>
 <pre><code>## [1] 3</code></pre>
-<p>This is already a small example of running a function (in this case sqrt). Functions will become important as we go along. ## Including Plots</p>
-<p>You can also embed plots, for example:</p>
-<p><img src="introduction_files/figure-html/pressure-1.png" width="672" /></p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+<p>Another feature that is important in R, is the ability to generate numbers. This can be used for simulations or estimation. Sometimes it might just be useful to illustrate some theoretical concept. Let us consider two examples. First, let us randomly draw 20 values from a normal distribution, 20 values from a uniform distribution, and then 20 values from a binomial distribution:</p>
+<pre class="r"><code>rnorm(20, mean=0, sd=1)</code></pre>
+<pre><code>##  [1] -1.02552314 -1.06292845 -0.33681353 -0.17882619  0.23829135 -0.03662210
+##  [7] -0.24232221  0.16100012 -0.30828019 -2.43680527  1.39662070 -0.17199290
+## [13] -0.57225160 -2.81529326 -0.22772255  0.25574257  0.87478161 -0.69918449
+## [19]  0.03380068  0.12643149</code></pre>
+<pre class="r"><code>runif(20, min=0, max=1)</code></pre>
+<pre><code>##  [1] 0.991955100 0.536644034 0.054716334 0.518870869 0.202100866 0.271771432
+##  [7] 0.252101913 0.348109012 0.243927550 0.179806493 0.156608321 0.562840367
+## [13] 0.438313432 0.743950247 0.911649265 0.006042952 0.449385207 0.397702667
+## [19] 0.029737056 0.840723955</code></pre>
+<pre class="r"><code>rbinom(20,size=1, prob=0.5)</code></pre>
+<pre><code>##  [1] 0 1 0 1 1 1 0 1 1 0 1 1 0 0 1 1 1 0 0 1</code></pre>
+</div>
+<div id="assignment" class="section level3">
+<h3>Assignment</h3>
+<p>R is an object oriented programming languages. This means there is a focus on creating and manipulating objects. So let us go back to the examples above, but storing results as objects.</p>
+<p>Let us start with 4+4 and assign the result to the variable x.</p>
+<pre class="r"><code>x &lt;- 4 + 4</code></pre>
+<p>We can then simply ask what is x?</p>
+<pre class="r"><code>x</code></pre>
+<pre><code>## [1] 8</code></pre>
+<p>And manipulate x again:</p>
+<pre class="r"><code>x/2</code></pre>
+<pre><code>## [1] 4</code></pre>
+<p>And create another variable y:</p>
+<pre class="r"><code>y &lt;- x/2</code></pre>
+<p>Here another example:</p>
+<pre class="r"><code>random.draw &lt;- rnorm(20, mean=0, sd=1)
+random.draw</code></pre>
+<pre><code>##  [1]  1.12887631  0.66187533 -0.66781652  1.82275276  2.17941266 -0.26172003
+##  [7]  1.35586162 -0.94307488 -0.71600410 -2.12062098  0.59095551  0.32151028
+## [13]  1.80617087 -0.01838273  0.67980994  0.84003580 -0.04371612  0.24351691
+## [19] -1.73524459  0.69374937</code></pre>
+<p>We can of course also just input our own data. Let us imagine we have seven countries:</p>
+<pre class="r"><code>country.names &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+country.names</code></pre>
+<pre><code>## [1] &quot;A&quot; &quot;B&quot; &quot;C&quot; &quot;D&quot; &quot;E&quot;</code></pre>
+<p>And imagine each country has a democracy score between 0 and 10</p>
+<pre class="r"><code>country.democracy &lt;- c(9,7,4,2,8)
+country.democracy</code></pre>
+<pre><code>## [1] 9 7 4 2 8</code></pre>
+<p>And some countries have been in war and some have not:</p>
+<pre class="r"><code>country.war &lt;- c(0,0,1,1,0)
+country.war</code></pre>
+<pre><code>## [1] 0 0 1 1 0</code></pre>
+<p>We could now put this information into a new dataframe:</p>
+<pre class="r"><code>country.data &lt;- data.frame(country.names,country.democracy,country.war)
+country.data</code></pre>
+<pre><code>##   country.names country.democracy country.war
+## 1             A                 9           0
+## 2             B                 7           0
+## 3             C                 4           1
+## 4             D                 2           1
+## 5             E                 8           0</code></pre>
+<p>Great! We have created our first dataframe!</p>
+</div>
+<div id="plotting-a-variable" class="section level3">
+<h3>Plotting a variable</h3>
+<p>A great feature of R is its plotting abilities. This will be particularly important for plotting networks. But let us first start with some simple examples. Remember that above we drew from distributions. Now let us plot how this actually looks like. That is if we, e.g. randomly draw 20 times from a normal distribution, what does this distribution look like using a histogram:</p>
+<pre class="r"><code>random.draw &lt;- rnorm(20, mean=0, sd=1)
+hist(random.draw)</code></pre>
+<p><img src="introduction_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>When you run this code a few times, you will sometimes get distributions that look pretty normal, but sometimes they certainly don’t. We can now test what happens when we draw more often from the normal distribution. In the example below, you will draw 1,000,000 times, but you can play with the code and see when you slowly increase this number.</p>
+<pre class="r"><code>random.draw &lt;- rnorm(1000000, mean=0, sd=1)
+hist(random.draw)</code></pre>
+<p><img src="introduction_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="plotting-two-variables" class="section level3">
+<h3>Plotting two variables</h3>
+<p>Remember the country.data we created above. This is a mock version of a very typical dataset. Imagine we wanted to plot the relationship between country.democracy and country.war. For example, we want to know whether a higher democracy score leads to more or less war.</p>
+<pre class="r"><code>country.data</code></pre>
+<pre><code>##   country.names country.democracy country.war
+## 1             A                 9           0
+## 2             B                 7           0
+## 3             C                 4           1
+## 4             D                 2           1
+## 5             E                 8           0</code></pre>
+<p>In a dataframe we can call a variable by using the $ sign.</p>
+<pre class="r"><code>country.data$country.democracy</code></pre>
+<pre><code>## [1] 9 7 4 2 8</code></pre>
+<pre class="r"><code>country.data$country.war</code></pre>
+<pre><code>## [1] 0 0 1 1 0</code></pre>
+<p>We can now plot these two variables by stating:</p>
+<pre class="r"><code>plot(country.data$country.democracy,country.data$country.war)</code></pre>
+<p><img src="introduction_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+<div id="my-first-network" class="section level3">
+<h3>My first network</h3>
+<p>We will go through this in week 6 in much more detail, but I already wanted to highlight that one way to store network information is through matrices. Each entry in a matrix indicates whether or two which degree two units are connected. Imagine we again have our five countries “A”,“B”,“C”,“D”,“E” and wanted to represent, which country fought with each other. Let us imagine 0 stands for peace and 1 stands for war.</p>
+<p>Let us first create a peaceful network through a matrix of filled of 0s. Because we have 5 countries it needs to have 5 rows and 5 columns. We also want to give the colums and rows names according to the countries.</p>
+<pre class="r"><code>conflict.matrix &lt;- matrix(data=0,nrow=5,ncol=5)
+conflict.matrix</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5]
+## [1,]    0    0    0    0    0
+## [2,]    0    0    0    0    0
+## [3,]    0    0    0    0    0
+## [4,]    0    0    0    0    0
+## [5,]    0    0    0    0    0</code></pre>
+<pre class="r"><code>colnames(conflict.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+rownames(conflict.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+conflict.matrix</code></pre>
+<pre><code>##   A B C D E
+## A 0 0 0 0 0
+## B 0 0 0 0 0
+## C 0 0 0 0 0
+## D 0 0 0 0 0
+## E 0 0 0 0 0</code></pre>
+<p>Okay, so far very peaceful (all zeros). Let us create some entries that indicate war. Let us imagine that A and B, B and D, and A and D have been in war with each other. We can manipulate individual values in a matrix by selecting row and column number (matrix[row,column]) and assigning a new value:</p>
+<pre class="r"><code>#A&lt;-B
+conflict.matrix[1,2] &lt;- 1
+#B&lt;-A
+conflict.matrix[2,1] &lt;- 1
+conflict.matrix</code></pre>
+<pre><code>##   A B C D E
+## A 0 1 0 0 0
+## B 1 0 0 0 0
+## C 0 0 0 0 0
+## D 0 0 0 0 0
+## E 0 0 0 0 0</code></pre>
+<pre class="r"><code>#B&lt;-D
+conflict.matrix[2,4] &lt;- 1
+#D&lt;-B
+conflict.matrix[4,2] &lt;- 1
+conflict.matrix</code></pre>
+<pre><code>##   A B C D E
+## A 0 1 0 0 0
+## B 1 0 0 1 0
+## C 0 0 0 0 0
+## D 0 1 0 0 0
+## E 0 0 0 0 0</code></pre>
+<pre class="r"><code>#A&lt;-D
+conflict.matrix[1,4] &lt;- 1
+#D&lt;-A
+conflict.matrix[4,1] &lt;- 1
+conflict.matrix</code></pre>
+<pre><code>##   A B C D E
+## A 0 1 0 1 0
+## B 1 0 0 1 0
+## C 0 0 0 0 0
+## D 1 1 0 0 0
+## E 0 0 0 0 0</code></pre>
 </div>
 </div>
 
