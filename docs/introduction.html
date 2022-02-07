@@ -280,17 +280,17 @@ $(document).ready(function () {
 <pre><code>## [1] 3</code></pre>
 <p>Another feature that is important in R, is the ability to generate numbers. This can be used for simulations or estimation. Sometimes it might just be useful to illustrate some theoretical concept. Let us consider two examples. First, let us randomly draw 20 values from a normal distribution, 20 values from a uniform distribution, and then 20 values from a binomial distribution:</p>
 <pre class="r"><code>rnorm(20, mean=0, sd=1)</code></pre>
-<pre><code>##  [1] -1.02552314 -1.06292845 -0.33681353 -0.17882619  0.23829135 -0.03662210
-##  [7] -0.24232221  0.16100012 -0.30828019 -2.43680527  1.39662070 -0.17199290
-## [13] -0.57225160 -2.81529326 -0.22772255  0.25574257  0.87478161 -0.69918449
-## [19]  0.03380068  0.12643149</code></pre>
+<pre><code>##  [1] -0.02808769  1.09644444 -0.82331907  0.56153977 -0.20904600 -1.09612102
+##  [7] -0.89302256 -0.66393013 -0.36461648  0.33348763  0.41795034 -1.57138501
+## [13]  0.38022259 -0.44330745  0.51295319 -1.73673449  1.35146821  1.15378884
+## [19]  0.94539947  0.37255129</code></pre>
 <pre class="r"><code>runif(20, min=0, max=1)</code></pre>
-<pre><code>##  [1] 0.991955100 0.536644034 0.054716334 0.518870869 0.202100866 0.271771432
-##  [7] 0.252101913 0.348109012 0.243927550 0.179806493 0.156608321 0.562840367
-## [13] 0.438313432 0.743950247 0.911649265 0.006042952 0.449385207 0.397702667
-## [19] 0.029737056 0.840723955</code></pre>
+<pre><code>##  [1] 0.98240227 0.73472196 0.75769957 0.64180546 0.84678037 0.39787489
+##  [7] 0.37280878 0.75423537 0.77127250 0.02952865 0.08014414 0.72681394
+## [13] 0.25931657 0.08672012 0.05488694 0.46545096 0.13929175 0.02007796
+## [19] 0.91242353 0.11856143</code></pre>
 <pre class="r"><code>rbinom(20,size=1, prob=0.5)</code></pre>
-<pre><code>##  [1] 0 1 0 1 1 1 0 1 1 0 1 1 0 0 1 1 1 0 0 1</code></pre>
+<pre><code>##  [1] 0 0 0 1 0 0 1 0 1 0 1 1 1 1 1 0 1 0 1 1</code></pre>
 </div>
 <div id="assignment" class="section level3">
 <h3>Assignment</h3>
@@ -308,10 +308,10 @@ $(document).ready(function () {
 <p>Here another example:</p>
 <pre class="r"><code>random.draw &lt;- rnorm(20, mean=0, sd=1)
 random.draw</code></pre>
-<pre><code>##  [1]  1.12887631  0.66187533 -0.66781652  1.82275276  2.17941266 -0.26172003
-##  [7]  1.35586162 -0.94307488 -0.71600410 -2.12062098  0.59095551  0.32151028
-## [13]  1.80617087 -0.01838273  0.67980994  0.84003580 -0.04371612  0.24351691
-## [19] -1.73524459  0.69374937</code></pre>
+<pre><code>##  [1]  0.22930357 -0.63049523  0.01397825 -0.24191748  0.65387478  1.07232610
+##  [7] -0.12367135 -0.22869424  1.39642320 -3.46082558  1.41139731 -0.22697554
+## [13]  0.64584229  0.64818394  1.93509366  0.42411452  0.34836225  0.94462242
+## [19] -1.51701467 -0.31790931</code></pre>
 <p>We can of course also just input our own data. Let us imagine we have seven countries:</p>
 <pre class="r"><code>country.names &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
 country.names</code></pre>
