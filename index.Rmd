@@ -1,7 +1,7 @@
 ---
-title: "Home"
-author: "Nils W Metternich"
-date: "27/01/2022"
+title: "Spread of Conflict"
+author: "Nils W Metternich and Luis Schenoni"
+date: "7/02/2022"
 output: html_document
 ---
 
@@ -9,22 +9,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Spread of Conflict in International Relations 
+### University College London: POLS0072
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This is code for the University College London course: Spread of Conflict in International Relations (POLS0072). This course aims to develop students’ understanding of major themes and debates in the contemporary study of the spread and diffusion of conflict. The course develops the theoretical and empirical understanding of networks.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Please start with the Introduction. Weeks will be added as we go along.
 
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

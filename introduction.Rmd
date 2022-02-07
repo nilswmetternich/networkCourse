@@ -73,7 +73,7 @@ Here another example:
 random.draw <- rnorm(20, mean=0, sd=1)
 random.draw
 ```
-We can of course also just input our own data. Let us imagine we have seven countries:
+We can of course also just input our own data. Let us imagine we have five countries:
 
 ```{r }
 country.names <- c("A","B","C","D","E")
