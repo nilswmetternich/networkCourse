@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Week 6</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Spread of Conflict</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="week6.html">Week 6</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Week 6</h1>
+
+</div>
+
+
+<div id="graph-theory-in-r" class="section level2">
+<h2>Graph Theory in R</h2>
+<p>This code replicates most parts of the lecture in R. This will allow you to see how the the theoretical network concepts translate into the empirical analysis. For the following exercise we will be using the library statnet. You can install this package by typing install.packages(“statnet”) into the R Console. After that you can call the library.</p>
+<pre class="r"><code>library(statnet)</code></pre>
+<pre><code>## Loading required package: tergm</code></pre>
+<pre><code>## Loading required package: ergm</code></pre>
+<pre><code>## Loading required package: network</code></pre>
+<pre><code>## network: Classes for Relational Data
+## Version 1.16.0 created on 2019-11-30.
+## copyright (c) 2005, Carter T. Butts, University of California-Irvine
+##                     Mark S. Handcock, University of California -- Los Angeles
+##                     David R. Hunter, Penn State University
+##                     Martina Morris, University of Washington
+##                     Skye Bender-deMoll, University of Washington
+##  For citation information, type citation(&quot;network&quot;).
+##  Type help(&quot;network-package&quot;) to get started.</code></pre>
+<pre><code>## 
+## ergm: version 3.10.4, created on 2019-06-10
+## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
+##                     David R. Hunter, Penn State University
+##                     Carter T. Butts, University of California -- Irvine
+##                     Steven M. Goodreau, University of Washington
+##                     Pavel N. Krivitsky, University of Wollongong
+##                     Martina Morris, University of Washington
+##                     with contributions from
+##                     Li Wang
+##                     Kirk Li, University of Washington
+##                     Skye Bender-deMoll, University of Washington
+##                     Chad Klumb
+## Based on &quot;statnet&quot; project software (statnet.org).
+## For license and citation information see statnet.org/attribution
+## or type citation(&quot;ergm&quot;).</code></pre>
+<pre><code>## NOTE: Versions before 3.6.1 had a bug in the implementation of the bd()
+## constriant which distorted the sampled distribution somewhat. In
+## addition, Sampson&#39;s Monks datasets had mislabeled vertices. See the
+## NEWS and the documentation for more details.</code></pre>
+<pre><code>## NOTE: Some common term arguments pertaining to vertex attribute and
+## level selection have changed in 3.10.0. See terms help for more
+## details. Use &#39;options(ergm.term=list(version=&quot;3.9.4&quot;))&#39; to use old
+## behavior.</code></pre>
+<pre><code>## Loading required package: networkDynamic</code></pre>
+<pre><code>## 
+## networkDynamic: version 0.10.1, created on 2020-01-16
+## Copyright (c) 2020, Carter T. Butts, University of California -- Irvine
+##                     Ayn Leslie-Cook, University of Washington
+##                     Pavel N. Krivitsky, University of Wollongong
+##                     Skye Bender-deMoll, University of Washington
+##                     with contributions from
+##                     Zack Almquist, University of California -- Irvine
+##                     David R. Hunter, Penn State University
+##                     Li Wang
+##                     Kirk Li, University of Washington
+##                     Steven M. Goodreau, University of Washington
+##                     Jeffrey Horner
+##                     Martina Morris, University of Washington
+## Based on &quot;statnet&quot; project software (statnet.org).
+## For license and citation information see statnet.org/attribution
+## or type citation(&quot;networkDynamic&quot;).</code></pre>
+<pre><code>## 
+## tergm: version 3.6.1, created on 2019-06-12
+## Copyright (c) 2019, Pavel N. Krivitsky, University of Wollongong
+##                     Mark S. Handcock, University of California -- Los Angeles
+##                     with contributions from
+##                     David R. Hunter, Penn State University
+##                     Steven M. Goodreau, University of Washington
+##                     Martina Morris, University of Washington
+##                     Nicole Bohme Carnegie, New York University
+##                     Carter T. Butts, University of California -- Irvine
+##                     Ayn Leslie-Cook, University of Washington
+##                     Skye Bender-deMoll
+##                     Li Wang
+##                     Kirk Li, University of Washington
+## Based on &quot;statnet&quot; project software (statnet.org).
+## For license and citation information see statnet.org/attribution
+## or type citation(&quot;tergm&quot;).</code></pre>
+<pre><code>## Loading required package: ergm.count</code></pre>
+<pre><code>## 
+## ergm.count: version 3.4.0, created on 2019-05-15
+## Copyright (c) 2019, Pavel N. Krivitsky, University of Wollongong
+##                     with contributions from
+##                     Mark S. Handcock, University of California -- Los Angeles
+##                     David R. Hunter, Penn State University
+## Based on &quot;statnet&quot; project software (statnet.org).
+## For license and citation information see statnet.org/attribution
+## or type citation(&quot;ergm.count&quot;).</code></pre>
+<pre><code>## NOTE: The form of the term &#39;CMP&#39; has been changed in version 3.2 of
+## &#39;ergm.count&#39;. See the news or help(&#39;CMP&#39;) for more information.</code></pre>
+<pre><code>## Loading required package: sna</code></pre>
+<pre><code>## Loading required package: statnet.common</code></pre>
+<pre><code>## 
+## Attaching package: &#39;statnet.common&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     order</code></pre>
+<pre><code>## sna: Tools for Social Network Analysis
+## Version 2.5 created on 2019-12-09.
+## copyright (c) 2005, Carter T. Butts, University of California-Irvine
+##  For citation information, type citation(&quot;sna&quot;).
+##  Type help(package=&quot;sna&quot;) to get started.</code></pre>
+<pre><code>## Loading required package: tsna</code></pre>
+<pre><code>## 
+## statnet: version 2019.6, created on 2019-06-13
+## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
+##                     David R. Hunter, Penn State University
+##                     Carter T. Butts, University of California -- Irvine
+##                     Steven M. Goodreau, University of Washington
+##                     Pavel N. Krivitsky, University of Wollongong
+##                     Skye Bender-deMoll
+##                     Martina Morris, University of Washington
+## Based on &quot;statnet&quot; project software (statnet.org).
+## For license and citation information see statnet.org/attribution
+## or type citation(&quot;statnet&quot;).</code></pre>
+<pre><code>## unable to reach CRAN</code></pre>
+<div id="nodes-vertex-and-links-edges" class="section level3">
+<h3>Nodes (vertex) and Links (edges)</h3>
+<p>Remember that a basic graph or network consists of a set of nodes/vertices and set of lines/edges. In the example provided in the lecture we thought of nodes as states and these were linked if they had a military dispute since 1990. Initially, imagine we would have states c(“A”,“B”,“C”,“D”,“E”) and with states having disputes AB, AD, BD. Let’s imagine that “A”,“B”,“C”,“D”,“E” is indexed 1,2,3,4,5.</p>
+<p>Given that we can now create an edge list (md.list) with all the edges between states (md.nodes). With these two objects we can then create a network (md.net) with the function network() in R.</p>
+<pre class="r"><code>#edgelist
+md.list &lt;- rbind(c(1,2), #AB
+                c(1,4), #AD
+                c(2,4),  #BD
+                c(1,5))  #AE
+ 
+#nodes
+md.nodes &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+
+md.net &lt;- network(md.list,directed=FALSE)
+
+network.vertex.names(md.net) &lt;- md.nodes
+
+summary(md.net)</code></pre>
+<pre><code>## Network attributes:
+##   vertices = 5
+##   directed = FALSE
+##   hyper = FALSE
+##   loops = FALSE
+##   multiple = FALSE
+##   bipartite = FALSE
+##  total edges = 4 
+##    missing edges = 0 
+##    non-missing edges = 4 
+##  density = 0.4 
+## 
+## Vertex attributes:
+##   vertex.names:
+##    character valued attribute
+##    5 valid vertex names
+## 
+## No edge attributes
+## 
+## Network adjacency matrix:
+##   A B C D E
+## A 0 1 0 1 1
+## B 1 0 0 1 0
+## C 0 0 0 0 0
+## D 1 1 0 0 0
+## E 1 0 0 0 0</code></pre>
+<p>At the end of the code there is the summary() function. When you do the summary of a network object, you already get some information about the network that we discussed in the lecture. E.g. the density is provided and whether or not it is bipartite. In addition to the summary() function we can now also use the plot() function for this initial network:</p>
+<pre class="r"><code>plot(md.net)</code></pre>
+<p><img src="week6_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>The final step now is to use another plotting function gplot()</p>
+<pre class="r"><code>gplot(md.net)</code></pre>
+<p><img src="week6_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>So let us now focus on some other the concepts from the lecture: Cutpoints and Bridges. Let us identify the cutpoint in our network</p>
+<pre class="r"><code>c.points &lt;- cutpoints(md.net,mode=&quot;graph&quot;, return.indicator = TRUE)
+c.points</code></pre>
+<pre><code>##     1     2     3     4     5 
+##  TRUE FALSE FALSE FALSE FALSE</code></pre>
+<pre class="r"><code>#Check whether this is right by plotting c.points as vertex.col
+gplot(md.net,vertex.col=c.points)</code></pre>
+<p><img src="week6_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

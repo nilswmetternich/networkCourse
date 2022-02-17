@@ -1,0 +1,64 @@
+---
+title: "Week 6"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Graph Theory in R 
+
+This code replicates most parts of the lecture in R. This will allow you to see how the the theoretical network concepts translate into the empirical analysis. For the following exercise we will be using the library statnet. You can install this package by typing install.packages("statnet") into the R Console. After that you can call the library.
+
+```{r }
+library(statnet)
+```
+### Nodes (vertex) and Links (edges)
+
+Remember that a basic graph or network consists of a set of nodes/vertices and set of lines/edges. In the example provided in the lecture we thought of nodes as states and these were linked if they had a military dispute since 1990. Initially, imagine we would have states c("A","B","C","D","E") and with states having disputes AB, AD, BD. Let's imagine that "A","B","C","D","E" is indexed 1,2,3,4,5. 
+
+Given that we can now create an edge list (md.list) with all the edges between states (md.nodes). With these two objects we can then create a network (md.net) with the function network() in R.
+
+
+
+
+```{r }
+#edgelist
+md.list <- rbind(c(1,2), #AB
+                c(1,4), #AD
+                c(2,4),  #BD
+                c(1,5))  #AE
+ 
+#nodes
+md.nodes <- c("A","B","C","D","E")
+
+md.net <- network(md.list,directed=FALSE)
+
+network.vertex.names(md.net) <- md.nodes
+
+summary(md.net)
+```
+
+At the end of the code there is the summary() function. When you do the summary of a network object, you already get some information about the network that we discussed in the lecture. E.g. the density is provided and whether or not it is bipartite. In addition to the summary() function we can now also use the plot() function for this initial network:
+
+```{r }
+plot(md.net)
+```
+
+The final step now is to use another plotting function gplot()
+
+```{r }
+gplot(md.net)
+```
+
+So let us now focus on some other the concepts from the lecture: Cutpoints and Bridges. Let us identify the cutpoint in our network
+```{r }
+c.points <- cutpoints(md.net,mode="graph", return.indicator = TRUE)
+c.points
+#Check whether this is right by plotting c.points as vertex.col
+gplot(md.net,vertex.col=c.points)
+```
+
+
+
+

@@ -7,3 +7,5 @@ navbar:
       href: index.html
     - text: "Introduction"
       href: introduction.html
+    - text: "Week 6"
+      href: week6.html
