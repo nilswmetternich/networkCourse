@@ -1,0 +1,111 @@
+---
+title: "Week 7"
+author: "Nils W Metternich"
+date: "22/02/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Centrality in R 
+
+This code replicates most parts of the lecture in R. This will allow you to see how the the theoretical network concepts translate into the empirical analysis. For the following exercise we will be using the library statnet. You can install this package by typing install.packages("statnet") into the R Console. After that you can call the library.
+
+```{r }
+library(statnet)
+```
+### Directed Graphs
+In today's session we will be working with the Militarized Interstate Dispute Dataset (MID). The dataset that we will be using is dyadic, whic means it records militarized interstate disputes between pairs of states. We can use this data to create a matrix, which we will in turn use to create network object. Please go to 
+[MID Homepage](https://correlatesofwar.org/data-sets/MIDs "MID Homepage") and familiarize yourself with the data. 
+
+In the following we will be using MID Dyadic Version 4.02. There is also a lot of information about the intensity of MIDs, but we will just focus on the occurence of MIDs in the time period of the dataset 1816-2014. The great thing is that the dataset is directed, so we can distingish sender and receiver of the militarized behavior. We subset the data such that we have all occurences of direcected MIDs. The dataset is on the Moodle page and once you can load the data into R (you will see currently in the code is my path which you will need to update) then you can run the rest of the code.
+
+
+```{r }
+mid <- read.csv("~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv") #First we load the data. You will need to change the path to do this.
+
+summary(mid)
+```
+
+You should now be able to see the dataset. Take a minute and look at the variables. We will only need the namea, nameb, and the strtyr of the MID. We also only need the directed instances of MIDs.
+
+```{r }
+mid <- mid[mid$rolea==1,c("namea","nameb","strtyr")]
+
+summary(mid)
+```
+
+Now we only have a subset of the data that we actually need to creat the MID matrix. We will do this in the following way. Step 1: Find all unique states in the data. Step 2: Create a matrix with the dimension of the states in the data. Step 3: Give the matrix row and column names accordingly. 
+
+```{r }
+states <- unique(c(as.character(mid$namea),as.character(mid$nameb)))
+
+midMat <- matrix(0,nrow=length(states),ncol=length(states)) # 
+	rownames(midMat) <- 	states
+		colnames(midMat) <- 	states
+
+dim(midMat)
+```		
+
+The final step is that we need to go through the dataset with a loop (will explain more in the seminar). With this loop we go through each line of the mid dataset, take namea and nameb of each line and add an entry in midMat accordingly. Again, I wil speak about this a bit more in the seminars, but this will be a basic way for you to take a dyadic dataset and turn it into a network
+```{r }
+for(i in 1:dim(mid)[1]){
+	midMat[as.character(mid$namea[i]),as.character(mid$nameb[i])] <- midMat[as.character(mid$namea[i]),as.character(mid$nameb[i])]+1
+}
+
+```
+
+Once you have the matrix midMat, we can simply tell R we want this matrix to be understood as a network. Also use the summary to get some insights to the network. You will also get the edgelist.
+```{r }
+midNet <- network(midMat,directed=TRUE)
+  network.vertex.names(midNet) <- states
+    summary(midNet)
+```
+
+Now we are ready to plot the network. You will see that one starts to see the need for network measures as the visualization starts to get complicated to read. Note the arrows indicating directionality of MIDs.
+
+```{r }
+gplot(midNet) # Basic
+
+gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col="grey",gmode="digraph") # with information
+
+gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col="grey",gmode="digraph",mode="circle") # as a circle
+
+#gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col="grey",gmode="digraph",mode="target") # based on target. Might take a minute to run this line, but it gives a better visualization than the ones above.
+
+```
+
+### Centrality measures
+
+Now we can use some of the centrality measures we head about in the lecture and apply these to the MID network.
+
+
+```{r }
+in.n <- degree(midNet,cmode="indegree")
+
+  out.n <- degree(midNet,cmode="outdegree")
+
+    close.n <- closeness(midNet,gmode="graph")
+
+      between.n <- betweenness(midNet,gmode="graph")
+
+        info.n <- infocent(midNet,gmode="graph")
+
+```
+
+
+We can also change the size of the nodes according to their indegree / outdegree and also create a table with indegree and outdegree for all states.
+```{r }
+gplot(midNet,label=states, vertex.cex=log(in.n),edge.lwd=0.01,arrowhead.cex=0.5,edge.col="grey",gmode="digraph")
+
+gplot(midNet,label=states, vertex.cex=log(out.n),edge.lwd=0.01,arrowhead.cex=0.5,edge.col="grey",gmode="digraph")
+
+data.frame(states,in.n,out.n)
+```
+
+
+
+
+
