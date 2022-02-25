@@ -15,6 +15,7 @@ This code replicates most parts of the lecture in R. This will allow you to see 
 
 ```{r }
 library(statnet)
+library(tidyverse)
 ```
 ### Directed Graphs
 In today's session we will be working with the Militarized Interstate Dispute Dataset (MID). The dataset that we will be using is dyadic, whic means it records militarized interstate disputes between pairs of states. We can use this data to create a matrix, which we will in turn use to create network object. Please go to 
@@ -102,7 +103,18 @@ gplot(midNet,label=states, vertex.cex=log(in.n),edge.lwd=0.01,arrowhead.cex=0.5,
 
 gplot(midNet,label=states, vertex.cex=log(out.n),edge.lwd=0.01,arrowhead.cex=0.5,edge.col="grey",gmode="digraph")
 
-data.frame(states,in.n,out.n)
+output <- data.frame(states,in.n,out.n,round(close.n,digits=2),round(between.n,digits=2))
+
+names(output) <- c("State","Indegree","Outdegree","Closeness","Betweenness")
+
+arrange(output, desc(Indegree))
+
+arrange(output, desc(Outdegree))
+
+arrange(output, desc(Closeness))
+
+arrange(output, desc(Betweenness))
+
 ```
 
 
