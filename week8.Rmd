@@ -1,0 +1,66 @@
+---
+title: "Week 8"
+author: "Nils W Metternich"
+date: "05/03/2022"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Inferential Network Analysi in R (Part 1)
+
+This code will introduce you to another package `cshapes', which allows you to generate maps, but also distance matrices. In this week, we will create an adjacency matrix from a distance matrix and then check the resulting network for transitivity. The network that we will attain (adjacency network of states) is similar to the one that we looked at in Lecture Week 7 when discussing, e.g., bridges and cutpoints. That is, we will attain a network of states (nodes) indicating whether they share a border (links).
+
+So as always let us start with the packages that we need for this session.
+
+```{r }
+library(cshapes)
+library(statnet)
+```
+### Using cshapes to create maps and distance matrices.
+Cshapes is great package for making maps and distance matrices when dealing with international relations data. This is because the country codes used in this package are either COW codes (Correlates of War Project. See last week's MID data) or Gleditsch and Ward codes (GW), which are used, e.g. by the Uppsala Conflict Data Program.
+
+So let us start by loading a map of the world. This can be done with the function cshp. Note that we are providing the date we want, because country borders change overtime. We also want COW codes, so we set useGW=FALSE. Type ?cshp in the R console if you want to know more about this function. We can then plot the map, where the color is simply ordered by the country code.
+
+```{r }
+cmap.2002 <- cshp(date=as.Date("2002-1-1"),useGW = FALSE)
+plot(cmap.2002[1])
+```
+
+The other important feature of cshapes is that it can provide us distance matrices. We can use these for later analysis, but this week will create a distance matrix and then recode it to an adjacency matrix which will tell us whether or not countries share a border. We proceed in three steps. Step 1: Create a minimal distance matrix, where the distance between two countries is the minimal distance between them. If two countries share a border the distance is 0. Step 2: We recode the minimal distance matrix such that countries are connected if they share a border (minimal distance = 0) and disconnected otherwise. Step 3: Turn the adjacency network into a network.
+
+Step 1: Create a minimal distance matrix
+```{r }
+dist.matrix <- distmatrix(date=as.Date("2002-1-1"),type = "mindist",useGW = FALSE)
+head(dist.matrix)
+```
+
+Step 2: Recode the minimal distance matrix to adjacency matrix
+```{r }
+adj.matrix <- ifelse(dist.matrix==0,1,0)
+diag(adj.matrix) <- 0 #need to set the diagonal to 0
+head(adj.matrix)
+```
+
+Step 3: Turn the adjacency network into a network
+```{r }
+adjNet <- network(adj.matrix,directed=FALSE) # transform to network
+	network.vertex.names(adjNet) <- colnames(adj.matrix) # take node names from adj.matrix
+		summary(adjNet)
+			gplot(adjNet)
+
+```
+
+### Checking for transitivity against the null model with the CUG test. 
+
+Now we can check for transitivity in the adjacency network. The CUG test does this by calculating the transitivity in the adjacency network and testing this against the null model. See Cranmer et al. 2021 page 24 for explanation of function and result interpretation. 
+
+```{r }
+cugResults <- cug.test(adjNet,mode="graph",FUN=gtrans,cmode="dyad.census")
+cugResults
+plot(cugResults)
+```
+

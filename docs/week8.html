@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Nils W Metternich" />
+
+<meta name="date" content="2022-05-03" />
+
+<title>Week 8</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Spread of Conflict</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="week6.html">Week 6</a>
+</li>
+<li>
+  <a href="week7.html">Week 7</a>
+</li>
+<li>
+  <a href="week8.html">Week 8</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Week 8</h1>
+<h4 class="author">Nils W Metternich</h4>
+<h4 class="date">05/03/2022</h4>
+
+</div>
+
+
+<div id="inferential-network-analysi-in-r-part-1" class="section level2">
+<h2>Inferential Network Analysi in R (Part 1)</h2>
+<p>This code will introduce you to another package `cshapes’, which allows you to generate maps, but also distance matrices. In this week, we will create an adjacency matrix from a distance matrix and then check the resulting network for transitivity. The network that we will attain (adjacency network of states) is similar to the one that we looked at in Lecture Week 7 when discussing, e.g., bridges and cutpoints. That is, we will attain a network of states (nodes) indicating whether they share a border (links).</p>
+<p>So as always let us start with the packages that we need for this session.</p>
+<pre class="r"><code>library(cshapes)</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;dplyr&#39;:
+##   method         from       
+##   print.location geojsonlint</code></pre>
+<pre class="r"><code>library(statnet)</code></pre>
+<pre><code>## Loading required package: tergm</code></pre>
+<pre><code>## Loading required package: ergm</code></pre>
+<pre><code>## Loading required package: network</code></pre>
+<pre><code>## network: Classes for Relational Data
+## Version 1.16.0 created on 2019-11-30.
+## copyright (c) 2005, Carter T. Butts, University of California-Irvine
+##                     Mark S. Handcock, University of California -- Los Angeles
+##                     David R. Hunter, Penn State University
+##                     Martina Morris, University of Washington
+##                     Skye Bender-deMoll, University of Washington
+##  For citation information, type citation(&quot;network&quot;).
+##  Type help(&quot;network-package&quot;) to get started.</code></pre>
+<pre><code>## 
+## ergm: version 3.10.4, created on 2019-06-10
+## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
+##                     David R. Hunter, Penn State University
+##                     Carter T. Butts, University of California -- Irvine
+##                     Steven M. Goodreau, University of Washington
+##                     Pavel N. Krivitsky, University of Wollongong
+##                     Martina Morris, University of Washington
+##                     with contributions from
+##                     Li Wang
+##                     Kirk Li, University of Washington
+##                     Skye Bender-deMoll, University of Washington
+##                     Chad Klumb
+## Based on &quot;statnet&quot; project software (statnet.org).
+## For license and citation information see statnet.org/attribution
+## or type citation(&quot;ergm&quot;).</code></pre>
+<pre><code>## NOTE: Versions before 3.6.1 had a bug in the implementation of the bd()
+## constriant which distorted the sampled distribution somewhat. In
+## addition, Sampson&#39;s Monks datasets had mislabeled vertices. See the
+## NEWS and the documentation for more details.</code></pre>
+<pre><code>## NOTE: Some common term arguments pertaining to vertex attribute and
+## level selection have changed in 3.10.0. See terms help for more
+## details. Use &#39;options(ergm.term=list(version=&quot;3.9.4&quot;))&#39; to use old
+## behavior.</code></pre>
+<pre><code>## Loading required package: networkDynamic</code></pre>
+<pre><code>## 
+## networkDynamic: version 0.10.1, created on 2020-01-16
+## Copyright (c) 2020, Carter T. Butts, University of California -- Irvine
+##                     Ayn Leslie-Cook, University of Washington
+##                     Pavel N. Krivitsky, University of Wollongong
+##                     Skye Bender-deMoll, University of Washington
+##                     with contributions from
+##                     Zack Almquist, University of California -- Irvine
+##                     David R. Hunter, Penn State University
+##                     Li Wang
+##                     Kirk Li, University of Washington
+##                     Steven M. Goodreau, University of Washington
+##                     Jeffrey Horner
+##                     Martina Morris, University of Washington
+## Based on &quot;statnet&quot; project software (statnet.org).
+## For license and citation information see statnet.org/attribution
+## or type citation(&quot;networkDynamic&quot;).</code></pre>
+<pre><code>## 
+## tergm: version 3.6.1, created on 2019-06-12
+## Copyright (c) 2019, Pavel N. Krivitsky, University of Wollongong
+##                     Mark S. Handcock, University of California -- Los Angeles
+##                     with contributions from
+##                     David R. Hunter, Penn State University
+##                     Steven M. Goodreau, University of Washington
+##                     Martina Morris, University of Washington
+##                     Nicole Bohme Carnegie, New York University
+##                     Carter T. Butts, University of California -- Irvine
+##                     Ayn Leslie-Cook, University of Washington
+##                     Skye Bender-deMoll
+##                     Li Wang
+##                     Kirk Li, University of Washington
+## Based on &quot;statnet&quot; project software (statnet.org).
+## For license and citation information see statnet.org/attribution
+## or type citation(&quot;tergm&quot;).</code></pre>
+<pre><code>## Loading required package: ergm.count</code></pre>
+<pre><code>## 
+## ergm.count: version 3.4.0, created on 2019-05-15
+## Copyright (c) 2019, Pavel N. Krivitsky, University of Wollongong
+##                     with contributions from
+##                     Mark S. Handcock, University of California -- Los Angeles
+##                     David R. Hunter, Penn State University
+## Based on &quot;statnet&quot; project software (statnet.org).
+## For license and citation information see statnet.org/attribution
+## or type citation(&quot;ergm.count&quot;).</code></pre>
+<pre><code>## NOTE: The form of the term &#39;CMP&#39; has been changed in version 3.2 of
+## &#39;ergm.count&#39;. See the news or help(&#39;CMP&#39;) for more information.</code></pre>
+<pre><code>## Loading required package: sna</code></pre>
+<pre><code>## Loading required package: statnet.common</code></pre>
+<pre><code>## 
+## Attaching package: &#39;statnet.common&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     order</code></pre>
+<pre><code>## sna: Tools for Social Network Analysis
+## Version 2.5 created on 2019-12-09.
+## copyright (c) 2005, Carter T. Butts, University of California-Irvine
+##  For citation information, type citation(&quot;sna&quot;).
+##  Type help(package=&quot;sna&quot;) to get started.</code></pre>
+<pre><code>## Loading required package: tsna</code></pre>
+<pre><code>## 
+## statnet: version 2019.6, created on 2019-06-13
+## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
+##                     David R. Hunter, Penn State University
+##                     Carter T. Butts, University of California -- Irvine
+##                     Steven M. Goodreau, University of Washington
+##                     Pavel N. Krivitsky, University of Wollongong
+##                     Skye Bender-deMoll
+##                     Martina Morris, University of Washington
+## Based on &quot;statnet&quot; project software (statnet.org).
+## For license and citation information see statnet.org/attribution
+## or type citation(&quot;statnet&quot;).</code></pre>
+<pre><code>## unable to reach CRAN</code></pre>
+<div id="using-cshapes-to-create-maps-and-distance-matrices." class="section level3">
+<h3>Using cshapes to create maps and distance matrices.</h3>
+<p>Cshapes is great package for making maps and distance matrices when dealing with international relations data. This is because the country codes used in this package are either COW codes (Correlates of War Project. See last week’s MID data) or Gleditsch and Ward codes (GW), which are used, e.g. by the Uppsala Conflict Data Program.</p>
+<p>So let us start by loading a map of the world. This can be done with the function cshp. Note that we are providing the date we want, because country borders change overtime. We also want COW codes, so we set useGW=FALSE. Type ?cshp in the R console if you want to know more about this function. We can then plot the map, where the color is simply ordered by the country code.</p>
+<pre class="r"><code>cmap.2002 &lt;- cshp(date=as.Date(&quot;2002-1-1&quot;),useGW = FALSE)
+plot(cmap.2002[1])</code></pre>
+<p><img src="week8_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>The other important feature of cshapes is that it can provide us distance matrices. We can use these for later analysis, but this week will create a distance matrix and then recode it to an adjacency matrix which will tell us whether or not countries share a border. We proceed in three steps. Step 1: Create a minimal distance matrix, where the distance between two countries is the minimal distance between them. If two countries share a border the distance is 0. Step 2: We recode the minimal distance matrix such that countries are connected if they share a border (minimal distance = 0) and disconnected otherwise. Step 3: Turn the adjacency network into a network.</p>
+<p>Step 1: Create a minimal distance matrix</p>
+<pre class="r"><code>dist.matrix &lt;- distmatrix(date=as.Date(&quot;2002-1-1&quot;),type = &quot;mindist&quot;,useGW = FALSE)
+head(dist.matrix)</code></pre>
+<pre><code>##            2       20         31         40         41        42        51
+## 2     0.0000    0.000  105.67852  233.68139  931.81334 1072.0053  779.2407
+## 20    0.0000    0.000 1689.61548 2049.94455 2568.39062 2618.0301 2603.3060
+## 31  105.6785 1689.615    0.00000   93.91066  120.03887  196.3491  415.4978
+## 40  233.6814 2049.945   93.91066    0.00000   85.59271  255.2915  146.1385
+## 41  931.8133 2568.391  120.03887   85.59271    0.00000    0.0000  195.1164
+## 42 1072.0053 2618.030  196.34912  255.29149    0.00000    0.0000  452.9208
+##          52       53        54       55        56        57        58        60
+## 2  2544.865 2540.922 2238.7089 2440.938 2376.6255 2400.7576 2119.8396 2012.3435
+## 20 3592.436 3386.465 3109.0657 3482.017 3282.7766 3359.5924 2936.0214 2901.1683
+## 31 1673.713 1665.132 1366.8137 1565.642 1500.7252 1524.1605 1257.8334 1148.0217
+## 40 1699.371 1720.694 1434.6975 1600.777 1554.7055 1572.1143 1339.3313 1228.9109
+## 41 1356.950 1399.332 1130.1073 1262.770 1232.1430 1243.9214 1050.9224  943.0321
+## 42 1123.450 1096.990  801.3999 1007.741  932.5975  957.6849  704.7911  594.8160
+##           70        80        90        91        92        93       94
+## 2     0.0000 1040.2524 1104.0943 1080.2435 1427.6847 1142.2515 1593.587
+## 20 1808.4167 2626.6572 2715.9748 2856.4040 3087.9068 2957.7097 3388.509
+## 31  928.9212 1215.5546 1341.0204 1108.7852 1515.9851 1122.2832 1536.380
+## 40  199.2574  506.9458  626.4879  637.0349  933.0672  714.0417 1161.477
+## 41 1309.1490 1417.4512 1494.1032 1002.7094 1507.8356 1002.7094 1291.921
+## 42 1561.3453 1678.3837 1754.0984 1254.3933 1762.4629 1254.3933 1496.479
+##          95       100       101      110      115      130      135      140
+## 2  1722.875 1662.4580 1740.0085 2855.061 3278.105 2631.270 2845.445 2834.662
+## 20 3553.148 3401.6951 3476.6969 3923.925 4234.421 4471.356 4677.889 4264.464
+## 31 1376.529  954.6860 1027.0449 1991.670 2407.878 2227.282 2325.939 2056.355
+## 40 1147.009  885.3287  961.0652 2006.950 2431.451 2038.675 2203.714 2025.904
+## 41 1071.471  617.0569  672.6463 1661.545 2087.568 1911.959 2003.219 1700.306
+## 42 1170.486  569.9957  617.1451 1444.723 1856.803 1962.249 1994.102 1597.479
+##         145      150      155      160      165      200      205      210
+## 2  4159.548 5355.282 4868.475 5417.315 6593.781 4119.931 4034.600 4996.947
+## 20 5887.352 6971.556 6685.849 7221.207 8191.609 2847.041 2959.007 3783.908
+## 31 3487.859 4661.749 4274.558 4788.862 5901.518 6302.687 6148.174 7105.710
+## 40 3418.798 4599.909 4181.520 4709.763 5840.814 6655.324 6469.999 7419.625
+## 41 3138.686 4309.300 3938.889 4445.518 5548.354 6545.561 6350.368 7294.715
+## 42 3084.733 4253.959 3889.083 4393.374 5485.628 6417.008 6211.247 7147.750
+##         211      212      220      221      223      225      230      232
+## 2  4959.359 5220.776 4587.260 5663.840 5605.915 5418.096 4523.796 5315.979
+## 20 3847.530 4078.403 3497.760 4570.043 4496.031 4338.114 3393.750 4205.753
+## 31 7054.774 7303.386 6566.437 7558.641 7642.274 7401.733 5502.682 7100.490
+## 40 7364.152 7600.954 6841.937 7818.013 7915.987 7666.228 5710.292 7356.453
+## 41 7237.959 7470.329 6704.773 7663.687 7775.798 7520.795 5494.614 7195.854
+## 42 7089.121 7313.735 6537.799 7468.426 7603.061 7340.294 5199.710 6991.526
+##         235      255      290      305      310      316      317      325
+## 2  3243.235 5133.990 5537.423 5593.206 6024.382 5601.060 5999.432 5507.072
+## 20 2188.493 3675.356 3843.368 4430.131 4564.789 4198.108 4433.046 4423.499
+## 31 4561.418 7272.944 7747.894 7639.962 8126.246 7730.196 8124.001 7472.731
+## 40 4809.625 7595.460 8111.576 7915.688 8415.645 8043.726 8427.607 7734.342
+## 41 4638.990 7470.425 8000.381 7776.763 8277.482 7916.893 8295.569 7584.920
+## 42 4426.289 7321.394 7867.779 7605.598 8106.697 7765.082 8134.485 7397.807
+##         331      338      339      343      344      345      346      349
+## 2  5992.601 6646.064 6557.178 6666.924 5976.308 6285.325 6138.043 5913.049
+## 20 4912.210 5535.179 5194.091 5265.329 4720.148 4808.575 4859.620 4680.489
+## 31 7949.694 8340.895 8541.170 8653.928 7996.580 8367.887 8170.725 7955.509
+## 40 8210.634 8587.249 8801.575 8914.368 8263.606 8644.328 8438.461 8227.261
+## 41 8059.315 8409.961 8648.623 8761.399 8118.739 8504.377 8293.755 8085.351
+## 42 7867.959 8175.538 8453.270 8565.769 7937.622 8330.177 8112.466 7909.058
+##         350       352      355      359      360        365      366      367
+## 2  6750.855  7929.321 6641.971 6607.175 6363.102   79.97761 5467.264 5642.816
+## 20 5381.807  6179.043 5068.628 4684.083 4652.219 1254.81420 3435.835 3598.479
+## 31 8655.951  9886.608 8713.376 8792.968 8461.526 7354.38757 8009.775 8043.360
+## 40 8912.389 10142.201 8982.468 9121.283 8744.808 7528.39434 8451.620 8458.469
+## 41 8751.395  9978.726 8837.768 8996.365 8606.676 8286.38715 8364.375 8362.816
+## 42 8542.854  9763.700 8655.200 8844.750 8435.123 8207.37329 8255.500 8246.121
+##         368      369      370       371       372       373      375      380
+## 2  5803.626 6212.915 5853.973  7393.057  7186.417  7291.938 4301.811 4418.511
+## 20 3733.803 4259.953 3853.857  5709.177  5394.580  5663.228 2349.530 2361.568
+## 31 8075.183 8432.397 8313.990 10337.775  9957.640 10423.832 7555.225 7344.713
+## 40 8480.988 8791.111 8700.386 10666.522 10290.911 10763.826 8032.907 7806.027
+## 41 8382.187 8674.912 8594.640 10537.691 10164.413 10638.076 8067.725 7743.392
+## 42 8262.121 8518.983 8466.895 10376.177 10007.446 10481.124 7999.457 7633.233
+##         385      390      395      402      403      404      411      420
+## 2  4185.387 5060.951 3264.142 4943.591 8688.870 5958.635 8587.412 5867.629
+## 20 2218.949 3419.355 1643.958 4158.124 7712.251 5105.278 7575.006 5000.657
+## 31 7013.450 7296.983 5631.222 4987.702 8898.529 6028.502 8971.114 5982.656
+## 40 7465.497 7687.221 6101.581 5141.205 9024.745 6170.020 9112.139 6128.877
+## 41 7385.823 7585.767 6107.424 4888.813 8756.514 5910.137 8850.329 5871.462
+## 42 7285.461 7461.746 6033.672 4547.560 8404.223 5563.025 8501.437 5526.047
+##         432      433      434      435      436      437      438      439
+## 2  5792.523 5657.945 7413.893 5239.915 7055.187 6790.622 6155.250 6839.673
+## 20 4740.822 4756.820 6406.212 4266.745 5992.969 5859.187 5263.093 5850.955
+## 31 6407.097 5863.140 7893.408 5739.424 7677.917 6998.192 6254.352 7225.396
+## 40 6565.375 6014.833 8052.978 5921.312 7851.550 7141.582 6392.028 7380.317
+## 41 6314.512 5760.532 7801.846 5686.587 7609.931 6881.991 6130.106 7126.851
+## 42 5973.749 5417.404 7460.351 5358.943 7275.923 6534.832 5781.620 6783.421
+##         450      451      452      461      471      475      481      482
+## 2  6751.014 6473.756 7120.520 7320.208 8293.589 7478.448 8872.333 8830.881
+## 20 5859.563 5593.603 6141.234 6320.425 7205.320 6438.455 7870.094 7762.925
+## 31 6776.943 6504.355 7507.378 7779.042 8914.013 8116.900 9167.302 9476.996
+## 40 6901.996 6635.945 7662.128 7937.764 9064.993 8285.531 9293.461 9636.330
+## 41 6634.243 6371.081 7407.716 7686.190 8808.305 8040.091 9025.101 9384.109
+## 42 6282.370 6020.786 7063.908 7344.406 8462.649 7702.846 8672.732 9041.385
+##         483      484      490       500       501       510      516       517
+## 2  7628.362 9073.167 9316.529 10354.842 10541.903 10681.699 10695.03 10630.338
+## 20 6499.053 8042.535 8242.843  9236.945  9411.838  9581.679  9607.02  9537.677
+## 31 8861.290 9522.228 9744.662 11268.260 11554.475 11426.700 11347.68 11317.069
+## 40 9075.066 9657.381 9856.097 11441.487 11734.635 11583.278 11495.89 11466.348
+## 41 8862.226 9387.531 9576.660 11197.184 11495.185 11328.357 11236.49 11207.517
+## 42 8567.423 9035.213 9228.045 10859.688 11161.278 10983.336 10888.68 10860.047
+##          520       522       530       531      540      541       551      552
+## 2  10534.626 10475.892  9911.621  9711.283 9537.915 11731.73 10929.059 11556.50
+## 20  8957.914  8820.226  8507.685  8175.521 8555.218 10698.76  9906.977 10566.99
+## 31 12103.494 11965.192 11283.633 11228.541 9693.376 11948.04 11039.521 11544.79
+## 40 12315.557 12179.105 11474.307 11450.084 9807.512 12048.15 11136.452 11630.66
+## 41 12099.547 11964.704 11243.583 11242.808 9530.062 11759.18 10846.271 11329.43
+## 42 11795.775 11663.762 10916.803 10954.555 9180.572 11415.83 10503.617 10995.57
+##         553      560       565      570      571      572      580      581
+## 2  11523.14 11680.25 10486.731 12557.55 11267.12 12609.94 12947.03 12490.38
+## 20 10448.27 10776.48  9589.524 11640.79 10308.44 11637.25 11610.42 11379.59
+## 31 12019.72 11065.77 10174.972 12080.93 11134.69 12359.25 13430.24 13158.85
+## 40 12147.38 11120.46 10252.179 12139.52 11216.51 12428.14 13536.61 13292.88
+## 41 11877.88 10789.06  9941.219 11810.54 10910.40 12107.58 13250.18 13025.99
+## 42 11525.70 10497.94  9617.409 11513.88 10581.25 11796.22 12905.47 12673.97
+##         590      591      600      615      616      620       625       630
+## 2  13809.07 12227.70 5087.777 5378.406 6171.141 6640.655  8454.634  7532.764
+## 20 12605.77 10882.44 3996.209 4312.859 5047.073 5512.055  7324.586  5870.990
+## 31 14875.16 13385.82 5729.362 6410.989 7792.411 8076.793  9851.224 10498.875
+## 40 14980.67 13532.86 5913.885 6625.713 8037.053 8305.792 10065.572 10813.413
+## 41 14691.79 13271.72 5682.562 6415.231 7849.870 8107.621  9852.690 10679.891
+## 42 14348.69 12922.56 5358.730 6127.958 7599.728 7838.883  9556.678 10510.711
+##         640       645      651       652       660       663       666
+## 2  7048.050  7841.339 7717.355  7863.830  8199.687  8325.839  8268.883
+## 20 5367.064  6108.707 6481.184  6083.207  6312.950  6492.060  6452.676
+## 31 9106.589 10504.508 9433.532 10135.109 10201.370 10282.210 10219.923
+## 40 9370.515 10762.069 9676.687 10394.516 10458.033 10536.102 10474.221
+## 41 9222.129 10601.839 9494.174 10238.253 10296.311 10369.309 10308.182
+## 42 9028.622 10390.747 9249.224 10033.710 10083.458 10148.210 10086.802
+##          670       679       690       692       694       696       698
+## 2   8457.862  9746.819  8598.650  8977.235  8975.742  8901.674  8861.981
+## 20  6631.923  8250.818  6976.855  7435.933  7455.281  7527.072  7497.826
+## 31 10404.141 11790.456 11372.913 11883.182 11938.933 12100.693 12321.250
+## 40 10651.521 12020.826 11632.227 12139.981 12195.964 12355.466 12592.011
+## 41 10474.256 11821.683 11474.831 11977.228 12033.606 12188.831 12440.648
+## 42 10236.141 11545.980 11262.897 11759.308 11816.186 11964.358 12239.480
+##          700       701       702       703       704       705       710
+## 2   7212.742  7039.094  6959.212  6514.834  6739.381  5397.124  3333.982
+## 20  6321.811  5715.210  6032.458  5827.897  5412.669  4431.019  4745.222
+## 31 11852.321 10836.069 11773.265 11661.012 10759.965  9884.359 10851.970
+## 40 12252.798 11227.061 12244.105 12137.129 11202.267 10326.747 11131.391
+## 41 12141.725 11115.859 12200.956 12127.403 11108.244 10235.153 11712.054
+## 42 12003.290 10978.796 12096.538 12037.377 10989.099 10119.227 11737.181
+##          712       713       731       732       740       750       760
+## 2   4365.222  5802.615  3928.942  4333.367  2806.665  7206.271  7568.639
+## 20  4980.374  7674.753  5567.883  6062.963  4850.708  6710.814  7590.042
+## 31 11240.660 13848.073 11741.374 12236.328 10943.746 12563.050 13751.739
+## 40 11658.297 14027.688 11943.520 12428.404 11051.343 13034.309 14231.585
+## 41 11978.617 14760.181 12651.984 13149.719 11885.383 12985.932 14342.453
+## 42 11960.729 14807.191 12700.103 13199.919 11962.337 12880.082 14275.797
+##          770       771       775       780       781       790       800
+## 2   7240.119  7819.209  7179.501  9896.725 10473.065  7702.380  7593.624
+## 20  6514.275  7768.124  7596.095  9563.479  9837.947  7304.008  8497.950
+## 31 12287.711 13895.491 13846.440 15280.176 15108.843 13284.860 14757.299
+## 40 12672.911 14380.880 14278.794 15651.432 15362.910 13764.910 15170.464
+## 41 12543.343 14453.275 14540.589 15517.351 15191.789 13765.028 15466.989
+## 42 12375.609 14378.833 14502.509 15331.922 14952.134 13671.292 15430.821
+##          811       812       816       820       830       835       840
+## 2   7653.788  7353.381  7028.493  7633.005  9050.594  7980.297  6301.347
+## 20  9144.213  8275.256  8188.660  9693.808 10607.365 10014.307  8283.779
+## 31 15363.472 14536.595 14435.518 15855.410 16861.748 16183.477 14449.963
+## 40 15673.270 14932.714 14796.433 15961.905 17196.606 16306.376 14591.377
+## 41 16171.346 15272.068 15213.359 16783.869 17609.898 17103.312 15374.114
+## 42 16157.444 15245.395 15202.750 16839.642 17571.584 17150.087 15429.362
+##          850       900       910       920       935       940      946
+## 2   6987.726  7241.964  5770.918  6772.155  5327.660  5194.439 1879.842
+## 20  9598.240 10299.623  9018.970 11011.648  9337.457  9137.439 6014.942
+## 31 14998.855 14816.767 13818.361 12457.147 13006.655 12977.417 8760.935
+## 40 14626.494 14106.874 13293.629 11760.201 12332.139 12351.512 8116.933
+## 41 15783.536 15025.080 14424.288 12343.014 13310.451 13423.162 9193.651
+## 42 15996.275 15271.618 14680.223 12526.332 13568.105 13684.162 9454.273
+##          947       950       955       970       983       986       987
+## 2   4076.605  4705.101  4909.552  4387.212  3746.127  6504.360  4407.284
+## 20  8196.783  8903.421  9153.245  8076.282  7207.959  8953.919  7674.323
+## 31 11603.967 11878.829 11603.642 12422.031 11818.269 14758.926 12473.658
+## 40 10961.295 11177.347 10875.236 11903.748 11372.537 14604.473 12040.413
+## 41 12026.055 12170.836 11797.133 13041.436 12527.950 15692.193 13196.503
+## 42 12287.090 12429.868 12051.036 13295.352 12759.790 15819.534 13425.506
+##          990
+## 2   4021.825
+## 20  8268.020
+## 31 10945.519
+## 40 10235.175
+## 41 11222.372
+## 42 11481.313</code></pre>
+<p>Step 2: Recode the minimal distance matrix to adjacency matrix</p>
+<pre class="r"><code>adj.matrix &lt;- ifelse(dist.matrix==0,1,0)
+diag(adj.matrix) &lt;- 0 #need to set the diagonal to 0
+head(adj.matrix)</code></pre>
+<pre><code>##    2 20 31 40 41 42 51 52 53 54 55 56 57 58 60 70 80 90 91 92 93 94 95 100 101
+## 2  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  0  0  0  0  0  0   0   0
+## 20 1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0   0   0
+## 31 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0   0   0
+## 40 0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0   0   0
+## 41 0  0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0   0   0
+## 42 0  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0   0   0
+##    110 115 130 135 140 145 150 155 160 165 200 205 210 211 212 220 221 223 225
+## 2    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 20   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 31   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 40   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 41   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 42   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+##    230 232 235 255 290 305 310 316 317 325 331 338 339 343 344 345 346 349 350
+## 2    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 20   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 31   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 40   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 41   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 42   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+##    352 355 359 360 365 366 367 368 369 370 371 372 373 375 380 385 390 395 402
+## 2    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 20   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 31   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 40   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 41   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 42   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+##    403 404 411 420 432 433 434 435 436 437 438 439 450 451 452 461 471 475 481
+## 2    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 20   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 31   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 40   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 41   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 42   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+##    482 483 484 490 500 501 510 516 517 520 522 530 531 540 541 551 552 553 560
+## 2    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 20   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 31   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 40   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 41   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 42   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+##    565 570 571 572 580 581 590 591 600 615 616 620 625 630 640 645 651 652 660
+## 2    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 20   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 31   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 40   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 41   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 42   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+##    663 666 670 679 690 692 694 696 698 700 701 702 703 704 705 710 712 713 731
+## 2    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 20   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 31   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 40   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 41   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 42   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+##    732 740 750 760 770 771 775 780 781 790 800 811 812 816 820 830 835 840 850
+## 2    0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 20   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 31   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 40   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 41   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 42   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+##    900 910 920 935 940 946 947 950 955 970 983 986 987 990
+## 2    0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 20   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 31   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 40   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 41   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+## 42   0   0   0   0   0   0   0   0   0   0   0   0   0   0</code></pre>
+<p>Step 3: Turn the adjacency network into a network</p>
+<pre class="r"><code>adjNet &lt;- network(adj.matrix,directed=FALSE) # transform to network
+    network.vertex.names(adjNet) &lt;- colnames(adj.matrix) # take node names from adj.matrix
+        summary(adjNet)</code></pre>
+<pre><code>## Network attributes:
+##   vertices = 191
+##   directed = FALSE
+##   hyper = FALSE
+##   loops = FALSE
+##   multiple = FALSE
+##   bipartite = FALSE
+##  total edges = 301 
+##    missing edges = 0 
+##    non-missing edges = 301 
+##  density = 0.01658859 
+## 
+## Vertex attributes:
+##   vertex.names:
+##    character valued attribute
+##    191 valid vertex names
+## 
+## No edge attributes
+## 
+## Network edgelist matrix:
+##        [,1] [,2]
+##   [1,]    2    1
+##   [2,]   16    1
+##   [3,]    6    5
+##   [4,]   17   16
+##   [5,]   18   16
+##   [6,]   18   17
+##   [7,]   19   18
+##   [8,]   20   18
+##   [9,]   20   19
+##  [10,]   21   19
+##  [11,]   22   21
+##  [12,]   23   22
+##  [13,]   24   23
+##  [14,]   25   24
+##  [15,]   28   24
+##  [16,]   29   24
+##  [17,]   30   24
+##  [18,]   26   25
+##  [19,]   30   25
+##  [20,]   27   26
+##  [21,]   30   26
+##  [22,]   30   27
+##  [23,]   29   28
+##  [24,]   30   29
+##  [25,]   31   29
+##  [26,]   33   29
+##  [27,]   31   30
+##  [28,]   32   30
+##  [29,]   34   30
+##  [30,]   35   30
+##  [31,]   32   31
+##  [32,]   33   31
+##  [33,]   34   31
+##  [34,]   34   32
+##  [35,]   34   33
+##  [36,]   35   34
+##  [37,]   37   36
+##  [38,]   39   38
+##  [39,]   48   38
+##  [40,]   40   39
+##  [41,]   41   39
+##  [42,]   48   39
+##  [43,]   41   40
+##  [44,]   48   40
+##  [45,]   42   41
+##  [46,]   44   41
+##  [47,]   45   41
+##  [48,]   46   41
+##  [49,]   48   41
+##  [50,]   54   41
+##  [51,]   44   43
+##  [52,]   50   43
+##  [53,]   48   44
+##  [54,]   50   44
+##  [55,]   54   44
+##  [56,]   46   45
+##  [57,]   47   45
+##  [58,]   49   48
+##  [59,]   50   48
+##  [60,]   52   48
+##  [61,]   80   48
+##  [62,]   52   49
+##  [63,]   53   49
+##  [64,]   68   49
+##  [65,]   71   49
+##  [66,]   72   49
+##  [67,]   73   49
+##  [68,]   51   50
+##  [69,]   52   50
+##  [70,]   53   50
+##  [71,]   54   50
+##  [72,]   62   50
+##  [73,]   53   51
+##  [74,]   59   51
+##  [75,]   60   51
+##  [76,]   62   51
+##  [77,]   67   51
+##  [78,]   72   51
+##  [79,]   53   52
+##  [80,]   72   53
+##  [81,]   55   54
+##  [82,]   62   54
+##  [83,]   58   57
+##  [84,]   60   57
+##  [85,]   63   57
+##  [86,]   60   58
+##  [87,]   63   58
+##  [88,]   65   58
+##  [89,]   60   59
+##  [90,]   61   59
+##  [91,]   62   59
+##  [92,]   61   60
+##  [93,]   65   60
+##  [94,]   67   60
+##  [95,]   65   63
+##  [96,]  135   63
+##  [97,]   67   65
+##  [98,]  135   65
+##  [99,]   67   66
+## [100,]   72   66
+## [101,]   72   67
+## [102,]   69   68
+## [103,]   70   68
+## [104,]   71   68
+## [105,]   72   68
+## [106,]   73   68
+## [107,]   75   68
+## [108,]   76   68
+## [109,]   77   68
+## [110,]   79   68
+## [111,]  154   68
+## [112,]  155   68
+## [113,]  156   68
+## [114,]  158   68
+## [115,]   70   69
+## [116,]   71   70
+## [117,]   73   70
+## [118,]   73   71
+## [119,]   73   72
+## [120,]   75   74
+## [121,]   76   74
+## [122,]  134   74
+## [123,]  135   74
+## [124,]   76   75
+## [125,]  135   75
+## [126,]  134   76
+## [127,]  135   76
+## [128,]   78   77
+## [129,]   79   77
+## [130,]   79   78
+## [131,]   88   84
+## [132,]   93   84
+## [133,]   99   85
+## [134,]  101   85
+## [135,]   88   86
+## [136,]   88   87
+## [137,]   90   87
+## [138,]   91   87
+## [139,]   92   87
+## [140,]   93   87
+## [141,]   94   87
+## [142,]  130   87
+## [143,]   90   88
+## [144,]   93   88
+## [145,]   91   89
+## [146,]   94   89
+## [147,]   98   89
+## [148,]  100   89
+## [149,]  129   90
+## [150,]  130   90
+## [151,]   94   91
+## [152,]  100   91
+## [153,]  103   91
+## [154,]  130   91
+## [155,]  132   91
+## [156,]   93   92
+## [157,]   94   92
+## [158,]   95   92
+## [159,]   97   92
+## [160,]   95   93
+## [161,]   96   93
+## [162,]   97   94
+## [163,]   98   94
+## [164,]   96   95
+## [165,]   98   97
+## [166,]  100   99
+## [167,]  101   99
+## [168,]  102   99
+## [169,]  103   99
+## [170,]  104   99
+## [171,]  103  100
+## [172,]  104  101
+## [173,]  103  102
+## [174,]  104  102
+## [175,]  105  102
+## [176,]  133  102
+## [177,]  132  103
+## [178,]  133  103
+## [179,]  105  104
+## [180,]  115  104
+## [181,]  106  105
+## [182,]  108  105
+## [183,]  109  105
+## [184,]  110  105
+## [185,]  115  105
+## [186,]  117  105
+## [187,]  133  105
+## [188,]  107  106
+## [189,]  108  106
+## [190,]  110  106
+## [191,]  133  106
+## [192,]  108  107
+## [193,]  111  107
+## [194,]  113  107
+## [195,]  133  107
+## [196,]  109  108
+## [197,]  110  108
+## [198,]  116  108
+## [199,]  117  108
+## [200,]  119  108
+## [201,]  110  109
+## [202,]  112  111
+## [203,]  113  111
+## [204,]  113  112
+## [205,]  114  112
+## [206,]  114  113
+## [207,]  133  113
+## [208,]  133  114
+## [209,]  117  115
+## [210,]  121  115
+## [211,]  117  116
+## [212,]  118  116
+## [213,]  119  116
+## [214,]  120  116
+## [215,]  124  116
+## [216,]  118  117
+## [217,]  119  117
+## [218,]  121  117
+## [219,]  123  117
+## [220,]  120  118
+## [221,]  121  118
+## [222,]  123  118
+## [223,]  121  120
+## [224,]  122  120
+## [225,]  123  120
+## [226,]  124  120
+## [227,]  123  121
+## [228,]  130  129
+## [229,]  131  130
+## [230,]  132  130
+## [231,]  132  131
+## [232,]  133  132
+## [233,]  137  132
+## [234,]  137  133
+## [235,]  135  134
+## [236,]  136  134
+## [237,]  149  134
+## [238,]  150  134
+## [239,]  163  134
+## [240,]  136  135
+## [241,]  138  135
+## [242,]  138  136
+## [243,]  140  136
+## [244,]  142  136
+## [245,]  144  136
+## [246,]  141  137
+## [247,]  139  138
+## [248,]  140  138
+## [249,]  141  138
+## [250,]  141  139
+## [251,]  141  140
+## [252,]  142  140
+## [253,]  143  142
+## [254,]  144  142
+## [255,]  146  142
+## [256,]  147  142
+## [257,]  148  142
+## [258,]  148  143
+## [259,]  148  147
+## [260,]  150  149
+## [261,]  151  149
+## [262,]  153  149
+## [263,]  155  149
+## [264,]  163  149
+## [265,]  153  150
+## [266,]  154  150
+## [267,]  152  151
+## [268,]  153  151
+## [269,]  155  151
+## [270,]  153  152
+## [271,]  154  152
+## [272,]  155  152
+## [273,]  154  153
+## [274,]  155  154
+## [275,]  156  155
+## [276,]  158  155
+## [277,]  161  155
+## [278,]  162  155
+## [279,]  163  155
+## [280,]  165  155
+## [281,]  168  155
+## [282,]  171  155
+## [283,]  172  155
+## [284,]  159  158
+## [285,]  162  161
+## [286,]  163  161
+## [287,]  164  161
+## [288,]  165  161
+## [289,]  168  161
+## [290,]  165  164
+## [291,]  169  165
+## [292,]  171  165
+## [293,]  170  169
+## [294,]  171  169
+## [295,]  173  169
+## [296,]  171  170
+## [297,]  172  170
+## [298,]  172  171
+## [299,]  175  173
+## [300,]  177  173
+## [301,]  179  177</code></pre>
+<pre class="r"><code>            gplot(adjNet)</code></pre>
+<p><img src="week8_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="checking-for-transitivity-against-the-null-model-with-the-cug-test." class="section level3">
+<h3>Checking for transitivity against the null model with the CUG test.</h3>
+<p>Now we can check for transitivity in the adjacency network. The CUG test does this by calculating the transitivity in the adjacency network and testing this against the null model. See Cranmer et al. 2021 page 24 for explanation of function and result interpretation.</p>
+<pre class="r"><code>cugResults &lt;- cug.test(adjNet,mode=&quot;graph&quot;,FUN=gtrans,cmode=&quot;dyad.census&quot;)
+cugResults</code></pre>
+<pre><code>## 
+## Univariate Conditional Uniform Graph Test
+## 
+## Conditioning Method: dyad.census 
+## Graph Type: graph 
+## Diagonal Used: FALSE 
+## Replications: 1000 
+## 
+## Observed Value: 0.3778802 
+## Pr(X&gt;=Obs): 0 
+## Pr(X&lt;=Obs): 1</code></pre>
+<pre class="r"><code>plot(cugResults)</code></pre>
+<p><img src="week8_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
