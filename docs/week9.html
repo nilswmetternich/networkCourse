@@ -11,9 +11,9 @@
 
 <meta name="author" content="Nils W Metternich" />
 
-<meta name="date" content="2022-05-03" />
+<meta name="date" content="2022-09-03" />
 
-<title>Week 8</title>
+<title>Week 9</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -273,17 +273,16 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Week 8</h1>
+<h1 class="title toc-ignore">Week 9</h1>
 <h4 class="author">Nils W Metternich</h4>
-<h4 class="date">05/03/2022</h4>
+<h4 class="date">09/03/2022</h4>
 
 </div>
 
 
-<div id="inferential-network-analysis-in-r-part-1" class="section level2">
-<h2>Inferential Network Analysis in R (Part 1)</h2>
-<p>This code will introduce you to another package `cshapes’, which allows you to generate maps, but also distance matrices. In this week, we will create an adjacency matrix from a distance matrix and then check the resulting network for transitivity. The network that we will attain (adjacency network of states) is similar to the one that we looked at in Lecture Week 7 when discussing, e.g., bridges and cutpoints. That is, we will attain a network of states (nodes) indicating whether they share a border (links).</p>
-<p>So as always let us start with the packages that we need for this session.</p>
+<div id="inferential-network-analysis-in-r-part-2" class="section level2">
+<h2>Inferential Network Analysis in R (Part 2)</h2>
+<p>This week we will estimate ERMG models. We will be looking at the relationship between two networks: Militarized Interstate Disputes and Geographic Adjacency. After this there is a short exercise in attaining networks from a monadic dataset. We will also work a bit more on the vizualization of networks in this code.</p>
 <pre class="r"><code>library(cshapes)</code></pre>
 <pre><code>## Registered S3 method overwritten by &#39;dplyr&#39;:
 ##   method         from       
@@ -398,14 +397,9 @@ $(document).ready(function () {
 ## For license and citation information see statnet.org/attribution
 ## or type citation(&quot;statnet&quot;).</code></pre>
 <pre><code>## unable to reach CRAN</code></pre>
-<div id="using-cshapes-to-create-maps-and-distance-matrices." class="section level3">
-<h3>Using cshapes to create maps and distance matrices.</h3>
-<p>Cshapes is great package for making maps and distance matrices when dealing with international relations data. This is because the country codes used in this package are either COW codes (Correlates of War Project. See last week’s MID data) or Gleditsch and Ward codes (GW), which are used, e.g. by the Uppsala Conflict Data Program.</p>
-<p>So let us start by loading a map of the world. This can be done with the function cshp. Note that we are providing the date we want, because country borders change overtime. We also want COW codes, so we set useGW=FALSE. Type ?cshp in the R console if you want to know more about this function. We can then plot the map, where the color is simply ordered by the country code.</p>
-<pre class="r"><code>cmap.2002 &lt;- cshp(date=as.Date(&quot;2002-1-1&quot;),useGW = FALSE)
-plot(cmap.2002[1])</code></pre>
-<p><img src="week8_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-<p>The other important feature of cshapes is that it can provide us distance matrices. We can use these for later analysis, but this week will create a distance matrix and then recode it to an adjacency matrix which will tell us whether or not countries share a border. We proceed in three steps. Step 1: Create a minimal distance matrix, where the distance between two countries is the minimal distance between them. If two countries share a border the distance is 0. Step 2: We recode the minimal distance matrix such that countries are connected if they share a border (minimal distance = 0) and disconnected otherwise. Step 3: Turn the adjacency network into a network.</p>
+<div id="using-cshapes-to-create-adjacency-matrix" class="section level3">
+<h3>Using cshapes to create adjacency matrix</h3>
+<p>The first part of the code this week is to generate the networks that we already discussed last week and engage a bit more in the vizualiztion of them.</p>
 <p>Step 1: Create a minimal distance matrix</p>
 <pre class="r"><code>dist.matrix &lt;- distmatrix(date=as.Date(&quot;2002-1-1&quot;),type = &quot;mindist&quot;,useGW = FALSE)
 head(dist.matrix)</code></pre>
@@ -665,353 +659,232 @@ head(adj.matrix)</code></pre>
 ## 40   0   0   0   0   0   0   0   0   0   0   0   0   0   0
 ## 41   0   0   0   0   0   0   0   0   0   0   0   0   0   0
 ## 42   0   0   0   0   0   0   0   0   0   0   0   0   0   0</code></pre>
-<p>Step 3: Turn the adjacency network into a network</p>
-<pre class="r"><code>adjNet &lt;- network(adj.matrix,directed=FALSE) # transform to network
-    network.vertex.names(adjNet) &lt;- colnames(adj.matrix) # take node names from adj.matrix
-        summary(adjNet)</code></pre>
+<p>Now let us work a bit more on the visualization of the network. Here is also a nice cheat sheet for the gplot function <a href="https://www.uni-due.de/hummell/man/sna/.sna.gplot.pdf">Cheat Sheet</a></p>
+<pre class="r"><code>adjNet &lt;- network(adj.matrix,directed=FALSE)
+
+#sized by nodal degree, but vertex.cex too big
+gplot(adjNet, displaylabels=TRUE,
+ label.cex=.75,label.col=&quot;black&quot;, vertex.cex = (degree(adjNet)))</code></pre>
+<p><img src="week9_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>#sized by nodal degree, but vertex.cex devided by 5
+gplot(adjNet, displaylabels=TRUE,
+ label.cex=.75,label.col=&quot;black&quot;, vertex.cex = (degree(adjNet))/5)</code></pre>
+<p><img src="week9_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<pre class="r"><code>#Different color for edges
+gplot(adjNet, displaylabels=TRUE, edge.col=&quot;blue&quot;,
+ label.cex=.75,label.col=&quot;black&quot;, vertex.cex = (degree(adjNet))/5)</code></pre>
+<p><img src="week9_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<pre class="r"><code>#Different color for edges and vertices
+gplot(adjNet, displaylabels=TRUE, edge.col=&quot;blue&quot;,vertex.col = &quot;orange&quot;,
+ label.cex=.75,label.col=&quot;black&quot;, vertex.cex = (degree(adjNet))/5)</code></pre>
+<p><img src="week9_files/figure-html/unnamed-chunk-4-4.png" width="672" /></p>
+<p>###Using militarized interstate dispute data</p>
+<pre class="r"><code>mid &lt;- read.csv(&quot;~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv&quot;) #First we load the data. You will need to change the path to do this.</code></pre>
+<p>You should now be able to see the dataset. Take a minute and look at the variables. We will only need the statea, stateeb, and the strtyr of the MID. statea and stateb are the COW numeric codes that match the cshape distance matrix We also only need the directed instances of MIDs.</p>
+<pre class="r"><code>mid &lt;- mid[mid$rolea==1,c(&quot;statea&quot;,&quot;stateb&quot;,&quot;strtyr&quot;)]
+summary(mid)</code></pre>
+<pre><code>##      statea          stateb          strtyr    
+##  Min.   :  2.0   Min.   :  2.0   Min.   :1816  
+##  1st Qu.:220.0   1st Qu.:220.0   1st Qu.:1937  
+##  Median :385.0   Median :451.5   Median :1967  
+##  Mean   :441.6   Mean   :452.7   Mean   :1957  
+##  3rd Qu.:666.0   3rd Qu.:678.0   3rd Qu.:1993  
+##  Max.   :986.0   Max.   :940.0   Max.   :2014</code></pre>
+<p>Now we only have a subset of the data that we actually need to create the MID matrix. We will do this in the following way. Step 1: Find all unique states in the data. Step 2: Create a matrix with the dimension of the states in the data. Step 3: Give the matrix row and column names accordingly.</p>
+<pre class="r"><code>states &lt;- unique(c(as.character(mid$statea),as.character(mid$stateb)))
+midMat &lt;- matrix(0,nrow=length(states),ncol=length(states)) # 
+    rownames(midMat) &lt;-     states
+        colnames(midMat) &lt;-     states
+dim(midMat)</code></pre>
+<pre><code>## [1] 186 186</code></pre>
+<p>The final step is that we need to go through the dataset with a loop. With this loop we go through each line of the mid dataset, take statea and stateb of each line and add an entry in midMat accordingly.</p>
+<pre class="r"><code>for(i in 1:dim(mid)[1]){
+    midMat[as.character(mid$statea[i]),as.character(mid$stateb[i])] &lt;- midMat[as.character(mid$statea[i]),as.character(mid$stateb[i])]+1
+}</code></pre>
+<p>The problem now is that we need to make sure that in the midMat and adj.matrix we have the same countries. To do this we intersect the column names of midMat and the adj.matrix. This gives us the joint states and we can select only those from the matrices. Then we can creat the networks that we will use in the ERGM model</p>
+<pre class="r"><code>joint.states &lt;- intersect(colnames(midMat), colnames(adj.matrix))
+midMat &lt;- midMat[joint.states,joint.states]
+adj.matrix &lt;- adj.matrix[joint.states,joint.states]
+
+midNet &lt;- network(midMat,directed=TRUE)
+adjNet &lt;- network(adj.matrix,directed=FALSE)</code></pre>
+<p>Again, once we have all data in the right place and order the analysis as such is not so difficult to run. We use the ergm function to initially run a binary outcome model, that is we estimate whether or not state A has initiated a militarized interstate dispute against state B. In this model we will consider the following features that might make it more or less likely that we observe the given network. First, we consider edges, which is how much the edgecount (number of edges) impacts on the network. Second, we consider reciprocity, captured by mutual. If we find a positive estimate on reciprocity, that means if A sends conflict, B is likely to send conflict back. If we find a negative effect of reciprocity, this means B is unlikely to respond to A sending conflict. Finally, we include an edgecov(ariate), which is whether or not countries share a border.</p>
+<pre class="r"><code>model.ergm &lt;- ergm(midNet~edges+mutual+edgecov(adjNet))</code></pre>
+<pre><code>## Starting maximum pseudolikelihood estimation (MPLE):</code></pre>
+<pre><code>## Evaluating the predictor and response matrix.</code></pre>
+<pre><code>## Maximizing the pseudolikelihood.</code></pre>
+<pre><code>## Finished MPLE.</code></pre>
+<pre><code>## Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
+<pre><code>## Iteration 1 of at most 20:</code></pre>
+<pre><code>## Optimizing with step length 1.</code></pre>
+<pre><code>## The log-likelihood improved by 0.06057.</code></pre>
+<pre><code>## Step length converged once. Increasing MCMC sample size.</code></pre>
+<pre><code>## Iteration 2 of at most 20:</code></pre>
+<pre><code>## Optimizing with step length 1.</code></pre>
+<pre><code>## The log-likelihood improved by 0.055.</code></pre>
+<pre><code>## Step length converged twice. Stopping.</code></pre>
+<pre><code>## Finished MCMLE.</code></pre>
+<pre><code>## Evaluating log-likelihood at the estimate. Using 20 bridges: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 .
+## This model was fit using MCMC.  To examine model diagnostics and check
+## for degeneracy, use the mcmc.diagnostics() function.</code></pre>
+<pre class="r"><code>summary(model.ergm)</code></pre>
+<pre><code>## 
+## ==========================
+## Summary of model fit
+## ==========================
+## 
+## Formula:   midNet ~ edges + mutual + edgecov(adjNet)
+## 
+## Iterations:  2 out of 20 
+## 
+## Monte Carlo MLE Results:
+##                Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
+## edges          -4.18703    0.05214      0  -80.31   &lt;1e-04 ***
+## mutual          3.78252    0.13002      0   29.09   &lt;1e-04 ***
+## edgecov.adjNet  2.35079    0.08364      1   28.11   &lt;1e-04 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##      Null Deviance: 37513  on 27060  degrees of freedom
+##  Residual Deviance:  6107  on 27057  degrees of freedom
+##  
+## AIC: 6113    BIC: 6138    (Smaller is better.)</code></pre>
+<p>Now we can do some interpretation given our estimates and calculate the probability of a MID from A to B in the network. The log odds of an edge in the MID network is given by the linear predictor: -4.18593 x change in edge count + 3.78405 x change in reciprocity + 2.35112 x change in being connected. We can now calculate the different probabilities of MID whether or not you are connected by taking the inverse logistic transformation of this linear predictor.</p>
+<pre class="r"><code>x &lt;- -4.18593*1 + 3.78405*1 + 2.35112*0
+  prob.noBorder &lt;-  exp(x)/(1+exp(x))
+    prob.noBorder</code></pre>
+<pre><code>## [1] 0.4008607</code></pre>
+<pre class="r"><code>x &lt;- -4.18593*1 + 3.78405*1 + 2.35112*1
+  prob.Border &lt;-  exp(x)/(1+exp(x))
+    prob.Border</code></pre>
+<pre><code>## [1] 0.8753637</code></pre>
+<p>We can see that the probability of sending an MID more than doubles when two states share a border.</p>
+</div>
+</div>
+<div id="four-ways-to-build-a-network" class="section level2">
+<h2>Four ways to build a network</h2>
+<div id="manual-from-matrix" class="section level3">
+<h3>Manual from matrix</h3>
+<p>Remember from Introduction section:</p>
+<pre class="r"><code>my.matrix &lt;- matrix(data=0,nrow=5,ncol=5)
+  colnames(my.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+    rownames(my.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+
+#A&lt;-B
+my.matrix[1,2] &lt;- 1
+#B&lt;-A
+my.matrix[2,1] &lt;- 1
+#B&lt;-D
+my.matrix[2,4] &lt;- 1
+#D&lt;-B
+my.matrix[4,2] &lt;- 1
+#A&lt;-D
+my.matrix[1,4] &lt;- 1
+#D&lt;-A
+my.matrix[4,1] &lt;- 1
+
+my.nodes &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+my.net &lt;- network(my.matrix,directed=FALSE)
+network.vertex.names(my.net) &lt;- my.nodes
+
+gplot(my.net)</code></pre>
+<p><img src="week9_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+</div>
+<div id="manual-from-edgelist" class="section level2">
+<h2>Manual from edgelist</h2>
+<p>In week 6 we used an edgelist to construct the network.</p>
+<pre class="r"><code>#edgelist
+my.list &lt;- rbind(c(1,2), #AB
+                c(1,4), #AD
+                c(2,4))  #BD
+              
+ 
+#nodes
+my.nodes &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+  my.net &lt;- network(my.list,directed=FALSE)
+    network.vertex.names(my.net) &lt;- my.nodes
+      summary(my.net)</code></pre>
 <pre><code>## Network attributes:
-##   vertices = 191
+##   vertices = 4
 ##   directed = FALSE
 ##   hyper = FALSE
 ##   loops = FALSE
 ##   multiple = FALSE
 ##   bipartite = FALSE
-##  total edges = 301 
+##  total edges = 3 
 ##    missing edges = 0 
-##    non-missing edges = 301 
-##  density = 0.01658859 
+##    non-missing edges = 3 
+##  density = 0.5 
 ## 
 ## Vertex attributes:
 ##   vertex.names:
 ##    character valued attribute
-##    191 valid vertex names
+##    4 valid vertex names
 ## 
 ## No edge attributes
 ## 
-## Network edgelist matrix:
-##        [,1] [,2]
-##   [1,]    2    1
-##   [2,]   16    1
-##   [3,]    6    5
-##   [4,]   17   16
-##   [5,]   18   16
-##   [6,]   18   17
-##   [7,]   19   18
-##   [8,]   20   18
-##   [9,]   20   19
-##  [10,]   21   19
-##  [11,]   22   21
-##  [12,]   23   22
-##  [13,]   24   23
-##  [14,]   25   24
-##  [15,]   28   24
-##  [16,]   29   24
-##  [17,]   30   24
-##  [18,]   26   25
-##  [19,]   30   25
-##  [20,]   27   26
-##  [21,]   30   26
-##  [22,]   30   27
-##  [23,]   29   28
-##  [24,]   30   29
-##  [25,]   31   29
-##  [26,]   33   29
-##  [27,]   31   30
-##  [28,]   32   30
-##  [29,]   34   30
-##  [30,]   35   30
-##  [31,]   32   31
-##  [32,]   33   31
-##  [33,]   34   31
-##  [34,]   34   32
-##  [35,]   34   33
-##  [36,]   35   34
-##  [37,]   37   36
-##  [38,]   39   38
-##  [39,]   48   38
-##  [40,]   40   39
-##  [41,]   41   39
-##  [42,]   48   39
-##  [43,]   41   40
-##  [44,]   48   40
-##  [45,]   42   41
-##  [46,]   44   41
-##  [47,]   45   41
-##  [48,]   46   41
-##  [49,]   48   41
-##  [50,]   54   41
-##  [51,]   44   43
-##  [52,]   50   43
-##  [53,]   48   44
-##  [54,]   50   44
-##  [55,]   54   44
-##  [56,]   46   45
-##  [57,]   47   45
-##  [58,]   49   48
-##  [59,]   50   48
-##  [60,]   52   48
-##  [61,]   80   48
-##  [62,]   52   49
-##  [63,]   53   49
-##  [64,]   68   49
-##  [65,]   71   49
-##  [66,]   72   49
-##  [67,]   73   49
-##  [68,]   51   50
-##  [69,]   52   50
-##  [70,]   53   50
-##  [71,]   54   50
-##  [72,]   62   50
-##  [73,]   53   51
-##  [74,]   59   51
-##  [75,]   60   51
-##  [76,]   62   51
-##  [77,]   67   51
-##  [78,]   72   51
-##  [79,]   53   52
-##  [80,]   72   53
-##  [81,]   55   54
-##  [82,]   62   54
-##  [83,]   58   57
-##  [84,]   60   57
-##  [85,]   63   57
-##  [86,]   60   58
-##  [87,]   63   58
-##  [88,]   65   58
-##  [89,]   60   59
-##  [90,]   61   59
-##  [91,]   62   59
-##  [92,]   61   60
-##  [93,]   65   60
-##  [94,]   67   60
-##  [95,]   65   63
-##  [96,]  135   63
-##  [97,]   67   65
-##  [98,]  135   65
-##  [99,]   67   66
-## [100,]   72   66
-## [101,]   72   67
-## [102,]   69   68
-## [103,]   70   68
-## [104,]   71   68
-## [105,]   72   68
-## [106,]   73   68
-## [107,]   75   68
-## [108,]   76   68
-## [109,]   77   68
-## [110,]   79   68
-## [111,]  154   68
-## [112,]  155   68
-## [113,]  156   68
-## [114,]  158   68
-## [115,]   70   69
-## [116,]   71   70
-## [117,]   73   70
-## [118,]   73   71
-## [119,]   73   72
-## [120,]   75   74
-## [121,]   76   74
-## [122,]  134   74
-## [123,]  135   74
-## [124,]   76   75
-## [125,]  135   75
-## [126,]  134   76
-## [127,]  135   76
-## [128,]   78   77
-## [129,]   79   77
-## [130,]   79   78
-## [131,]   88   84
-## [132,]   93   84
-## [133,]   99   85
-## [134,]  101   85
-## [135,]   88   86
-## [136,]   88   87
-## [137,]   90   87
-## [138,]   91   87
-## [139,]   92   87
-## [140,]   93   87
-## [141,]   94   87
-## [142,]  130   87
-## [143,]   90   88
-## [144,]   93   88
-## [145,]   91   89
-## [146,]   94   89
-## [147,]   98   89
-## [148,]  100   89
-## [149,]  129   90
-## [150,]  130   90
-## [151,]   94   91
-## [152,]  100   91
-## [153,]  103   91
-## [154,]  130   91
-## [155,]  132   91
-## [156,]   93   92
-## [157,]   94   92
-## [158,]   95   92
-## [159,]   97   92
-## [160,]   95   93
-## [161,]   96   93
-## [162,]   97   94
-## [163,]   98   94
-## [164,]   96   95
-## [165,]   98   97
-## [166,]  100   99
-## [167,]  101   99
-## [168,]  102   99
-## [169,]  103   99
-## [170,]  104   99
-## [171,]  103  100
-## [172,]  104  101
-## [173,]  103  102
-## [174,]  104  102
-## [175,]  105  102
-## [176,]  133  102
-## [177,]  132  103
-## [178,]  133  103
-## [179,]  105  104
-## [180,]  115  104
-## [181,]  106  105
-## [182,]  108  105
-## [183,]  109  105
-## [184,]  110  105
-## [185,]  115  105
-## [186,]  117  105
-## [187,]  133  105
-## [188,]  107  106
-## [189,]  108  106
-## [190,]  110  106
-## [191,]  133  106
-## [192,]  108  107
-## [193,]  111  107
-## [194,]  113  107
-## [195,]  133  107
-## [196,]  109  108
-## [197,]  110  108
-## [198,]  116  108
-## [199,]  117  108
-## [200,]  119  108
-## [201,]  110  109
-## [202,]  112  111
-## [203,]  113  111
-## [204,]  113  112
-## [205,]  114  112
-## [206,]  114  113
-## [207,]  133  113
-## [208,]  133  114
-## [209,]  117  115
-## [210,]  121  115
-## [211,]  117  116
-## [212,]  118  116
-## [213,]  119  116
-## [214,]  120  116
-## [215,]  124  116
-## [216,]  118  117
-## [217,]  119  117
-## [218,]  121  117
-## [219,]  123  117
-## [220,]  120  118
-## [221,]  121  118
-## [222,]  123  118
-## [223,]  121  120
-## [224,]  122  120
-## [225,]  123  120
-## [226,]  124  120
-## [227,]  123  121
-## [228,]  130  129
-## [229,]  131  130
-## [230,]  132  130
-## [231,]  132  131
-## [232,]  133  132
-## [233,]  137  132
-## [234,]  137  133
-## [235,]  135  134
-## [236,]  136  134
-## [237,]  149  134
-## [238,]  150  134
-## [239,]  163  134
-## [240,]  136  135
-## [241,]  138  135
-## [242,]  138  136
-## [243,]  140  136
-## [244,]  142  136
-## [245,]  144  136
-## [246,]  141  137
-## [247,]  139  138
-## [248,]  140  138
-## [249,]  141  138
-## [250,]  141  139
-## [251,]  141  140
-## [252,]  142  140
-## [253,]  143  142
-## [254,]  144  142
-## [255,]  146  142
-## [256,]  147  142
-## [257,]  148  142
-## [258,]  148  143
-## [259,]  148  147
-## [260,]  150  149
-## [261,]  151  149
-## [262,]  153  149
-## [263,]  155  149
-## [264,]  163  149
-## [265,]  153  150
-## [266,]  154  150
-## [267,]  152  151
-## [268,]  153  151
-## [269,]  155  151
-## [270,]  153  152
-## [271,]  154  152
-## [272,]  155  152
-## [273,]  154  153
-## [274,]  155  154
-## [275,]  156  155
-## [276,]  158  155
-## [277,]  161  155
-## [278,]  162  155
-## [279,]  163  155
-## [280,]  165  155
-## [281,]  168  155
-## [282,]  171  155
-## [283,]  172  155
-## [284,]  159  158
-## [285,]  162  161
-## [286,]  163  161
-## [287,]  164  161
-## [288,]  165  161
-## [289,]  168  161
-## [290,]  165  164
-## [291,]  169  165
-## [292,]  171  165
-## [293,]  170  169
-## [294,]  171  169
-## [295,]  173  169
-## [296,]  171  170
-## [297,]  172  170
-## [298,]  172  171
-## [299,]  175  173
-## [300,]  177  173
-## [301,]  179  177</code></pre>
-<pre class="r"><code>            gplot(adjNet)</code></pre>
-<p><img src="week8_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+## Network adjacency matrix:
+##   A B C D
+## A 0 1 0 1
+## B 1 0 0 1
+## C 0 0 0 0
+## D 1 1 0 0</code></pre>
+<div id="from-dyadic-data" class="section level3">
+<h3>From dyadic data</h3>
+<p>In week 7 we used this to convert MID data into a network</p>
+<pre class="r"><code>actorA &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;,&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;,&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;,&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;,&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;) 
+  actorB &lt;- c(&quot;A&quot;,&quot;A&quot;,&quot;A&quot;,&quot;A&quot;,&quot;A&quot;,&quot;B&quot;,&quot;B&quot;,&quot;B&quot;,&quot;B&quot;,&quot;B&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;D&quot;,&quot;D&quot;,&quot;D&quot;,&quot;D&quot;,&quot;D&quot;,&quot;E&quot;,&quot;E&quot;,&quot;E&quot;,&quot;E&quot;,&quot;E&quot;) 
+    my.link &lt;- c(0,1,0,1,0,1,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0)      
+      my.data &lt;- data.frame(actorA,actorB,my.link)
+        names(my.data) &lt;- c(&quot;actorA&quot;,&quot;actorB&quot;,&quot;my.link&quot;)
+
+my.matrix &lt;- matrix(data=0,nrow=5,ncol=5)
+  colnames(my.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+    rownames(my.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+
+for(i in 1:dim(my.data)[1]){
+  temp.a &lt;- as.character(my.data$actorA[i])
+     temp.b &lt;- as.character(my.data$actorB[i])
+      temp.link &lt;- my.data$my.link[i]
+  if(temp.link==1){my.matrix[temp.a,temp.b] &lt;- my.matrix[temp.a,temp.b]+1 }
+}
+
+my.nodes &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+my.net &lt;- network(my.matrix,directed=FALSE)
+network.vertex.names(my.net) &lt;- my.nodes
+
+gplot(my.net)</code></pre>
+<p><img src="week9_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
-<div id="checking-for-transitivity-against-the-null-model-with-the-cug-test." class="section level3">
-<h3>Checking for transitivity against the null model with the CUG test.</h3>
-<p>Now we can check for transitivity in the adjacency network. The CUG test does this by calculating the transitivity in the adjacency network and testing this against the null model. See Cranmer et al. 2021 page 24 for explanation of function and result interpretation.</p>
-<pre class="r"><code>cugResults &lt;- cug.test(adjNet,mode=&quot;graph&quot;,FUN=gtrans,cmode=&quot;dyad.census&quot;)
-cugResults</code></pre>
-<pre><code>## 
-## Univariate Conditional Uniform Graph Test
-## 
-## Conditioning Method: dyad.census 
-## Graph Type: graph 
-## Diagonal Used: FALSE 
-## Replications: 1000 
-## 
-## Observed Value: 0.3778802 
-## Pr(X&gt;=Obs): 0 
-## Pr(X&lt;=Obs): 1</code></pre>
-<pre class="r"><code>plot(cugResults)</code></pre>
-<p><img src="week8_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<div id="from-monadic-data" class="section level3">
+<h3>From monadic data</h3>
+<p>Sometimes we might have data on the monadic level (e.g. democracy scores of states) and we want to connect actors that have the same value (e.g. both democratic). In this case, we can construct a nested loop, where we cycle through each actor comparing it with each other actors’ value.</p>
+<pre class="r"><code>actorA &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;) 
+    my.link &lt;- c(1,1,0,1,0)      
+      my.data &lt;- data.frame(actorA,my.link)
+        names(my.data) &lt;- c(&quot;actorA&quot;,&quot;my.link&quot;)
+        
+my.matrix &lt;- matrix(data=0,nrow=5,ncol=5)
+  colnames(my.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+    rownames(my.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+
+for(i in 1:dim(my.data)[1]){
+      for(j in 1:dim(my.data)[1]){
+            temp.i &lt;- as.character(my.data$actorA[i])
+              link.i &lt;- my.data$my.link[i]
+                temp.j &lt;- as.character(my.data$actorA[j])
+                  link.j &lt;- my.data$my.link[j]
+  if(link.i==1 &amp; link.j==1){my.matrix[temp.i,temp.j] &lt;- my.matrix[temp.i,temp.j]+1}
+}}
+
+diag(my.matrix) &lt;- 0
+my.nodes &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+my.net &lt;- network(my.matrix,directed=FALSE)
+network.vertex.names(my.net) &lt;- my.nodes
+
+gplot(my.net)</code></pre>
+<p><img src="week9_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 </div>
 

@@ -1,0 +1,230 @@
+---
+title: "Week 9"
+author: "Nils W Metternich"
+date: "09/03/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Inferential Network Analysis in R (Part 2)
+
+This week we will estimate ERMG models. We will be looking at the relationship between two networks: Militarized Interstate Disputes and Geographic Adjacency. After this there is a short exercise in attaining networks from a monadic dataset. We will also work a bit more on the vizualization of networks in this code.
+
+
+
+```{r }
+library(cshapes)
+library(statnet)
+```
+### Using cshapes to create adjacency matrix
+
+The first part of the code this week is to generate the networks that we already discussed last week and engage a bit more in the vizualiztion of them.
+
+Step 1: Create a minimal distance matrix
+```{r }
+dist.matrix <- distmatrix(date=as.Date("2002-1-1"),type = "mindist",useGW = FALSE)
+head(dist.matrix)
+```
+
+Step 2: Recode the minimal distance matrix to adjacency matrix
+```{r }
+adj.matrix <- ifelse(dist.matrix==0,1,0)
+diag(adj.matrix) <- 0 #need to set the diagonal to 0
+head(adj.matrix)
+```
+
+Now let us work a bit more on the visualization of the network. Here is also a nice cheat sheet for the gplot function [Cheat Sheet](https://www.uni-due.de/hummell/man/sna/.sna.gplot.pdf)
+
+```{r }
+adjNet <- network(adj.matrix,directed=FALSE)
+
+#sized by nodal degree, but vertex.cex too big
+gplot(adjNet, displaylabels=TRUE,
+ label.cex=.75,label.col="black", vertex.cex = (degree(adjNet)))
+
+#sized by nodal degree, but vertex.cex devided by 5
+gplot(adjNet, displaylabels=TRUE,
+ label.cex=.75,label.col="black", vertex.cex = (degree(adjNet))/5)
+
+#Different color for edges
+gplot(adjNet, displaylabels=TRUE, edge.col="blue",
+ label.cex=.75,label.col="black", vertex.cex = (degree(adjNet))/5)
+
+#Different color for edges and vertices
+gplot(adjNet, displaylabels=TRUE, edge.col="blue",vertex.col = "orange",
+ label.cex=.75,label.col="black", vertex.cex = (degree(adjNet))/5)
+
+
+```
+
+###Using militarized interstate dispute data
+
+```{r }
+mid <- read.csv("~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv") #First we load the data. You will need to change the path to do this.
+```
+
+You should now be able to see the dataset. Take a minute and look at the variables. We will only need the statea, stateeb, and the strtyr of the MID. statea and stateb are the COW numeric codes that match the cshape distance matrix We also only need the directed instances of MIDs.
+
+```{r }
+mid <- mid[mid$rolea==1,c("statea","stateb","strtyr")]
+summary(mid)
+```
+
+Now we only have a subset of the data that we actually need to create the MID matrix. We will do this in the following way. Step 1: Find all unique states in the data. Step 2: Create a matrix with the dimension of the states in the data. Step 3: Give the matrix row and column names accordingly. 
+
+```{r }
+states <- unique(c(as.character(mid$statea),as.character(mid$stateb)))
+midMat <- matrix(0,nrow=length(states),ncol=length(states)) # 
+	rownames(midMat) <- 	states
+		colnames(midMat) <- 	states
+dim(midMat)
+```		
+
+The final step is that we need to go through the dataset with a loop. With this loop we go through each line of the mid dataset, take statea and stateb of each line and add an entry in midMat accordingly.
+```{r }
+for(i in 1:dim(mid)[1]){
+	midMat[as.character(mid$statea[i]),as.character(mid$stateb[i])] <- midMat[as.character(mid$statea[i]),as.character(mid$stateb[i])]+1
+}
+
+```
+
+The problem now is that we need to make sure that in the midMat and adj.matrix we have the same countries. To do this we intersect the column names of midMat and the adj.matrix. This gives us the joint states and we can select only those from the matrices. Then we can creat the networks that we will use in the ERGM model
+
+```{r }
+joint.states <- intersect(colnames(midMat), colnames(adj.matrix))
+midMat <- midMat[joint.states,joint.states]
+adj.matrix <- adj.matrix[joint.states,joint.states]
+
+midNet <- network(midMat,directed=TRUE)
+adjNet <- network(adj.matrix,directed=FALSE)
+```
+
+
+Again, once we have all data in the right place and order the analysis as such is not so difficult to run. We use the ergm function to initially run a binary outcome model, that is we estimate whether or not state A has initiated a militarized interstate dispute against state B. In this model we will consider the following features that might make it more or less likely that we observe the given network. First, we consider edges, which is how much the edgecount (number of edges) impacts on the network. Second, we consider reciprocity, captured by mutual. If we find a positive estimate on reciprocity, that means if A sends conflict, B is likely to send conflict back. If we find a negative effect of reciprocity, this means B is unlikely to respond to A sending conflict. Finally, we include an edgecov(ariate), which is whether or not countries share a border. 
+
+```{r }
+model.ergm <- ergm(midNet~edges+mutual+edgecov(adjNet))
+summary(model.ergm)
+```
+
+Now we can do some interpretation given our estimates and calculate the probability of a MID from A to B in the network. The log odds of an edge in the MID network is given by the linear predictor: -4.18593 x change in edge count +  3.78405 x change in reciprocity  + 2.35112 x change in being connected. We can now calculate the different probabilities of MID whether or not you are connected by taking the inverse logistic transformation of this linear predictor.
+
+```{r }
+x <- -4.18593*1 + 3.78405*1 + 2.35112*0
+  prob.noBorder <-  exp(x)/(1+exp(x))
+    prob.noBorder
+x <- -4.18593*1 + 3.78405*1 + 2.35112*1
+  prob.Border <-  exp(x)/(1+exp(x))
+    prob.Border
+```
+We can see that the probability of sending an MID more than doubles when two states share a border.
+
+## Four ways to build a network
+
+### Manual from matrix
+Remember from Introduction section:
+```{r }
+my.matrix <- matrix(data=0,nrow=5,ncol=5)
+  colnames(my.matrix) <- c("A","B","C","D","E")
+    rownames(my.matrix) <- c("A","B","C","D","E")
+
+#A<-B
+my.matrix[1,2] <- 1
+#B<-A
+my.matrix[2,1] <- 1
+#B<-D
+my.matrix[2,4] <- 1
+#D<-B
+my.matrix[4,2] <- 1
+#A<-D
+my.matrix[1,4] <- 1
+#D<-A
+my.matrix[4,1] <- 1
+
+my.nodes <- c("A","B","C","D","E")
+my.net <- network(my.matrix,directed=FALSE)
+network.vertex.names(my.net) <- my.nodes
+
+gplot(my.net)
+
+```
+
+## Manual from edgelist
+In week 6 we used an edgelist to construct the network.
+
+```{r }
+#edgelist
+my.list <- rbind(c(1,2), #AB
+                c(1,4), #AD
+                c(2,4))  #BD
+              
+ 
+#nodes
+my.nodes <- c("A","B","C","D","E")
+  my.net <- network(my.list,directed=FALSE)
+    network.vertex.names(my.net) <- my.nodes
+      summary(my.net)
+
+```
+
+### From dyadic data
+In week 7 we used this to convert MID data into a network
+
+```{r }
+actorA <- c("A","B","C","D","E","A","B","C","D","E","A","B","C","D","E","A","B","C","D","E","A","B","C","D","E") 
+  actorB <- c("A","A","A","A","A","B","B","B","B","B","C","C","C","C","C","D","D","D","D","D","E","E","E","E","E") 
+    my.link <- c(0,1,0,1,0,1,0,0,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0)      
+      my.data <- data.frame(actorA,actorB,my.link)
+        names(my.data) <- c("actorA","actorB","my.link")
+
+my.matrix <- matrix(data=0,nrow=5,ncol=5)
+  colnames(my.matrix) <- c("A","B","C","D","E")
+    rownames(my.matrix) <- c("A","B","C","D","E")
+
+for(i in 1:dim(my.data)[1]){
+  temp.a <- as.character(my.data$actorA[i])
+     temp.b <- as.character(my.data$actorB[i])
+      temp.link <- my.data$my.link[i]
+  if(temp.link==1){my.matrix[temp.a,temp.b] <- my.matrix[temp.a,temp.b]+1 }
+}
+
+my.nodes <- c("A","B","C","D","E")
+my.net <- network(my.matrix,directed=FALSE)
+network.vertex.names(my.net) <- my.nodes
+
+gplot(my.net)
+
+```
+
+### From monadic data
+Sometimes we might have data on the monadic level (e.g. democracy scores of states) and we want to connect actors that have the same value (e.g. both democratic). In this case, we can construct a nested loop, where we cycle through each actor comparing it with each other actors' value.
+```{r }
+actorA <- c("A","B","C","D","E") 
+    my.link <- c(1,1,0,1,0)      
+      my.data <- data.frame(actorA,my.link)
+        names(my.data) <- c("actorA","my.link")
+        
+my.matrix <- matrix(data=0,nrow=5,ncol=5)
+  colnames(my.matrix) <- c("A","B","C","D","E")
+    rownames(my.matrix) <- c("A","B","C","D","E")
+
+for(i in 1:dim(my.data)[1]){
+      for(j in 1:dim(my.data)[1]){
+            temp.i <- as.character(my.data$actorA[i])
+              link.i <- my.data$my.link[i]
+                temp.j <- as.character(my.data$actorA[j])
+                  link.j <- my.data$my.link[j]
+  if(link.i==1 & link.j==1){my.matrix[temp.i,temp.j] <- my.matrix[temp.i,temp.j]+1}
+}}
+
+diag(my.matrix) <- 0
+my.nodes <- c("A","B","C","D","E")
+my.net <- network(my.matrix,directed=FALSE)
+network.vertex.names(my.net) <- my.nodes
+
+gplot(my.net)
+```
