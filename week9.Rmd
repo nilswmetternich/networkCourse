@@ -166,8 +166,9 @@ my.list <- rbind(c(1,2), #AB
 #nodes
 my.nodes <- c("A","B","C","D","E")
   my.net <- network(my.list,directed=FALSE)
-    network.vertex.names(my.net) <- my.nodes
-      summary(my.net)
+     add.vertices(my.net,1) # !!note!! you have do add this, if the last node is an isolate
+        network.vertex.names(my.net) <- my.nodes
+          summary(my.net)
 
 ```
 

@@ -9,9 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Nils W Metternich" />
 
 
-<title>Week 6</title>
+<title>Week 10</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -274,14 +275,30 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Week 6</h1>
+<h1 class="title toc-ignore">Week 10</h1>
+<h4 class="author">Nils W Metternich</h4>
+<h4 class="date">16/03/2022</h4>
 
 </div>
 
 
-<div id="graph-theory-in-r" class="section level2">
-<h2>Graph Theory in R</h2>
-<p>This code replicates most parts of the lecture in R. This will allow you to see how the the theoretical network concepts translate into the empirical analysis. For the following exercise we will be using the library statnet. You can install this package by typing install.packages(“statnet”) into the R Console. After that you can call the library.</p>
+<div id="inferential-network-analysis-in-r-part-3" class="section level2">
+<h2>Inferential Network Analysis in R (Part 3)</h2>
+<p>This week we look at the second major approach to estimating networks: Latent network models. These are different to ERGMs as they are more concerned about unbiased estimatation of sender, receiver, and dyad effects in the presence of third-order network effects, rather than actually testing which third-order network effects are present. In a sense, latent network models are complicated random effects models, where we try to account for unobserved (e.g. unmeasured third order network effects). We will use the MID and contiguity data to explore this method, but using the MID count as an outcome. Hence, whereas in the past weeks we have focused mostly on binary outcomes, we will now work with weighted network. Since, some of you might have weighted networks, we also will plot and them and introduce the stength of ties as an additional measure.</p>
+<p>This week we also use two additional packages. Igraph: which is an alternative to statnet and has its own plotting and network statistics functions. We will only use it to calculate the strength of ties. Then there is the amen package by Peter Hoff, which allows us to estimate latent network models.</p>
+<pre class="r"><code>library(igraph)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;igraph&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     decompose, spectrum</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     union</code></pre>
+<pre class="r"><code>library(cshapes)</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;dplyr&#39;:
+##   method         from       
+##   print.location geojsonlint</code></pre>
 <pre class="r"><code>library(statnet)</code></pre>
 <pre><code>## Loading required package: tergm</code></pre>
 <pre><code>## Loading required package: ergm</code></pre>
@@ -295,6 +312,14 @@ $(document).ready(function () {
 ##                     Skye Bender-deMoll, University of Washington
 ##  For citation information, type citation(&quot;network&quot;).
 ##  Type help(&quot;network-package&quot;) to get started.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;network&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:igraph&#39;:
+## 
+##     %c%, %s%, add.edges, add.vertices, delete.edges, delete.vertices,
+##     get.edge.attribute, get.edges, get.vertex.attribute, is.bipartite,
+##     is.directed, list.edge.attributes, list.vertex.attributes,
+##     set.edge.attribute, set.vertex.attribute</code></pre>
 <pre><code>## 
 ## ergm: version 3.10.4, created on 2019-06-10
 ## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
@@ -378,6 +403,12 @@ $(document).ready(function () {
 ## copyright (c) 2005, Carter T. Butts, University of California-Irvine
 ##  For citation information, type citation(&quot;sna&quot;).
 ##  Type help(package=&quot;sna&quot;) to get started.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;sna&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:igraph&#39;:
+## 
+##     betweenness, bonpow, closeness, components, degree, dyad.census,
+##     evcent, hierarchy, is.connected, neighborhood, triad.census</code></pre>
 <pre><code>## Loading required package: tsna</code></pre>
 <pre><code>## 
 ## statnet: version 2019.6, created on 2019-06-13
@@ -392,24 +423,174 @@ $(document).ready(function () {
 ## For license and citation information see statnet.org/attribution
 ## or type citation(&quot;statnet&quot;).</code></pre>
 <pre><code>## unable to reach CRAN</code></pre>
-<div id="nodes-vertex-and-links-edges" class="section level3">
-<h3>Nodes (vertex) and Links (edges)</h3>
-<p>Remember that a basic graph or network consists of a set of nodes/vertices and set of lines/edges. In the example provided in the lecture we thought of nodes as states and these were linked if they had a military dispute since 1990. Initially, imagine we would have states c(“A”,“B”,“C”,“D”,“E”) and with states having disputes AB, AD, BD. Let’s imagine that “A”,“B”,“C”,“D”,“E” is indexed 1,2,3,4,5.</p>
-<p>Given that we can now create an edge list (md.list) with all the edges between states (md.nodes). With these two objects we can then create a network (md.net) with the function network() in R.</p>
+<pre class="r"><code>library(amen)</code></pre>
+</div>
+<div id="preparing-the-data" class="section level2">
+<h2>Preparing the data</h2>
+<p>We now load the MID data and construct our border adjacency matrix. This is similar to last week, but we stop at the matrix stage. This is because amen simply takes matrices and arrays as input and not network objects like ERGMs did last week.</p>
+<pre class="r"><code>#Distance matrix
+dist.matrix &lt;- distmatrix(date=as.Date(&quot;2002-1-1&quot;),type = &quot;mindist&quot;,useGW = FALSE)
+  adj.matrix &lt;- ifelse(dist.matrix==0,1,0)
+    diag(adj.matrix) &lt;- 0 #need to set the diagonal to 0
+
+#MID matrix
+mid &lt;- read.csv(&quot;~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv&quot;) #First we load the data. You will need to change the path to do this.
+mid &lt;- mid[mid$rolea==1,c(&quot;statea&quot;,&quot;stateb&quot;,&quot;strtyr&quot;)]
+
+states &lt;- unique(c(as.character(mid$statea),as.character(mid$stateb)))
+midMat &lt;- matrix(0,nrow=length(states),ncol=length(states)) # 
+    rownames(midMat) &lt;-     states
+        colnames(midMat) &lt;-     states
+
+for(i in 1:dim(mid)[1]){
+    midMat[as.character(mid$statea[i]),as.character(mid$stateb[i])] &lt;- midMat[as.character(mid$statea[i]),as.character(mid$stateb[i])]+1
+}
+
+        
+#Making sure that MID and Adjacency matrix have same states
+joint.states &lt;- intersect(colnames(midMat), colnames(adj.matrix))
+midMat &lt;- midMat[joint.states,joint.states]
+adj.matrix &lt;- adj.matrix[joint.states,joint.states]</code></pre>
+</div>
+<div id="estimating-with-amen" class="section level2">
+<h2>Estimating with amen</h2>
+<p>Now that we have the our outcome and our independent variable, we are ready to estimate a latent network model with amen. First, we define our outcome Y (count of MIDs). Second, we define our main explanatory variable Xdyad (whether or not two states share a border). In amen, we can also specify sender, receiver, and additional dyadic explanatory variables, but in this example we only have one observed explanatory variable (matrix).</p>
+<pre class="r"><code>#outcome
+Y &lt;- midMat
+Xdyad &lt;- adj.matrix
+
+fit_ar1&lt;-ame(Y,Xdyad,model=&quot;nrm&quot;,plot=FALSE,R=2,nscan =
+1000, burn = 200, odens = 10)
+
+summary(fit_ar1)
+#va within-row covariance (heterogeneity of senders)
+#vb within-column covariance (heterogeneity of receivers)
+#cab row-column covariance ()
+#rho reciprocity 
+#ve within dyad covariance (heterogeneity of dyads)
+plot(fit_ar1$U) # sender network</code></pre>
+<p><img src="week10_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>plot(fit_ar1$V) # receiver network</code></pre>
+<p><img src="week10_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+</div>
+<div id="plotting-and-measuring-strength-of-ties" class="section level2">
+<h2>Plotting and measuring strength of ties</h2>
+<p>In the past weeks, we mainly dealt with binary variables or at least treated them as such. Now we will look at weighed networks. Let us start with a matrix of five nodes and add some weighted links. The important bit here is that once we have the weighted matrix, we need to slightly change the options in the network function to tell R that the matrix should be treated as a weighted network. Note that we are using the plot and not the gplot function in this example.</p>
+<pre class="r"><code>my.matrix &lt;- matrix(data=0,nrow=5,ncol=5)
+  colnames(my.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+    rownames(my.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+
+#A&lt;-B
+my.matrix[1,2] &lt;- 10
+#B&lt;-A
+my.matrix[2,1] &lt;- 10
+#B&lt;-D
+my.matrix[2,4] &lt;- 3
+#D&lt;-B
+my.matrix[4,2] &lt;- 3
+#A&lt;-D
+my.matrix[1,4] &lt;- 1
+#D&lt;-A
+my.matrix[4,1] &lt;- 1
+
+my.nodes &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+
+#Ignoring weights of the imported graph is the default behavior of network. To import weight, specify ignore.eval = FALSE and names.eval = &quot;weight&quot;.
+
+my.net &lt;- network(my.matrix, 
+                 matrix.type=&#39;adjacency&#39;,
+                 directed = TRUE,
+                 ignore.eval=FALSE,
+                 names.eval=&#39;weight&#39;)
+
+network.vertex.names(my.net) &lt;- my.nodes
+summary(my.net)</code></pre>
+<pre><code>## Network attributes:
+##   vertices = 5
+##   directed = TRUE
+##   hyper = FALSE
+##   loops = FALSE
+##   multiple = FALSE
+##   bipartite = FALSE
+##  total edges = 6 
+##    missing edges = 0 
+##    non-missing edges = 6 
+##  density = 0.3 
+## 
+## Vertex attributes:
+##   vertex.names:
+##    character valued attribute
+##    5 valid vertex names
+## 
+## Edge attributes:
+## 
+##  weight:
+##    numeric valued attribute
+##    attribute summary:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   1.500   3.000   4.667   8.250  10.000 
+## 
+## Network adjacency matrix:
+##   A B C D E
+## A 0 1 0 1 0
+## B 1 0 0 1 0
+## C 0 0 0 0 0
+## D 1 1 0 0 0
+## E 0 0 0 0 0</code></pre>
+<pre class="r"><code>plot(my.net, displaylabels=TRUE,
+ label.cex=.75,label.col=&quot;black&quot;, edge.col=&quot;weight&quot;,vertex.cex=2) # Edges color according to weight</code></pre>
+<p><img src="week10_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>plot(my.net, displaylabels=TRUE,
+ label.cex=.75,label.col=&quot;black&quot;,edge.lwd=&quot;weight&quot;, edge.col=&quot;weight&quot;,vertex.cex=2) # Edges color and line width according to weight</code></pre>
+<p><img src="week10_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<p>Now we would also like to calculate the strength of ties for each node. This is similar to the nodal degree, but now accounting for the weight of the ties. If, e.g., a node has two links and each link has a value of 2 the strength would be 2x2. For this measure, we will use the igraph packages. Reading a matrix to a graph is a bit different, but once you have it, you can use the strength function.</p>
+<pre class="r"><code>g1 &lt;- graph_from_adjacency_matrix(my.matrix, mode = &quot;undirected&quot;, diag = FALSE, weighted=TRUE)
+
+strength(g1)</code></pre>
+<pre><code>##  A  B  C  D  E 
+## 11 13  0  4  0</code></pre>
+</div>
+<div id="plotting-nodal-characteristics" class="section level2">
+<h2>Plotting nodal characteristics</h2>
+<p>Here is a little extra on how to plot nodal characteristics. You can use the set.vertex.attribute function to include vertex/node attributes. Once you have defined them, you can use them to plot, e.g., the node color accordingly. Note that we are using the plot not the gplot function in this example.</p>
 <pre class="r"><code>#edgelist
-md.list &lt;- rbind(c(1,2), #AB
+my.list &lt;- rbind(c(1,2), #AB
                 c(1,4), #AD
-                c(2,4),  #BD
-                c(1,5))  #AE
+                c(2,4))  #BD
+              
  
 #nodes
-md.nodes &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
-
-md.net &lt;- network(md.list,directed=FALSE)
-
-network.vertex.names(md.net) &lt;- md.nodes
-
-summary(md.net)</code></pre>
+my.nodes &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
+    my.net &lt;- network(my.list,directed=FALSE,matrix.type=&quot;edgelist&quot;)
+      summary(my.net)</code></pre>
+<pre><code>## Network attributes:
+##   vertices = 4
+##   directed = FALSE
+##   hyper = FALSE
+##   loops = FALSE
+##   multiple = FALSE
+##   bipartite = FALSE
+##  total edges = 3 
+##    missing edges = 0 
+##    non-missing edges = 3 
+##  density = 0.5 
+## 
+## Vertex attributes:
+##   vertex.names:
+##    character valued attribute
+##    4 valid vertex names
+## 
+## No edge attributes
+## 
+## Network adjacency matrix:
+##   1 2 3 4
+## 1 0 1 0 1
+## 2 1 0 0 1
+## 3 0 0 0 0
+## 4 1 1 0 0</code></pre>
+<pre class="r"><code>        add.vertices(my.net,1) # !!note!! you have do add this, if the last node is an isolate
+          network.vertex.names(my.net) &lt;- my.nodes
+            summary(my.net)</code></pre>
 <pre><code>## Network attributes:
 ##   vertices = 5
 ##   directed = FALSE
@@ -417,10 +598,10 @@ summary(md.net)</code></pre>
 ##   loops = FALSE
 ##   multiple = FALSE
 ##   bipartite = FALSE
-##  total edges = 4 
+##  total edges = 3 
 ##    missing edges = 0 
-##    non-missing edges = 4 
-##  density = 0.4 
+##    non-missing edges = 3 
+##  density = 0.3 
 ## 
 ## Vertex attributes:
 ##   vertex.names:
@@ -431,26 +612,16 @@ summary(md.net)</code></pre>
 ## 
 ## Network adjacency matrix:
 ##   A B C D E
-## A 0 1 0 1 1
+## A 0 1 0 1 0
 ## B 1 0 0 1 0
 ## C 0 0 0 0 0
 ## D 1 1 0 0 0
-## E 1 0 0 0 0</code></pre>
-<p>At the end of the code there is the summary() function. When you do the summary of a network object, you already get some information about the network that we discussed in the lecture. E.g. the density is provided and whether or not it is bipartite. In addition to the summary() function we can now also use the plot() function for this initial network:</p>
-<pre class="r"><code>plot(md.net)</code></pre>
-<p><img src="week6_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>The final step now is to use another plotting function gplot()</p>
-<pre class="r"><code>gplot(md.net)</code></pre>
-<p><img src="week6_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>So let us now focus on some other the concepts from the lecture: Cutpoints and Bridges. Let us identify the cutpoint in our network</p>
-<pre class="r"><code>c.points &lt;- cutpoints(md.net,mode=&quot;graph&quot;, return.indicator = TRUE)
-c.points</code></pre>
-<pre><code>##     1     2     3     4     5 
-##  TRUE FALSE FALSE FALSE FALSE</code></pre>
-<pre class="r"><code>#Check whether this is right by plotting c.points as vertex.col
-gplot(md.net,vertex.col=c.points)</code></pre>
-<p><img src="week6_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-</div>
+## E 0 0 0 0 0</code></pre>
+<pre class="r"><code>set.vertex.attribute(my.net,&quot;my.var&quot;,c(0,1,0,3,3))
+
+plot(my.net, displaylabels=TRUE, edge.col=&quot;black&quot;,
+ label.cex=.75,label.col=&quot;black&quot;, vertex.col=&quot;my.var&quot;,vertex.cex=2)</code></pre>
+<p><img src="week10_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 
 
