@@ -295,17 +295,17 @@ $(document).ready(function () {
 <pre><code>## [1] 3</code></pre>
 <p>Another feature that is important in R, is the ability to generate numbers. This can be used for simulations or estimation. Sometimes it might just be useful to illustrate some theoretical concept. Let us consider two examples. First, let us randomly draw 20 values from a normal distribution, 20 values from a uniform distribution, and then 20 values from a binomial distribution:</p>
 <pre class="r"><code>rnorm(20, mean=0, sd=1)</code></pre>
-<pre><code>##  [1]  0.18609810  1.39236023  0.07949112  1.09250711  0.23887666 -0.01435971
-##  [7]  0.91977938  0.16415926 -0.58240520 -0.56637353  1.72528384 -1.53258605
-## [13]  0.56110161 -0.53862101 -1.34328487 -0.07700723 -0.03621996 -0.03654159
-## [19] -0.67274763  0.28650146</code></pre>
+<pre><code>##  [1]  0.8294355 -0.5471522  1.2126202  0.6992211 -1.1360022  0.1418444
+##  [7]  0.4953872  0.3685275  0.6865254 -0.7326827  1.2155639  0.3515709
+## [13]  2.3477679 -0.2538749  0.9720192 -0.9995242 -0.7128772 -0.9433292
+## [19]  0.7132639 -1.1759290</code></pre>
 <pre class="r"><code>runif(20, min=0, max=1)</code></pre>
-<pre><code>##  [1] 0.17674069 0.42864542 0.83388104 0.21317423 0.42052606 0.65301321
-##  [7] 0.55255467 0.58237268 0.32780672 0.15684223 0.07846509 0.09040196
-## [13] 0.96511204 0.07567198 0.25324746 0.14173193 0.03660132 0.25304221
-## [19] 0.45973314 0.66872721</code></pre>
+<pre><code>##  [1] 0.90173616 0.45700655 0.26756471 0.07390789 0.08792715 0.70082994
+##  [7] 0.63627906 0.77191470 0.65253574 0.89086107 0.84503214 0.11874081
+## [13] 0.22435706 0.53687170 0.53020406 0.24342499 0.86329858 0.26384611
+## [19] 0.67578593 0.09039649</code></pre>
 <pre class="r"><code>rbinom(20,size=1, prob=0.5)</code></pre>
-<pre><code>##  [1] 0 1 0 0 1 1 0 0 0 0 1 1 0 0 0 0 1 1 0 1</code></pre>
+<pre><code>##  [1] 0 1 0 1 0 0 1 0 0 0 1 0 0 1 1 0 0 0 0 1</code></pre>
 </div>
 <div id="assignment" class="section level3">
 <h3>Assignment</h3>
@@ -323,10 +323,10 @@ $(document).ready(function () {
 <p>Here another example:</p>
 <pre class="r"><code>random.draw &lt;- rnorm(20, mean=0, sd=1)
 random.draw</code></pre>
-<pre><code>##  [1]  0.31593654 -0.94077117 -1.85416868  0.96087626 -0.17588488 -0.51988970
-##  [7] -0.02719276  0.69252333 -0.61996321  1.57767713 -0.25414195 -0.53442829
-## [13] -0.32087207 -0.15952638  0.04543755  0.33786276 -0.01971205  1.76428006
-## [19] -0.71633494 -0.47934477</code></pre>
+<pre><code>##  [1] -0.9810648 -1.8018141 -0.7340025  0.4168093 -0.2545316 -1.8159205
+##  [7] -0.6160536  0.1224851  0.1616914  2.0461936 -0.2381427  1.2555959
+## [13]  0.9719218 -0.3081777  0.2383908 -1.4956526 -1.8887305  1.5958381
+## [19] -1.1844328  0.4144998</code></pre>
 <p>We can of course also just input our own data. Let us imagine we have five countries:</p>
 <pre class="r"><code>country.names &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
 country.names</code></pre>
