@@ -154,7 +154,7 @@ gplot(my.net)
 ```
 
 ## Manual from edgelist
-In week 6 we used an edgelist to construct the network.
+In week 1 we used an edgelist to construct the network.
 
 ```{r }
 #edgelist
