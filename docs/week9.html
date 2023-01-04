@@ -9,9 +9,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Nils W Metternich" />
+<meta name="author" content="Nils W Metternich, Luis Schenoni, and Sigrid Weber" />
 
-<meta name="date" content="2022-09-03" />
 
 <title>Week 9</title>
 
@@ -277,8 +276,8 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Week 9</h1>
-<h4 class="author">Nils W Metternich</h4>
-<h4 class="date">09/03/2022</h4>
+<h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid Weber</h4>
+<h4 class="date">2022/23</h4>
 
 </div>
 
@@ -720,11 +719,11 @@ adjNet &lt;- network(adj.matrix,directed=FALSE)</code></pre>
 <pre><code>## Starting Monte Carlo maximum likelihood estimation (MCMLE):</code></pre>
 <pre><code>## Iteration 1 of at most 20:</code></pre>
 <pre><code>## Optimizing with step length 1.</code></pre>
-<pre><code>## The log-likelihood improved by 0.2107.</code></pre>
+<pre><code>## The log-likelihood improved by 0.2031.</code></pre>
 <pre><code>## Step length converged once. Increasing MCMC sample size.</code></pre>
 <pre><code>## Iteration 2 of at most 20:</code></pre>
 <pre><code>## Optimizing with step length 1.</code></pre>
-<pre><code>## The log-likelihood improved by 0.3537.</code></pre>
+<pre><code>## The log-likelihood improved by 0.2476.</code></pre>
 <pre><code>## Step length converged twice. Stopping.</code></pre>
 <pre><code>## Finished MCMLE.</code></pre>
 <pre><code>## Evaluating log-likelihood at the estimate. Using 20 bridges: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 .
@@ -742,16 +741,16 @@ adjNet &lt;- network(adj.matrix,directed=FALSE)</code></pre>
 ## 
 ## Monte Carlo MLE Results:
 ##                Estimate Std. Error MCMC % z value Pr(&gt;|z|)    
-## edges          -4.18735    0.04844      0  -86.44   &lt;1e-04 ***
-## mutual          3.76103    0.11963      0   31.44   &lt;1e-04 ***
-## edgecov.adjNet  2.38074    0.07836      1   30.38   &lt;1e-04 ***
+## edges          -4.18575    0.04896      0  -85.50   &lt;1e-04 ***
+## mutual          3.76871    0.12365      0   30.48   &lt;1e-04 ***
+## edgecov.adjNet  2.34617    0.08583      1   27.34   &lt;1e-04 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
 ##      Null Deviance: 37513  on 27060  degrees of freedom
-##  Residual Deviance:  6110  on 27057  degrees of freedom
+##  Residual Deviance:  6107  on 27057  degrees of freedom
 ##  
-## AIC: 6116    BIC: 6141    (Smaller is better.)</code></pre>
+## AIC: 6113    BIC: 6137    (Smaller is better.)</code></pre>
 <p>Now we can do some interpretation given our estimates and calculate the probability of a MID from A to B in the network. The log odds of an edge in the MID network is given by the linear predictor: -4.18593 x change in edge count + 3.78405 x change in reciprocity + 2.35112 x change in being connected. We can now calculate the different probabilities of MID whether or not you are connected by taking the inverse logistic transformation of this linear predictor.</p>
 <pre class="r"><code>x &lt;- -4.18593*1 + 3.78405*1 + 2.35112*0
   prob.noBorder &lt;-  exp(x)/(1+exp(x))

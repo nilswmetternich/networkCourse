@@ -1,7 +1,7 @@
 ---
 title: "Week 10"
-author: "Nils W Metternich"
-date: "16/03/2022"
+author: "Nils W Metternich, Luis Schenoni, and Sigrid Weber"
+date: "2022/23"
 output: html_document
 ---
 
