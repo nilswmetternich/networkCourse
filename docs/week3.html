@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Nils W Metternich, Luis Schenoni, and Sigrid Weber" />
+
+
+<title>Week 3</title>
+
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Spread of Conflict</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="introduction.html">Week 1 Part 1</a>
+</li>
+<li>
+  <a href="week6.html">Week 1 Part 2</a>
+</li>
+<li>
+  <a href="week7.html">Week 2</a>
+</li>
+<li>
+  <a href="week3.html">Week 3</a>
+</li>
+<li>
+  <a href="week8.html">Week 8</a>
+</li>
+<li>
+  <a href="week9.html">Week 9</a>
+</li>
+<li>
+  <a href="week10.html">Week 10</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Week 3</h1>
+<h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid
+Weber</h4>
+<h4 class="date">2022/23</h4>
+
+</div>
+
+
+<div id="load-required-libraries" class="section level2">
+<h2>Load required libraries</h2>
+<p>As in past weeks, you need to call the libraries that you need for
+your code to run. You will need <code>statnet</code> to create and
+visualise networks but you may also need other libraries such as
+<code>tidyverse</code>.</p>
+<pre class="r"><code>library(statnet)
+library(tidyverse)</code></pre>
+</div>
+<div id="read-the-data" class="section level2">
+<h2>Read the data</h2>
+<p>In today’s session, we will continue to work with the Militarized
+Interstate Dispute Dataset (MID). If you want to read again about this
+dataset, please go to <a
+href="https://correlatesofwar.org/data-sets/MIDs"
+title="MID Homepage">MID Homepage</a>.</p>
+<p>Please load the raw data we used last week and that you will need
+again for your network analysis. As last week, you will need to adjust
+the file path to your dataset depending on where you downloaded and
+saved it.</p>
+<pre class="r"><code>mid &lt;- read.csv( &quot;C:/Users/sigri/Dropbox/8_Teaching/Spread of Conflict in Int. Relations/Week 2/Data/dyadic_mid_4.02.csv&quot;) </code></pre>
+</div>
+<div id="subsetting-datasets" class="section level2">
+<h2>Subsetting datasets</h2>
+<p>In the following lines of code, I make examples of how to subset the
+MID dataset. You can for example reduce the data to a certain time frame
+or only focus on militarised interstate disputes that were particularly
+hostile. We asked you to draw some networks of conflict throughout WWII
+in your groups. After learning how to subset the dataset in general, you
+should be able to adjust the code and draw your group’s own networks
+with the MID data.</p>
+<div id="filtering-observationsrows" class="section level3">
+<h3>Filtering observations/rows</h3>
+<p>For the purpose of making our analysis easier, we only focus on
+directed instances of MIDs where state A was the primary initiator of a
+conflict. In order to reduce the whole dataset to only the directed
+instances of MIDs in the data, run this code:</p>
+<pre class="r"><code>mid &lt;- mid[mid$rolea==1,]
+
+# this is equivalent to 
+mid &lt;- filter(mid,rolea==1)</code></pre>
+</div>
+<div id="reducing-variablescolumns" class="section level3">
+<h3>Reducing variables/columns</h3>
+<p>Let’s reduce the 59 variables in the MID dataset to a few variables
+that will likely be relevant for your group work. In the code below, I
+drop a few variables that you will likely not need. Note that you can
+drop variables by using a <code>-</code> in front of the
+<code>c()</code> command. As an example, I drop a few variables telling
+us if the coders changed anything in the data in their last update to
+the dataset or not:</p>
+<pre class="r"><code>mid &lt;- select(mid,-c(&quot;change&quot;,&quot;changetype_1&quot;,&quot;changetype_2&quot;))</code></pre>
+<p>Instead of dropping variables, you can also select which ones to
+keep. My suggestion is to keep the following variables for your
+purposes:</p>
+<ul>
+<li>Name of state A and B</li>
+<li>Start month and year</li>
+<li>End month and year</li>
+<li>Outcome of the dispute (0 = Ongoing, 1 = Victory for A, 2 = Victory
+for B, 3 = Yield by A, 4 = Yield by B, 5 = Stalemate, 6 = Compromise, 7
+= Released, 8 = Unclear)</li>
+<li>Fatality levels (0 = None, 1 = 1-25 deaths, 2 = 26-100 deaths, 3 =
+101-250 deaths, 4 = 251-500 deaths, 5 = 501-999 deaths, 6 = 1000 or more
+deaths, -9 = missing)</li>
+<li>Highest level of hostility (1 = none, 2 = threat to use force, 3 =
+display of force, 4 = use of force, 5 = interstate war)</li>
+<li>Type of revision sought by state A (0 = Not applicable, 1 =
+Territory, 2 = Policy, 3= Regime/Government, 4 = Other)</li>
+</ul>
+<pre class="r"><code>mid &lt;- mid[,c(&quot;namea&quot;,&quot;nameb&quot;, &quot;strtmnth&quot;,&quot;strtyr&quot;,
+              &quot;endmnth&quot;,&quot;endyear&quot;, &quot;outcome&quot;, &quot;fatlev&quot;, &quot;hihost&quot;,
+              &quot;revtypea&quot;)]
+
+# this is equivalent to :
+mid &lt;- select(mid, 
+              c(&quot;namea&quot;,&quot;nameb&quot;, &quot;strtmnth&quot;,&quot;strtyr&quot;,
+                &quot;endmnth&quot;,&quot;endyear&quot;, &quot;outcome&quot;, &quot;fatlev&quot;, &quot;hihost&quot;,
+                &quot;revtypea&quot;))</code></pre>
+<p>Now you should have a much more manageable dataset of 4212
+observations of MIDs and 10 variables to work with. Take a minute and
+explore the data.</p>
+<pre class="r"><code># Summary stats of all variables
+summary(mid)</code></pre>
+<pre><code>##     namea              nameb              strtmnth          strtyr    
+##  Length:4212        Length:4212        Min.   : 1.000   Min.   :1816  
+##  Class :character   Class :character   1st Qu.: 4.000   1st Qu.:1937  
+##  Mode  :character   Mode  :character   Median : 7.000   Median :1967  
+##                                        Mean   : 6.551   Mean   :1957  
+##                                        3rd Qu.: 9.000   3rd Qu.:1993  
+##                                        Max.   :12.000   Max.   :2014  
+##     endmnth          endyear        outcome         fatlev       
+##  Min.   : 1.000   Min.   :1816   Min.   :0.00   Min.   :-9.0000  
+##  1st Qu.: 3.000   1st Qu.:1938   1st Qu.:0.00   1st Qu.: 0.0000  
+##  Median : 7.000   Median :1969   Median :5.00   Median : 0.0000  
+##  Mean   : 6.483   Mean   :1958   Mean   :3.51   Mean   : 0.3689  
+##  3rd Qu.:10.000   3rd Qu.:1994   3rd Qu.:5.00   3rd Qu.: 0.0000  
+##  Max.   :12.000   Max.   :2014   Max.   :8.00   Max.   : 6.0000  
+##      hihost         revtypea    
+##  Min.   :2.000   Min.   :0.000  
+##  1st Qu.:3.000   1st Qu.:0.000  
+##  Median :4.000   Median :1.000  
+##  Mean   :3.765   Mean   :1.287  
+##  3rd Qu.:4.000   3rd Qu.:2.000  
+##  Max.   :5.000   Max.   :4.000</code></pre>
+<pre class="r"><code># Variable names
+names(mid)</code></pre>
+<pre><code>##  [1] &quot;namea&quot;    &quot;nameb&quot;    &quot;strtmnth&quot; &quot;strtyr&quot;   &quot;endmnth&quot;  &quot;endyear&quot; 
+##  [7] &quot;outcome&quot;  &quot;fatlev&quot;   &quot;hihost&quot;   &quot;revtypea&quot;</code></pre>
+<p>You can look at the distribution of a specific variable for example
+by using the <code>table</code> function:</p>
+<pre class="r"><code># Looking at the distribution of fatalities
+table(mid$fatlev)</code></pre>
+<pre><code>## 
+##   -9    0    1    2    3    4    5    6 
+##   27 3603  235   85   39   29    5  189</code></pre>
+<pre class="r"><code># most interstate disputes have no deaths recorded
+# 189 MIDs had more than 1000 fatalities and could count as a war</code></pre>
+</div>
+</div>
+<div id="example-network" class="section level2">
+<h2>Example network</h2>
+<p>We now want you to create in groups a couple of network
+visualisations tracing the diffusion of conflict throughout WWII. You
+will need the code to subset data as well as last week’s code to do
+that. Let me make an example.</p>
+<p>I am interested in plotting the network of MIDs just before the WWII
+began. Since World War II is considered to have begun on 1 September
+1939, when Nazi Germany invaded Poland, I will plot the MIDs in the 3
+years before September 1939. I create a new object for this data.</p>
+<pre class="r"><code>mid_beforeWWII &lt;- filter(mid, 
+                         # this code limits the data to the years before 1939
+                         strtyr&lt;1939 &amp; 
+                           # this code limits the data to the time after and during 1936
+                           strtyr&gt;=1936)</code></pre>
+<p>I seem to have 56 MIDs in the data in the 3 years before the
+conflict. To double-check if I did this correctly, I check the years
+that I can still find in my dataset and it seems to be that I selected
+the correct years:</p>
+<pre class="r"><code>table(mid_beforeWWII$strtyr)</code></pre>
+<pre><code>## 
+## 1936 1937 1938 
+##   14   21   21</code></pre>
+<pre class="r"><code>range(mid_beforeWWII$strtyr)</code></pre>
+<pre><code>## [1] 1936 1938</code></pre>
+<p>Lets check out the states that were involved in MIDs before WWII
+(code to generate the map not relevant for today):</p>
+<pre class="r"><code>states_before &lt;- unique(c(as.character(mid_beforeWWII$namea),
+                          as.character(mid_beforeWWII$nameb)))
+
+states_before</code></pre>
+<pre><code>##  [1] &quot;GMY&quot; &quot;JPN&quot; &quot;RUS&quot; &quot;ITA&quot; &quot;BOL&quot; &quot;PER&quot; &quot;LIT&quot; &quot;CZE&quot; &quot;YUG&quot; &quot;HUN&quot; &quot;ECU&quot; &quot;CHN&quot;
+## [13] &quot;TUR&quot; &quot;AUS&quot; &quot;UKG&quot; &quot;BEL&quot; &quot;FRN&quot; &quot;SPN&quot; &quot;POL&quot; &quot;PAR&quot; &quot;USA&quot; &quot;PAN&quot; &quot;DEN&quot;</code></pre>
+<p><img src="week3_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>Now, I am turning to the visualisation of this network using the code
+from last week but I adjust it for my data:</p>
+<pre class="r"><code>midMat &lt;- matrix(0,nrow=length(states_before),ncol=length(states_before)) 
+rownames(midMat) &lt;-     states_before
+colnames(midMat) &lt;-     states_before</code></pre>
+<p>The next step is that we need to go through the dataset with a loop
+as explained last week. We go through each line of our filtered mid
+dataset, take namea and nameb of each line and add an entry in midMat
+accordingly. This will turn your data into a network.</p>
+<pre class="r"><code>for(i in 1:dim(mid_beforeWWII)[1]){
+    midMat[as.character(mid_beforeWWII$namea[i]),as.character(mid_beforeWWII$nameb[i])] &lt;- midMat[as.character(mid_beforeWWII$namea[i]),as.character(mid_beforeWWII$nameb[i])]+1
+}</code></pre>
+<p>Now I tell R we want this matrix to be understood as a network.</p>
+<pre class="r"><code>midNet &lt;- network(midMat,directed=TRUE)
+network.vertex.names(midNet) &lt;- states_before</code></pre>
+<p>And then we are ready to plot the network. I decided to plot the
+labels of the state and to vary the size depending on who is the actor
+with the highest indegree centrality (receiving most MIDs just before
+the war WWII).</p>
+<pre class="r"><code>in.n &lt;- degree(midNet,cmode=&quot;indegree&quot;)
+gplot(midNet,
+      # this labels the nodes
+      label=states_before, 
+      # this adjusts the size of the nodes
+      vertex.cex=log(in.n),
+      edge.lwd=0.01,
+      arrowhead.cex=0.5,
+      edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;,mode=&quot;target&quot;)</code></pre>
+<p><img src="week3_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>This is already somewhat informative. We can see that France, Russia,
+United Kingdom, and Poland “receive” the most MIDs.</p>
+</div>
+<div id="your-own-networks-of-diffusion-of-conflict-during-wwii"
+class="section level2">
+<h2>Your own networks of diffusion of conflict during WWII</h2>
+<p>It is your turn now!</p>
+<p>Your group should now work on your own network visualisation to
+visualise the diffusion of conflict <strong>during</strong> World War
+II. Try subsetting the data for a time frame during the WWII (the whole
+time or different year episodes). You might also choose to focus only on
+conflicts with high fatality or where actual physical violence between
+countries was used.</p>
+<p><strong>As a group, you should try to produce at least one network of
+conflict during the World War II.</strong> You can also produce a series
+of networks for different time frames. However, aim to produce a network
+visualisation that can be interpreted meaningfully in the context of
+World War II.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
