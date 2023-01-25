@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Nils W Metternich, Luis Schenoni, and Sigrid Weber" />
+
+
+<title>Week 4</title>
+
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Spread of Conflict</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="introduction.html">Week 1 Part 1</a>
+</li>
+<li>
+  <a href="week6.html">Week 1 Part 2</a>
+</li>
+<li>
+  <a href="week7.html">Week 2</a>
+</li>
+<li>
+  <a href="week3.html">Week 3</a>
+</li>
+<li>
+  <a href="week4.html">Week 4</a>
+</li>
+<li>
+  <a href="week8.html">Week 8</a>
+</li>
+<li>
+  <a href="week9.html">Week 9</a>
+</li>
+<li>
+  <a href="week10.html">Week 10</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Week 4</h1>
+<h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid
+Weber</h4>
+<h4 class="date">2022/23</h4>
+
+</div>
+
+
+<div id="load-required-libraries" class="section level2">
+<h2>Load required libraries</h2>
+<p>Don’t forget to call the libraries that you need for your code to
+run. If there is a package you have not used before, you may need to
+install it first.</p>
+<pre class="r"><code>library(statnet)
+library(tidyverse)
+# install.packages(&quot;countrycode&quot;)
+library(countrycode) 
+# package can translate different country codes and is often useful</code></pre>
+</div>
+<div id="correlates-of-war-project" class="section level2">
+<h2>Correlates of War Project</h2>
+<p>Today, we are working with different datasets from the Correlates of
+War Project. Check out their available data here: <a
+href="https://correlatesofwar.org/data-sets/">COW Homepage</a>. The
+Correlates of War Project was founded in 1963 to assemble more accurate
+data on the incidence and extent of inter-state and extra-systemic war.
+By now, the data collection includes datasets on diplomatic exchanges,
+alliances, trade, IGO participation and much more.</p>
+<p>In contrast to previous weeks, this website does not one solution to
+get from the data to the network visualisation and analysis. Instead, we
+provide examples for how to load and clean the data. You will need to
+pick a dataset you are interested in and download it. Then subset the
+data to the time period you would like to look at or specific links in
+your network, etc. Once you have your dataset ready, you will need to
+adjust the code from previous weeks (e.g. the for-loop) to turn the data
+into a network and visualise it. Also practice calculating centrality
+measures. If you get stuck, there is some additional code you can click
+at on the website to learn how we have made the networks we show
+here.</p>
+<p>You can download the data sets here:</p>
+<ul>
+<li><a
+href="https://correlatesofwar.org/data-sets/diplomatic-exchange/">Diplomatic
+exchange</a></li>
+<li><a
+href="https://correlatesofwar.org/data-sets/formal-alliances/">Formal
+alliances</a></li>
+<li><a
+href="https://correlatesofwar.org/data-sets/bilateral-trade/">Trade</a></li>
+<li><a
+href="https://correlatesofwar.org/data-sets/igos/">Intergovernmental
+Organizations</a></li>
+</ul>
+<div id="cow-diplomatic-exchanges" class="section level3">
+<h3>COW: Diplomatic exchanges</h3>
+<p>The Correlates of War Diplomatic Exchange data set captures
+diplomatic representation at the level of chargé d’affaires, minister,
+and ambassador between states. While some years are excluded, the data
+set generally includes snapshots of diplomatic exchanges every five
+years between 1817 and 2005. Thus is the codebook for more details: <a
+href="https://correlatesofwar.org/wp-content/uploads/Diplomatic_Exchange_2006v1_codebook.pdf">Codebook
+Diplomatic exchanges</a>.</p>
+<p>The following variables are in the data:</p>
+<ul>
+<li><code>ccode1</code>: state number of country 1</li>
+<li><code>ccode2</code>: state number of country 2</li>
+<li><code>year</code></li>
+<li><code>DR_at_1</code>: Diplomatic representation level of side 2 at
+side 1 (codebook for details)</li>
+<li><code>DR_at_2</code>: Diplomatic representation level of side 1 at
+side 2 (codebook for details)</li>
+<li><code>DE</code>: Any diplomatic exchange between side 1 and side
+2</li>
+<li><code>version</code>: Current version of the data set</li>
+</ul>
+<p>Most scholars are likely to be primarily interested in whether
+diplomatic representation existed between the two sides. The following
+code reduces the data to only entries in which at least one side was
+represented in the other side. However, I decided to further reduce it
+and to only look at networks in which at least one side has an
+ambassador (coded as 3, high representation) in the other country and to
+focus on the time period before 1900. You could also change this and
+focus on other levels of representation between countries (using the
+variables <code>DR_at_1</code> and <code>DR_at_2</code>). I am also
+adding a string variable with state names to the data because I find
+numeric state codes hard to remember.</p>
+<pre class="r"><code># read the data
+diplo &lt;- read.csv(&quot;data_week4/Diplomatic_Exchange_2006v1.csv&quot;)
+
+# reduce to only entries in which at least one side was represented in the other side
+diplo &lt;- filter(diplo, DE == 1)
+
+# reduce the data to entries in which at least one country is represented as an ambassador
+diplo &lt;- filter(diplo, DR_at_1 == 3| DR_at_2 == 3)
+
+
+# reduce the data to entries before 2000
+diplo &lt;- filter(diplo, year &lt;= 2000)
+
+# since I often forget what numeric state codes stand for, I turn them into strings of statenames
+diplo$country1 &lt;- countrycode(diplo$ccode1,origin=&quot;cown&quot;,destination = &quot;cowc&quot;) 
+diplo$country1 &lt;- ifelse(diplo$ccode1==260, &quot;GER&quot;, diplo$country1) 
+diplo$country1 &lt;- ifelse(diplo$ccode1==730, &quot;KOR&quot;, diplo$country1) 
+diplo$country2 &lt;- countrycode(diplo$ccode2,origin=&quot;cown&quot;,destination = &quot;cowc&quot;) 
+diplo$country2 &lt;- ifelse(diplo$ccode2==260, &quot;KOR&quot;, diplo$country2) 
+diplo$country2 &lt;- ifelse(diplo$ccode2==730, &quot;KOR&quot;, diplo$country2) 
+
+# now the data is in a good shape to turn it into a network</code></pre>
+<p>Please find below a network visualisation of diplomatic relationships
+between states: You can see that even with my subsetting of the data to
+only diplomatic relations with high representation and before 2000, the
+network is quite dense already. This is because many states have many
+diplomatic relationships. Here it might be relevant to work more with
+network statistics to understand which countries are particularly
+central in the network.</p>
+<pre class="r fold-hide"><code># get string of unique states in the data
+diplo_states &lt;- unique(c(as.character(diplo$country1),as.character(diplo$country2)))
+
+# make an empty matrix
+diploMat&lt;- matrix(0,nrow=length(diplo_states),ncol=length(diplo_states)) 
+rownames(diploMat) &lt;-   diplo_states
+colnames(diploMat) &lt;-   diplo_states
+
+# fill the empty matrix
+for(i in 1:dim(diplo)[1]){
+    diploMat[as.character(diplo$country1[i]),as.character(diplo$country2[i])] &lt;-
+      diploMat[as.character(diplo$country1[i]),as.character(diplo$country2[i])]+1
+}
+
+# tell R to understand this matrix as a network
+diploNet &lt;- network(diploMat,directed=FALSE)
+network.vertex.names(diploNet)  &lt;- diplo_states
+                     
+gplot(diploNet,
+      label=diplo_states, 
+      vertex.cex=0.5,
+      edge.lwd=0.01,
+      
+      arrowhead.cex=0.5,
+      node.col =&quot;darkgray&quot;,
+      edge.col=&quot;turquoise&quot;,gmode=&quot;digraph&quot;)</code></pre>
+<p><img src="week4_files/figure-html/diplo-net-1.png" width="672" /></p>
+</div>
+<div id="cow-trade" class="section level3">
+<h3>COW: Trade</h3>
+<p>The trade dataset is the result of the effort to code trade flows
+between statesfor the period 1870-2014. The data include information on
+both bilateral trade flows and total national imports and exports. The
+dyadic trade dataset describes import and export data in current U.S.
+dollars for pairs of sovereign states and is the one that you want to
+use for network analysis. Here a selection of important variables:</p>
+<ul>
+<li><code>ccode1</code>: state number of country 1</li>
+<li><code>ccode2</code>: state number of country 2</li>
+<li><code>year</code></li>
+<li><code>importer1</code>: Name of country 1</li>
+<li><code>importer2</code>: Name of country 2</li>
+<li><code>flow1</code>: Imports of country 1 from country 2 (US millions
+of current dollars)</li>
+<li><code>flow2</code>: Imports of country 3 from country 1 (US millions
+of current dollars)</li>
+<li><code>smoothtotrade</code>: Smoothed total trade values</li>
+</ul>
+<p>Because I expect this dataset to be quite comprehensive (many states
+have some form of trade relations with each other), I only look at the
+time since 2000. I also limit the dataset to only links in which
+countries have a higher trade relation with each other than the average
+recorded between 2000 and 2014.</p>
+<pre class="r"><code># read the data
+trade &lt;- read.csv(&quot;data_week4/Dyadic_COW_4.0.csv&quot;)
+
+# selecting relevant variables
+trade &lt;- select(trade, c(&quot;importer1&quot;,&quot;importer2&quot;,&quot;year&quot;,&quot;flow1&quot;,&quot;flow2&quot;, &quot;smoothtotrade&quot;))
+
+
+# only focus on years since 2000
+trade &lt;- filter(trade, year &gt;= 2000)
+
+# only focus on trade relations in which the total trade value between countries 1 and 2 is higher than the average
+trade &lt;- filter(trade, smoothtotrade &gt;= mean(smoothtotrade))
+
+# since the state names are so long, I turn them into shorter state names
+trade$importer1 &lt;- countrycode(trade$importer1,origin=&quot;country.name&quot;,destination = &quot;cowc&quot;) 
+trade$importer2 &lt;- countrycode(trade$importer2,origin=&quot;country.name&quot;,destination = &quot;cowc&quot;) 
+
+# now the data is in a good shape to turn it into a network</code></pre>
+<p>Please find below a visualisation of above average trade flows
+between countriess from 2000 to 2014:</p>
+<pre class="r fold-hide"><code># get string of unique states in the data
+trade_states &lt;- unique(c(as.character(trade$importer1),as.character(trade$importer2)))
+
+# make an empty matrix
+tradeMat &lt;- matrix(0,nrow=length(trade_states),ncol=length(trade_states)) 
+rownames(tradeMat) &lt;-   trade_states
+colnames(tradeMat) &lt;-   trade_states
+
+# fill the empty matrix
+for(i in 1:dim(trade)[1]){
+    tradeMat[as.character(trade$importer1[i]),as.character(trade$importer2[i])] &lt;-
+      tradeMat[as.character(trade$importer1[i]),as.character(trade$importer2[i])]+1
+}
+
+# tell R to understand this matrix as a network
+tradeNet &lt;- network(tradeMat,directed=FALSE)
+network.vertex.names(tradeNet) &lt;- trade_states
+                     
+gplot(tradeNet,
+      label=trade_states, 
+      vertex.cex=0.5,
+      edge.lwd=0.01,
+      vertex.col =&quot;darkslateblue&quot;,
+      edge.col=&quot;lightgray&quot;,gmode=&quot;digraph&quot;)</code></pre>
+<p><img src="week4_files/figure-html/trade-net-1.png" width="672" /></p>
+</div>
+<div id="cow-formal-alliances" class="section level3">
+<h3>COW: Formal Alliances</h3>
+<p>This data set records all formal alliances among states between 1816
+and 2012, including mutual defense pacts, non-aggression treaties, and
+ententes. You want to focus on a dyad format
+(<code>alliance v4.1 by directed</code>). In the example below, I use
+directed dyad data on alliances. Here an example list of relevant
+variables:</p>
+<ul>
+<li><code>ccode1</code>: state number of country 1</li>
+<li><code>ccode2</code>: state number of country 2</li>
+<li><code>state_name1</code>: name of country 1</li>
+<li><code>state_name2</code>: name of country 2</li>
+<li><code>dyad_st_year</code>: Start of alliance (year)</li>
+<li><code>dyad_end_year</code>: End of alliance (year)</li>
+<li><code>right_censor</code>: whether the alliance is active by the end
+of 2012</li>
+<li><code>defense</code>: whether there is a defence pact with the other
+state</li>
+<li><code>neutrality</code>: whether there is a neutrality pact with the
+other state</li>
+<li><code>nonagression</code>: whether there is a non-aggression
+pact</li>
+</ul>
+<p>I have decided to limit this data to only alliances that are
+currently active (right_censored) but you could think about many other
+approaches with this data.</p>
+<pre class="r"><code>ally &lt;- read.csv(&quot;data_week4/alliance_v4.1_by_directed.csv&quot;)
+
+ally &lt;- select(ally, c(&quot;ccode1&quot;,&quot;state_name1&quot;,&quot;ccode2&quot;,&quot;state_name2&quot;,
+                        &quot;dyad_st_year&quot;, &quot;dyad_end_year&quot;, &quot;right_censor&quot;,
+                       &quot;defense&quot;,&quot;neutrality&quot;,&quot;nonaggression&quot;))
+
+
+# only focus on current alliances (right_censored)
+ally &lt;- filter(ally, right_censor == 1)
+
+# since the state names are so long, I turn them into shorter state names
+ally$state_name1 &lt;- countrycode(ally$state_name1,origin=&quot;country.name&quot;,destination = &quot;cowc&quot;) 
+ally$state_name2 &lt;- countrycode(ally$state_name2,origin=&quot;country.name&quot;,destination = &quot;cowc&quot;) 
+
+# now the data is in a good shape to turn it into a network</code></pre>
+<p>Please find below a visualisation of all currently active alliances
+in the data:</p>
+<pre class="r fold-hide"><code># get string of unique states in the data
+ally_states &lt;- unique(c(as.character(ally$state_name1),as.character(ally$state_name2)))
+
+# make an empty matrix
+allyMat &lt;- matrix(0,nrow=length(ally_states),ncol=length(ally_states)) 
+rownames(allyMat) &lt;-    ally_states
+colnames(allyMat) &lt;-    ally_states
+
+# fill the empty matrix
+for(i in 1:dim(ally)[1]){
+    allyMat[as.character(ally$state_name1[i]),as.character(ally$state_name2[i])] &lt;-
+      allyMat[as.character(ally$state_name1[i]),as.character(ally$state_name2[i])]+1
+}
+
+# tell R to understand this matrix as a network
+allyNet &lt;- network(allyMat,directed=TRUE)
+network.vertex.names(allyNet) &lt;- ally_states
+                     
+gplot(allyNet,
+      label=ally_states, 
+      vertex.cex=0.5,
+      edge.lwd=0.01,
+      arrowhead.cex=0.5,
+      vertex.col =&quot;pink&quot;,
+      edge.col=&quot;darkred&quot;,gmode=&quot;digraph&quot;)</code></pre>
+<p><img src="week4_files/figure-html/ally-net-1.png" width="672" /></p>
+</div>
+<div id="cow-intergovernmental-organizations" class="section level3">
+<h3>COW: Intergovernmental organizations</h3>
+<p>This data set tracks the status and membership of such organizations
+from 1815-2014. The IGO data are collected at 5-year intervals from
+1815-1965, and annually thereafter. The data are presented in three
+forms with distinct units of analysis. Form 1 is organized by IGO,
+listing all IGOs with the IGO-year as the unit of analysis, and
+identifying all state members of the IGO in that year. Form 2 is
+organized by state, listing all states with the country-year as the unit
+of analysis, and identifying all IGO memberships of the state in that
+year. <strong>Form 3 combines individual country memberships into joint
+dyadic memberships in each IGO, marking joint membership in each IGO for
+each pair of states.</strong> This is the easiest to use for the purpose
+of setting up a network structure.</p>
+<p>You can access the codebook <a
+href="https://correlatesofwar.org/wp-content/uploads/IGO_codebook_v2.1.pdf">here</a>
+but here is a selection of relevant variables:</p>
+<ul>
+<li><code>state1</code>: COW code for the first state in the dyad</li>
+<li><code>state2</code>: COW code for the second state in the dyad</li>
+<li><code>year</code>: Calendar year</li>
+<li>Abbreviation of the NGO: indicates joint membership in the IGO</li>
+</ul>
+<p><strong>WARNING! This dataset will take very long to load.</strong>
+For the purpose of my demonstration, I have decided to focus on the year
+2014 and on EU membership countries only. I want to explore the network
+of EU members in the year 2014 and understand which EU members are more
+tightly working together in multiple IGOs and which ones are active in
+less IGOs. This dataset is trickier because it is not in a long format
+that list all IGO memberships as individual rows but we can turn it into
+the right shape.</p>
+<pre class="r"><code>igo &lt;- read.csv(&quot;data_week4/dyadic_formatv3.csv&quot;)
+
+# only focus on igo memberships in 2014 and for joint EU members
+igo &lt;- filter(igo, year == 2014 &amp; EU == 1)
+
+
+# now we have to count joint memberships in organisations
+igo &lt;- igo |&gt; 
+  # turn data into a long shape
+  pivot_longer(names_to = &quot;igo&quot;, values_to=&quot;membership&quot;, cols = 7:540) |&gt; 
+  # filter that the membership has to be present
+  filter(membership ==1) |&gt; 
+  # select relevant variables
+  select(country1, country2, igo)
+
+# now the data is in a good shape to turn it into a network</code></pre>
+<p>Here you can see the network of IGO memberships for EU members in
+2014. As expected the EU members share a lot of joint IGO memberships
+with each other and a lot of ties are realised.</p>
+<pre class="r fold-hide"><code># get string of unique states in the data
+igo_states &lt;- unique(c(as.character(igo$country1),as.character(igo$country2)))
+
+# make an empty matrix
+igoMat &lt;- matrix(0,nrow=length(igo_states),ncol=length(igo_states)) 
+rownames(igoMat) &lt;-     igo_states
+colnames(igoMat) &lt;-     igo_states
+
+# fill the empty matrix
+for(i in 1:dim(igo)[1]){
+    igoMat[as.character(igo$country1[i]),as.character(igo$country2[i])] &lt;-
+      igoMat[as.character(igo$country1[i]),as.character(igo$country2[i])]+1
+}
+
+# tell R to understand this matrix as a network
+igoNet &lt;- network(igoMat,directed=FALSE)
+network.vertex.names(igoNet) &lt;- igo_states
+                     
+gplot(igoNet,
+      label=igo_states, 
+      vertex.cex=0.5,
+      edge.lwd=0.01,
+      arrowhead.cex=0.5,
+      vertex.col =&quot;forestgreen&quot;,
+      edge.col=&quot;blue&quot;,gmode=&quot;digraph&quot;)</code></pre>
+<p><img src="week4_files/figure-html/igo-net-1.png" width="672" /></p>
+</div>
+<div id="cow-militarised-interstate-disputes" class="section level3">
+<h3>COW: Militarised Interstate Disputes</h3>
+<p>This dataset (familiar from previous weeks), records militarised
+interstate disputes between two states:</p>
+<ul>
+<li><code>namea</code>: Name of state A</li>
+<li><code>nameb</code>: Name of state B</li>
+<li><code>strtyr</code>: Start year</li>
+<li><code>strtmnth</code>: Start month</li>
+<li><code>endyr</code>: End year</li>
+<li><code>endmnth</code>: End month</li>
+<li><code>outcome</code>: Outcome of the dispute (0 = Ongoing, 1 =
+Victory for A, 2 = Victory for B, 3 = Yield by A, 4 = Yield by B, 5 =
+Stalemate, 6 = Compromise, 7 = Released, 8 = Unclear)</li>
+<li><code>fatlev</code>: Fatality levels (0 = None, 1 = 1-25 deaths, 2 =
+26-100 deaths, 3 = 101-250 deaths, 4 = 251-500 deaths, 5 = 501-999
+deaths, 6 = 1000 or more deaths, -9 = missing)</li>
+<li><code>hihost</code>: Highest level of hostility (1 = none, 2 =
+threat to use force, 3 = display of force, 4 = use of force, 5 =
+interstate war)</li>
+<li><code>revtypea</code>: Type of revision sought by state A (0 = Not
+applicable, 1 = Territory, 2 = Policy, 3= Regime/Government, 4 =
+Other)</li>
+</ul>
+<p>As another example for how to subset data, I am plotting below the
+MID dataset again. In this example, I have decided to plot all
+militarised interstate disputes in the dataset that are directed and in
+which state A sought to gain territory from the militarised interstate
+dispute.</p>
+<pre class="r"><code>mid &lt;- read.csv( &quot;data_week4/dyadic_mid_4.02.csv&quot;) 
+
+# filter data to directed instances
+mid &lt;- filter(mid,rolea==1)
+
+# only focus on territorial conflicts
+mid &lt;- filter(mid, revtypea == 1)
+
+# select relevant variables
+mid &lt;- select(mid, 
+              c(&quot;namea&quot;,&quot;nameb&quot;, &quot;strtmnth&quot;,&quot;strtyr&quot;,
+                &quot;endmnth&quot;,&quot;endyear&quot;, &quot;outcome&quot;, &quot;fatlev&quot;, &quot;hihost&quot;,
+                &quot;revtypea&quot;))</code></pre>
+<p>Below you can see a visualisation of militarised state disputes over
+territory. The size of the nodes represents the indegree centality of
+our network.</p>
+<pre class="r fold-hide"><code># create a string of unique state names in the mid data
+mid_states &lt;- unique(c(as.character(mid$namea), as.character(mid$nameb)))
+
+# create and name an empty matrix
+midMat &lt;- matrix(0,nrow=length(mid_states),ncol=length(mid_states)) 
+rownames(midMat) &lt;-     mid_states
+colnames(midMat) &lt;-     mid_states
+
+# fill the matrix with information 
+for(i in 1:dim(mid)[1]){
+    midMat[as.character(mid$namea[i]),as.character(mid$nameb[i])] &lt;- 
+      midMat[as.character(mid$namea[i]),as.character(mid$nameb[i])]+1
+}
+
+# tell r to understand the matrix as a network 
+midNet &lt;- network(midMat,directed=TRUE)
+network.vertex.names(midNet) &lt;- mid_states
+
+# calculate indegree centrality
+in.n &lt;- degree(midNet,cmode=&quot;indegree&quot;)
+
+# plot the indegree centrality 
+gplot(midNet,
+      label=mid_states, 
+      # this adjusts the size of the nodes
+      vertex.cex=log(in.n),
+      edge.lwd=0.01,
+      arrowhead.cex=0.5,
+      edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;)</code></pre>
+<p><img src="week4_files/figure-html/mid-net-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
