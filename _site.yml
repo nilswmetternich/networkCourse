@@ -8,15 +8,15 @@ navbar:
     - text: "Week 1 Part 1"
       href: introduction.html
     - text: "Week 1 Part 2"
-      href: week6.html
+      href: week1.html
     - text: "Week 2"
-      href: week7.html
+      href: week2.html
     - text: "Week 3"
       href: week3.html
     - text: "Week 4"
       href: week4.html	
     - text: "Week 7"
-      href: week7_new.html	
+      href: week7.html	
     - text: "Week 8"
       href: week8.html
     - text: "Week 9"

@@ -1,123 +1,230 @@
 ---
-title: "Week 2"
+title: "Week 7: International involvement in domestic conflict"
 author: "Nils W Metternich, Luis Schenoni, and Sigrid Weber"
 date: "2022/23"
-output: html_document
+output:
+  html_document:
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message = FALSE)
 ```
 
-## Centrality in R 
+Today, we are applying network analysis to the question of the topic of external support by other states for rebels and governments that fight each other in domestic conflict. During domestic conflict or intra-state conflict, we usually have one or more rebel groups fighting the government. Foreign governments can either decide to support the rebels or they can decide to support the government. 
 
-This code replicates most parts of the lecture in R. This will allow you to see how the the theoretical network concepts translate into the empirical analysis. For the following exercise we will be using the library statnet. You can install this package by typing install.packages("statnet") into the R Console. After that you can call the library.
+We will be using two different datasets to look at these networks of support. On the one hand, we want to understand in which states we saw rebels fighting that were supported by external states. On the other hand, we want to understand where governments at war with rebels received support by other external states. 
 
-```{r }
+
+## Load required libraries
+
+As usual, don't forget to call the libraries that you need for your code to run. I am adding a few more packages that you might not have used before. Remember to install them once (if you never used them) and then load them. 
+
+```{r , message=FALSE}
 library(statnet)
 library(tidyverse)
-```
-### Directed Graphs
-In today's session we will be working with the Militarized Interstate Dispute Dataset (MID). The dataset that we will be using is dyadic, whic means it records militarized interstate disputes between pairs of states. We can use this data to create a matrix, which we will in turn use to create network object. Please go to 
-[MID Homepage](https://correlatesofwar.org/data-sets/MIDs "MID Homepage") and familiarize yourself with the data. 
+library(countrycode)
 
-In the following we will be using MID Dyadic Version 4.02. There is also a lot of information about the intensity of MIDs, but we will just focus on the occurence of MIDs in the time period of the dataset 1816-2014. The great thing is that the dataset is directed, so we can distingish sender and receiver of the militarized behavior. We subset the data such that we have all occurences of direcected MIDs. The dataset is on the Moodle page and once you can load the data into R (you will see currently in the code is my path which you will need to update) then you can run the rest of the code.
+#install.packages("haven")
+# this package teaches R how to read stata files (dta)
+library(haven)
 
-
-```{r }
-mid <- read.csv("~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv") #First we load the data. You will need to change the path to do this.
-
-summary(mid)
+#install.packages("haven") 
+# this package teaches R how to read xls and xlsx sheets
+library(readxl)
 ```
 
-You should now be able to see the dataset. Take a minute and look at the variables. We will only need the namea, nameb, and the strtyr of the MID. We also only need the directed instances of MIDs.
+## External support for rebels: NAG data from Belgin San Akca
 
-```{r }
-mid <- mid[mid$rolea==1,c("namea","nameb","strtyr")]
+The [State-NAG Cooperation Dataset](http://home.ku.edu.tr/~bakca/#complementary) has information on 454 rebel groups, which emerged in the post-WWII period, and how they were supported by other governments. It includes descriptive information about ideational features and objectives of nonstate armed groups, their state supporters, type and duration of support, and all sources used for coding date. Sources and descriptive characteristics of NAGs are available on [project website](https://www.armedgroups.net/). 
 
-summary(mid)
-```
+We will be focusing on the key variables `tarnum` (the country code of the state targeted by the non-state actor), `psnum` (the country code of the state supporting the non-state actor) and the year of support. We will *not* focus on which rebel group is fighting which state but you could think of analyses on the rebel rather than state level for your assignments.
 
-Now we only have a subset of the data that we actually need to creat the MID matrix. We will do this in the following way. Step 1: Find all unique states in the data. Step 2: Create a matrix with the dimension of the states in the data. Step 3: Give the matrix row and column names accordingly. 
+The code below turns the whole NAG data into a network. This network links states supporting rebels (senders) to states being attacked by those rebels (receivers). The links between senders and receivers are external state support for the rebels in the receiving country. 
 
-```{r }
-states <- unique(c(as.character(mid$namea),as.character(mid$nameb)))
+```{r networks-rebels}
 
-midMat <- matrix(0,nrow=length(states),ncol=length(states)) # 
-	rownames(midMat) <- 	states
-		colnames(midMat) <- 	states
+# read the data
+nag <- read_dta("data_week7_new/BookFinalData.dta")
 
-dim(midMat)
-```		
+# recode the country codes into abbreviated state names
+nag$target <- countrycode(nag$tarnum,origin="cown",destination = "cowc") 
+nag$supporter <- countrycode(nag$psnum,origin="cown",destination = "cowc") 
 
-The final step is that we need to go through the dataset with a loop (will explain more in the seminar). With this loop we go through each line of the mid dataset, take namea and nameb of each line and add an entry in midMat accordingly. Again, I wil speak about this a bit more in the seminars, but this will be a basic way for you to take a dyadic dataset and turn it into a network
-```{r }
-for(i in 1:dim(mid)[1]){
-	midMat[as.character(mid$namea[i]),as.character(mid$nameb[i])] <- midMat[as.character(mid$namea[i]),as.character(mid$nameb[i])]+1
+# clean up Germany that is often not identified (because of East and West Germany)
+nag$supporter <- ifelse(nag$psnum==260, "GER", nag$supporter) 
+
+# selecting relevant variables
+nag <-  select(nag, c("target","supporter","year"))
+
+# now the data is in a good shape to calculate network statistics
+
+# get string of unique states in the data
+nag_states <- unique(c(as.character(nag$target),
+                       as.character(nag$supporter)))
+
+# make an empty matrix
+nagMat <- matrix(0,nrow=length(nag_states),ncol=length(nag_states)) 
+rownames(nagMat) <- 	nag_states
+colnames(nagMat) <- 	nag_states
+
+# fill the empty matrix
+for(i in 1:dim(nag)[1]){
+	nagMat[as.character(nag$supporter[i]),as.character(nag$target[i])] <-
+	  nagMat[as.character(nag$supporter[i]),as.character(nag$target[i])]+1
 }
 
-```
-
-Once you have the matrix midMat, we can simply tell R we want this matrix to be understood as a network. Also use the summary to get some insights to the network. You will also get the edgelist.
-```{r }
-midNet <- network(midMat,directed=TRUE)
-  network.vertex.names(midNet) <- states
-    summary(midNet)
-```
-
-Now we are ready to plot the network. You will see that one starts to see the need for network measures as the visualization starts to get complicated to read. Note the arrows indicating directionality of MIDs.
-
-```{r }
-gplot(midNet) # Basic
-
-gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col="grey",gmode="digraph") # with information
-
-gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col="grey",gmode="digraph",mode="circle") # as a circle
-
-#gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col="grey",gmode="digraph",mode="target") # based on target. Might take a minute to run this line, but it gives a better visualization than the ones above.
+# tell R to understand this matrix as a network
+nagNet <- network(nagMat,
+                  directed=TRUE)
+network.vertex.names(nagNet) <- nag_states
+       
 
 ```
 
-### Centrality measures
+Based on this network of external rebel support, we can try to identify the countries that send support to a lot of different rebels in different states (*outdegree centrality*) but also which states are heavily targeted through external rebel support by various other states (*indegree centrality*). Also revise the other centrality measures! 
 
-Now we can use some of the centrality measures we head about in the lecture and apply these to the MID network.
+```{r rebels-centrality , class.source = 'fold-hide'}
 
+# which states target other states the most by supporting rebels (outdegree centrality)
+out.n <- degree(nagNet,cmode="outdegree")
 
-```{r }
-in.n <- degree(midNet,cmode="indegree")
+# which starts are the most targeted through other states' support of rebels (indegree centrality)
+in.n <- degree(nagNet,cmode="indegree")
 
-  out.n <- degree(midNet,cmode="outdegree")
+centrality <- data.frame(state=nag_states,
+                         indegree = in.n,
+                         outdegree = out.n)
+```
 
-    close.n <- closeness(midNet,gmode="graph")
+**Countries with the highest outdegree centrality:**
 
-      between.n <- betweenness(midNet,gmode="graph")
+```{r rebels-outentrality , class.source = 'fold-hide'}
+# Outdegree: USA, UK, FR, Rus, China
+centrality |> arrange(-outdegree) |> head()
+```
 
-        info.n <- infocent(midNet,gmode="graph")
+**Countries with the highest indegree centrality:**
+
+```{r rebels-incentrality , class.source = 'fold-hide'}
+# Indegree: USA, China, UK, Russia, France
+centrality |> arrange(-indegree) |> head()
 
 ```
 
+To make the network a little bit less overwhelming for visual inspection, I only plot ties if a state supported at least 20 rebel groups across all years counting separately. You can do this by manipulating the `thres` argument in the `gplot`function. I also display countries with a high indegree centrality as bigger. 
 
-We can also change the size of the nodes according to their indegree / outdegree and also create a table with indegree and outdegree for all states.
-```{r }
-gplot(midNet,label=states, vertex.cex=log(in.n),edge.lwd=0.01,arrowhead.cex=0.5,edge.col="grey",gmode="digraph")
-
-gplot(midNet,label=states, vertex.cex=log(out.n),edge.lwd=0.01,arrowhead.cex=0.5,edge.col="grey",gmode="digraph")
-
-output <- data.frame(states,in.n,out.n,round(close.n,digits=2),round(between.n,digits=2))
-
-names(output) <- c("State","Indegree","Outdegree","Closeness","Betweenness")
-
-arrange(output, desc(Indegree))
-
-arrange(output, desc(Outdegree))
-
-arrange(output, desc(Closeness))
-
-arrange(output, desc(Betweenness))
-
+```{r rebels-visual, class.source = 'fold-hide'}
+gplot(nagNet,
+      label=nag_states, 
+      vertex.cex=log(in.n),
+      edge.lwd=0.0001,
+      thres>20,
+      vertex.col ="slateblue", vertex.border = "slateblue",
+      edge.col="gray",gmode="digraph")
 ```
 
 
 
+## External support for governments: UCDP External Support dataset. 
 
+The second dataset, the [UCDP External Support dataset](https://ucdp.uu.se/downloads/index.html#externalsupport) provides  information on the existence, type, and provider of external support for all warring parties (non-state and governments) coded as active in UCDP data, on an annual basis, between 1975 and 2017. The triadic version of the datata constains the warring-party-supporter-opponent-year (or triad-year) as units of analysis.
+
+While we could use this data to analyse both support for rebels or governments, we will focus in this second network only on states supporting other governments that currently fight a rebel group in a domestic conflict. Again we will read the data, clean it and bring it in network shape. We remove observations of support for non-state actors with the help of `ext_nonstate` (whether the sender state is a state) and `actor_nonstate` (whether the receiving actor is a state). 
+
+The relevant variables we will focus on are `ext_name` (the name of the actor providing support to the government), `actor_name` (the name of the warring party receiving support) and the year of support given. 
+
+```{r networks-governments}
+
+ucdp <- read_xlsx("data_week7_new/ucdp-esd-ty-181.xlsx")
+
+# sender of foreign support must be a state!
+ucdp <- filter(ucdp, ext_nonstate == 0)
+
+# recipient of foreign support must be a government!
+ucdp <- filter(ucdp, actor_nonstate == 0)
+
+# select relevant columns
+ucdp <- select(ucdp, c("ext_name","actor_name","year"))
+
+# give them more intuitive names
+names(ucdp) <- c("supporter","recipient","year")
+
+# fix double-entries
+ucdp <- separate_rows(ucdp,"recipient",sep = ",")
+
+# turn country codes into names
+ucdp$recipient <- countrycode(ucdp$recipient,origin="country.name",
+                              destination = "cowc") 
+ucdp$supporter <- countrycode(ucdp$supporter,origin="country.name",
+                              destination = "cowc") 
+
+# remove entry that seem wrong
+ucdp <- filter(ucdp, supporter != "Emirati elements")
+
+# get string of unique states in the data
+ucdp_states <- unique(c(as.character(ucdp$supporter),
+                       as.character(ucdp$recipient)))
+
+# make an empty matrix
+ucdpMat <- matrix(0,nrow=length(ucdp_states),ncol=length(ucdp_states)) 
+rownames(ucdpMat) <- 	ucdp_states
+colnames(ucdpMat) <- 	ucdp_states
+
+# fill the empty matrix
+for(i in 1:dim(ucdp)[1]){
+	ucdpMat[as.character(ucdp$supporter[i]),as.character(ucdp$recipient[i])] <-
+	  ucdpMat[as.character(ucdp$supporter[i]),as.character(ucdp$recipient[i])]+1
+}
+
+# tell R to understand this matrix as a network
+ucdpNet <- network(ucdpMat,
+                  directed=TRUE)
+network.vertex.names(ucdpNet) <- ucdp_states
+
+```
+
+
+Based on this network of external government support, we can try to identify the countries that send support to a lot of different governments in different states (*outdegree centrality*) but also which states are heavy receivers of external support by various other states (*indegree centrality*). 
+
+```{r gov-centrality , class.source = 'fold-hide'}
+
+# which states target other states the most by supporting rebels (outdegree centrality)
+out.n <- degree(ucdpNet,cmode="outdegree")
+
+# which starts are the most targeted through other states' support of rebels (indegree centrality)
+in.n <- degree(ucdpNet,cmode="indegree")
+
+centrality <- data.frame(state=ucdp_states,
+                         indegree = in.n,
+                         outdegree = out.n)
+
+```
+
+**Countries with the highest outdegree centrality:**
+
+```{r gov-outentrality , class.source = 'fold-hide'}
+# Outdegree: USA, France, Russia, UK
+centrality |> arrange(-outdegree) |> head()
+
+```
+
+**Countries with the highest indegree centrality:**
+
+```{r gov-incentrality , class.source = 'fold-hide'}
+# Indegree: Mali, USA, Afghanistan, UK, Iraq
+centrality |> arrange(-indegree) |> head()
+```
+
+To visualise the network, I plot the size of the nodes bigger for higher levels of indegree centrality. 
+
+```{r ucdp-visual, class.source = 'fold-hide'}
+gplot(ucdpNet,
+      label=ucdp_states, 
+      vertex.cex=log(in.n),
+      edge.lwd=0.001,
+      vertex.col ="goldenrod3",vertex.border = "goldenrod3",
+      edge.col="gray",
+      gmode="digraph")
+```
 

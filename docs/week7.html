@@ -12,9 +12,9 @@
 <meta name="author" content="Nils W Metternich, Luis Schenoni, and Sigrid Weber" />
 
 
-<title>Week 2</title>
+<title>Week 7: International involvement in domestic conflict</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -31,6 +31,7 @@
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 
@@ -61,6 +62,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -81,6 +83,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -138,11 +143,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -171,8 +180,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -180,16 +189,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -216,6 +218,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -233,7 +238,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -261,9 +266,6 @@ $(document).ready(function () {
   <a href="week4.html">Week 4</a>
 </li>
 <li>
-  <a href="week7_new.html">Week 7</a>
-</li>
-<li>
   <a href="week8.html">Week 8</a>
 </li>
 <li>
@@ -282,2141 +284,274 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
-<h1 class="title toc-ignore">Week 2</h1>
-<h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid Weber</h4>
+
+<h1 class="title toc-ignore">Week 7: International involvement in
+domestic conflict</h1>
+<h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid
+Weber</h4>
 <h4 class="date">2022/23</h4>
 
 </div>
 
 
-<div id="centrality-in-r" class="section level2">
-<h2>Centrality in R</h2>
-<p>This code replicates most parts of the lecture in R. This will allow you to see how the the theoretical network concepts translate into the empirical analysis. For the following exercise we will be using the library statnet. You can install this package by typing install.packages(“statnet”) into the R Console. After that you can call the library.</p>
-<pre class="r"><code>library(statnet)</code></pre>
-<pre><code>## Loading required package: tergm</code></pre>
-<pre><code>## Loading required package: ergm</code></pre>
-<pre><code>## Loading required package: network</code></pre>
-<pre><code>## network: Classes for Relational Data
-## Version 1.16.0 created on 2019-11-30.
-## copyright (c) 2005, Carter T. Butts, University of California-Irvine
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Martina Morris, University of Washington
-##                     Skye Bender-deMoll, University of Washington
-##  For citation information, type citation(&quot;network&quot;).
-##  Type help(&quot;network-package&quot;) to get started.</code></pre>
-<pre><code>## 
-## ergm: version 3.10.4, created on 2019-06-10
-## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Steven M. Goodreau, University of Washington
-##                     Pavel N. Krivitsky, University of Wollongong
-##                     Martina Morris, University of Washington
-##                     with contributions from
-##                     Li Wang
-##                     Kirk Li, University of Washington
-##                     Skye Bender-deMoll, University of Washington
-##                     Chad Klumb
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;ergm&quot;).</code></pre>
-<pre><code>## NOTE: Versions before 3.6.1 had a bug in the implementation of the bd()
-## constriant which distorted the sampled distribution somewhat. In
-## addition, Sampson&#39;s Monks datasets had mislabeled vertices. See the
-## NEWS and the documentation for more details.</code></pre>
-<pre><code>## NOTE: Some common term arguments pertaining to vertex attribute and
-## level selection have changed in 3.10.0. See terms help for more
-## details. Use &#39;options(ergm.term=list(version=&quot;3.9.4&quot;))&#39; to use old
-## behavior.</code></pre>
-<pre><code>## Loading required package: networkDynamic</code></pre>
-<pre><code>## 
-## networkDynamic: version 0.10.1, created on 2020-01-16
-## Copyright (c) 2020, Carter T. Butts, University of California -- Irvine
-##                     Ayn Leslie-Cook, University of Washington
-##                     Pavel N. Krivitsky, University of Wollongong
-##                     Skye Bender-deMoll, University of Washington
-##                     with contributions from
-##                     Zack Almquist, University of California -- Irvine
-##                     David R. Hunter, Penn State University
-##                     Li Wang
-##                     Kirk Li, University of Washington
-##                     Steven M. Goodreau, University of Washington
-##                     Jeffrey Horner
-##                     Martina Morris, University of Washington
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;networkDynamic&quot;).</code></pre>
-<pre><code>## 
-## tergm: version 3.6.1, created on 2019-06-12
-## Copyright (c) 2019, Pavel N. Krivitsky, University of Wollongong
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     with contributions from
-##                     David R. Hunter, Penn State University
-##                     Steven M. Goodreau, University of Washington
-##                     Martina Morris, University of Washington
-##                     Nicole Bohme Carnegie, New York University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Ayn Leslie-Cook, University of Washington
-##                     Skye Bender-deMoll
-##                     Li Wang
-##                     Kirk Li, University of Washington
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;tergm&quot;).</code></pre>
-<pre><code>## Loading required package: ergm.count</code></pre>
-<pre><code>## 
-## ergm.count: version 3.4.0, created on 2019-05-15
-## Copyright (c) 2019, Pavel N. Krivitsky, University of Wollongong
-##                     with contributions from
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;ergm.count&quot;).</code></pre>
-<pre><code>## NOTE: The form of the term &#39;CMP&#39; has been changed in version 3.2 of
-## &#39;ergm.count&#39;. See the news or help(&#39;CMP&#39;) for more information.</code></pre>
-<pre><code>## Loading required package: sna</code></pre>
-<pre><code>## Loading required package: statnet.common</code></pre>
-<pre><code>## 
-## Attaching package: &#39;statnet.common&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:base&#39;:
-## 
-##     order</code></pre>
-<pre><code>## sna: Tools for Social Network Analysis
-## Version 2.5 created on 2019-12-09.
-## copyright (c) 2005, Carter T. Butts, University of California-Irvine
-##  For citation information, type citation(&quot;sna&quot;).
-##  Type help(package=&quot;sna&quot;) to get started.</code></pre>
-<pre><code>## Loading required package: tsna</code></pre>
-<pre><code>## 
-## statnet: version 2019.6, created on 2019-06-13
-## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Steven M. Goodreau, University of Washington
-##                     Pavel N. Krivitsky, University of Wollongong
-##                     Skye Bender-deMoll
-##                     Martina Morris, University of Washington
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;statnet&quot;).</code></pre>
-<pre><code>## unable to reach CRAN</code></pre>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✔ ggplot2 3.3.5     ✔ purrr   0.3.4
-## ✔ tibble  3.1.0     ✔ dplyr   1.0.8
-## ✔ tidyr   1.1.3     ✔ stringr 1.4.0
-## ✔ readr   1.4.0     ✔ forcats 0.5.1</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-<div id="directed-graphs" class="section level3">
-<h3>Directed Graphs</h3>
-<p>In today’s session we will be working with the Militarized Interstate Dispute Dataset (MID). The dataset that we will be using is dyadic, whic means it records militarized interstate disputes between pairs of states. We can use this data to create a matrix, which we will in turn use to create network object. Please go to <a href="https://correlatesofwar.org/data-sets/MIDs" title="MID Homepage">MID Homepage</a> and familiarize yourself with the data.</p>
-<p>In the following we will be using MID Dyadic Version 4.02. There is also a lot of information about the intensity of MIDs, but we will just focus on the occurence of MIDs in the time period of the dataset 1816-2014. The great thing is that the dataset is directed, so we can distingish sender and receiver of the militarized behavior. We subset the data such that we have all occurences of direcected MIDs. The dataset is on the Moodle page and once you can load the data into R (you will see currently in the code is my path which you will need to update) then you can run the rest of the code.</p>
-<pre class="r"><code>mid &lt;- read.csv(&quot;~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv&quot;) #First we load the data. You will need to change the path to do this.
+<p>Today, we are applying network analysis to the question of the topic
+of external support by other states for rebels and governments that
+fight each other in domestic conflict. During domestic conflict or
+intra-state conflict, we usually have one or more rebel groups fighting
+the government. Foreign governments can either decide to support the
+rebels or they can decide to support the government.</p>
+<p>We will be using two different datasets to look at these networks of
+support. On the one hand, we want to understand in which states we saw
+rebels fighting that were supported by external states. On the other
+hand, we want to understand where governments at war with rebels
+received support by other external states.</p>
+<div id="load-required-libraries" class="section level2">
+<h2>Load required libraries</h2>
+<p>As usual, don’t forget to call the libraries that you need for your
+code to run. I am adding a few more packages that you might not have
+used before. Remember to install them once (if you never used them) and
+then load them.</p>
+<pre class="r"><code>library(statnet)
+library(tidyverse)
+library(countrycode)
 
-summary(mid)</code></pre>
-<pre><code>##      disno         dyindex             statea          namea     
-##  Min.   :   2   Min.   :   2.001   Min.   :  2.0   RUS    : 643  
-##  1st Qu.:1006   1st Qu.:1006.002   1st Qu.:230.0   USA    : 548  
-##  Median :2244   Median :2244.002   Median :385.0   CHN    : 489  
-##  Mean   :2346   Mean   :2345.618   Mean   :448.7   UKG    : 406  
-##  3rd Qu.:3957   3rd Qu.:3957.019   3rd Qu.:666.0   GMY    : 370  
-##  Max.   :4726   Max.   :4726.001   Max.   :986.0   TUR    : 335  
-##                                                    (Other):7567  
-##      stateb          nameb         strtday         strtmnth          strtyr    
-##  Min.   :  2.0   RUS    : 643   Min.   : 1.00   Min.   : 1.000   Min.   :1816  
-##  1st Qu.:230.0   USA    : 548   1st Qu.: 6.00   1st Qu.: 4.000   1st Qu.:1937  
-##  Median :385.0   CHN    : 489   Median :14.00   Median : 7.000   Median :1964  
-##  Mean   :448.7   UKG    : 406   Mean   :14.04   Mean   : 6.681   Mean   :1956  
-##  3rd Qu.:666.0   GMY    : 370   3rd Qu.:22.00   3rd Qu.:10.000   3rd Qu.:1992  
-##  Max.   :986.0   TUR    : 335   Max.   :31.00   Max.   :12.000   Max.   :2014  
-##                  (Other):7567                                                  
-##      endday         endmnth          endyear        outcome     
-##  Min.   : 1.00   Min.   : 1.000   Min.   :1816   Min.   :0.000  
-##  1st Qu.: 9.00   1st Qu.: 4.000   1st Qu.:1938   1st Qu.:0.000  
-##  Median :19.00   Median : 7.000   Median :1966   Median :5.000  
-##  Mean   :17.84   Mean   : 6.586   Mean   :1957   Mean   :3.255  
-##  3rd Qu.:27.00   3rd Qu.:10.000   3rd Qu.:1993   3rd Qu.:5.000  
-##  Max.   :31.00   Max.   :12.000   Max.   :2014   Max.   :8.000  
-##                                                                 
-##     settlmnt         fatlev           highact          hihost    
-##  Min.   :0.000   Min.   :-9.0000   Min.   : 2.00   Min.   :2.00  
-##  1st Qu.:0.000   1st Qu.: 0.0000   1st Qu.:13.00   1st Qu.:3.00  
-##  Median :2.000   Median : 0.0000   Median :18.00   Median :4.00  
-##  Mean   :1.776   Mean   : 0.4636   Mean   :15.94   Mean   :3.81  
-##  3rd Qu.:3.000   3rd Qu.: 0.0000   3rd Qu.:19.00   3rd Qu.:4.00  
-##  Max.   :4.000   Max.   : 6.0000   Max.   :23.00   Max.   :5.00  
-##                                                                  
-##      recip            noinit           notarg           sideaa      
-##  Min.   :0.0000   Min.   : 1.000   Min.   : 0.000   Min.   :0.0000  
-##  1st Qu.:0.0000   1st Qu.: 1.000   1st Qu.: 1.000   1st Qu.:0.0000  
-##  Median :0.0000   Median : 1.000   Median : 1.000   Median :1.0000  
-##  Mean   :0.2533   Mean   : 3.318   Mean   : 3.013   Mean   :0.5023  
-##  3rd Qu.:1.0000   3rd Qu.: 2.000   3rd Qu.: 2.000   3rd Qu.:1.0000  
-##  Max.   :2.0000   Max.   :33.000   Max.   :38.000   Max.   :1.0000  
-##                                                                     
-##     revstata         revtypea         fatleva           highmcaa    
-##  Min.   :0.0000   Min.   :0.0000   Min.   :-9.0000   Min.   : 0.00  
-##  1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.: 0.0000   1st Qu.: 7.00  
-##  Median :0.0000   Median :0.0000   Median : 0.0000   Median :17.00  
-##  Mean   :0.4609   Mean   :0.8113   Mean   :-0.1289   Mean   :12.74  
-##  3rd Qu.:1.0000   3rd Qu.:2.0000   3rd Qu.: 0.0000   3rd Qu.:19.00  
-##  Max.   :6.0000   Max.   :4.0000   Max.   : 6.0000   Max.   :23.00  
-##                                                                     
-##     hihosta         orignata          sideab            revstatb     
-##  Min.   :1.000   Min.   :0.0000   Min.   :   0.000   Min.   :0.0000  
-##  1st Qu.:3.000   1st Qu.:1.0000   1st Qu.:   0.000   1st Qu.:0.0000  
-##  Median :4.000   Median :1.0000   Median :   0.000   Median :0.0000  
-##  Mean   :3.258   Mean   :0.8149   Mean   :   1.258   Mean   :0.4608  
-##  3rd Qu.:4.000   3rd Qu.:1.0000   3rd Qu.:   1.000   3rd Qu.:1.0000  
-##  Max.   :5.000   Max.   :1.0000   Max.   :1969.000   Max.   :6.0000  
-##                                                                      
-##     revtypeb         fatlevb           highmcab        hihostb     
-##  Min.   :0.0000   Min.   :-9.0000   Min.   : 0.00   Min.   :1.000  
-##  1st Qu.:0.0000   1st Qu.: 0.0000   1st Qu.: 7.00   1st Qu.:3.000  
-##  Median :0.0000   Median : 0.0000   Median :17.00   Median :4.000  
-##  Mean   :0.8105   Mean   :-0.1338   Mean   :12.74   Mean   :3.258  
-##  3rd Qu.:2.0000   3rd Qu.: 0.0000   3rd Qu.:19.00   3rd Qu.:4.000  
-##  Max.   :4.0000   Max.   : 6.0000   Max.   :23.00   Max.   :5.000  
-##                                                                    
-##     orignatb          rolea           roleb         dyad_rolea   
-##  Min.   :0.0000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:1.0000   1st Qu.:1.000   1st Qu.:1.000   1st Qu.:1.000  
-##  Median :1.0000   Median :2.000   Median :3.000   Median :1.000  
-##  Mean   :0.8149   Mean   :2.184   Mean   :2.186   Mean   :1.998  
-##  3rd Qu.:1.0000   3rd Qu.:3.000   3rd Qu.:3.000   3rd Qu.:3.000  
-##  Max.   :1.0000   Max.   :4.000   Max.   :4.000   Max.   :3.000  
-##                                                                  
-##    dyad_roleb         war            durindx         duration    
-##  Min.   :1.000   Min.   :0.0000   Min.   : 1.00   Min.   :  1.0  
-##  1st Qu.:1.000   1st Qu.:0.0000   1st Qu.: 1.00   1st Qu.: 11.0  
-##  Median :3.000   Median :0.0000   Median : 1.00   Median : 79.0  
-##  Mean   :2.002   Mean   :0.1394   Mean   : 1.69   Mean   :129.2  
-##  3rd Qu.:3.000   3rd Qu.:0.0000   3rd Qu.: 2.00   3rd Qu.:215.0  
-##  Max.   :3.000   Max.   :1.0000   Max.   :69.00   Max.   :366.0  
-##                                                                  
-##     cumdurat        mid5hiact       mid5hiacta      mid5hiactb   
-##  Min.   :   1.0   Min.   : 1.00   Min.   : 0.00   Min.   : 0.00  
-##  1st Qu.:  12.0   1st Qu.:11.00   1st Qu.: 7.00   1st Qu.: 7.00  
-##  Median : 106.0   Median :16.00   Median :15.00   Median :15.00  
-##  Mean   : 299.9   Mean   :14.11   Mean   :11.38   Mean   :11.37  
-##  3rd Qu.: 333.8   3rd Qu.:17.00   3rd Qu.:17.00   3rd Qu.:17.00  
-##  Max.   :4905.0   Max.   :21.00   Max.   :21.00   Max.   :21.00  
-##                                                                  
-##     severity        severitya        severityb           year     
-##  Min.   :  1.00   Min.   :  0.00   Min.   :  0.00   Min.   :1816  
-##  1st Qu.: 65.00   1st Qu.: 49.00   1st Qu.: 49.00   1st Qu.:1938  
-##  Median : 65.00   Median : 75.00   Median : 75.00   Median :1965  
-##  Mean   : 70.13   Mean   : 67.16   Mean   : 67.28   Mean   :1957  
-##  3rd Qu.: 81.00   3rd Qu.: 81.00   3rd Qu.: 81.00   3rd Qu.:1993  
-##  Max.   :100.00   Max.   :100.00   Max.   :100.00   Max.   :2014  
-##                                                                   
-##     ongo2014              new              change           changetype_1    
-##  Min.   :0.0000000   Min.   :0.00000   Min.   :   0.0000   Min.   : 0.0000  
-##  1st Qu.:0.0000000   1st Qu.:0.00000   1st Qu.:   0.0000   1st Qu.: 0.0000  
-##  Median :0.0000000   Median :0.00000   Median :   0.0000   Median : 0.0000  
-##  Mean   :0.0001931   Mean   :0.01622   Mean   :   0.7697   Mean   : 0.0419  
-##  3rd Qu.:0.0000000   3rd Qu.:0.00000   3rd Qu.:   0.0000   3rd Qu.: 0.0000  
-##  Max.   :1.0000000   Max.   :1.00000   Max.   :2701.0000   Max.   :11.0000  
-##  NA&#39;s   :3                                                                  
-##   changetype_2           dyad           abbreva         abbrevb     
-##  Min.   :0.000000   Min.   :  2020   Min.   :  1.0   Min.   :  1.0  
-##  1st Qu.:0.000000   1st Qu.:230376   1st Qu.: 59.0   1st Qu.: 59.0  
-##  Median :0.000000   Median :385365   Median : 93.0   Median : 93.0  
-##  Mean   :0.005406   Mean   :449132   Mean   :105.6   Mean   :105.6  
-##  3rd Qu.:0.000000   3rd Qu.:666660   3rd Qu.:158.0   3rd Qu.:158.0  
-##  Max.   :2.000000   Max.   :986840   Max.   :195.0   Max.   :195.0  
-##                                                                     
-##     lastobs           newar       
-##  Min.   :0.0000   Min.   :0.0000  
-##  1st Qu.:0.0000   1st Qu.:0.0000  
-##  Median :1.0000   Median :0.0000  
-##  Mean   :0.6853   Mean   :0.0615  
-##  3rd Qu.:1.0000   3rd Qu.:0.0000  
-##  Max.   :1.0000   Max.   :1.0000  
-## </code></pre>
-<p>You should now be able to see the dataset. Take a minute and look at the variables. We will only need the namea, nameb, and the strtyr of the MID. We also only need the directed instances of MIDs.</p>
-<pre class="r"><code>mid &lt;- mid[mid$rolea==1,c(&quot;namea&quot;,&quot;nameb&quot;,&quot;strtyr&quot;)]
+#install.packages(&quot;haven&quot;)
+# this package teaches R how to read stata files (dta)
+library(haven)
 
-summary(mid)</code></pre>
-<pre><code>##      namea          nameb          strtyr    
-##  RUS    : 362   USA    : 209   Min.   :1816  
-##  USA    : 254   CHN    : 203   1st Qu.:1937  
-##  UKG    : 169   RUS    : 159   Median :1967  
-##  GMY    : 161   JPN    : 148   Mean   :1957  
-##  PRK    : 146   TUR    : 148   3rd Qu.:1993  
-##  CHN    : 142   UKG    : 144   Max.   :2014  
-##  (Other):2978   (Other):3201</code></pre>
-<p>Now we only have a subset of the data that we actually need to creat the MID matrix. We will do this in the following way. Step 1: Find all unique states in the data. Step 2: Create a matrix with the dimension of the states in the data. Step 3: Give the matrix row and column names accordingly.</p>
-<pre class="r"><code>states &lt;- unique(c(as.character(mid$namea),as.character(mid$nameb)))
-
-midMat &lt;- matrix(0,nrow=length(states),ncol=length(states)) # 
-    rownames(midMat) &lt;-     states
-        colnames(midMat) &lt;-     states
-
-dim(midMat)</code></pre>
-<pre><code>## [1] 188 188</code></pre>
-<p>The final step is that we need to go through the dataset with a loop (will explain more in the seminar). With this loop we go through each line of the mid dataset, take namea and nameb of each line and add an entry in midMat accordingly. Again, I wil speak about this a bit more in the seminars, but this will be a basic way for you to take a dyadic dataset and turn it into a network</p>
-<pre class="r"><code>for(i in 1:dim(mid)[1]){
-    midMat[as.character(mid$namea[i]),as.character(mid$nameb[i])] &lt;- midMat[as.character(mid$namea[i]),as.character(mid$nameb[i])]+1
-}</code></pre>
-<p>Once you have the matrix midMat, we can simply tell R we want this matrix to be understood as a network. Also use the summary to get some insights to the network. You will also get the edgelist.</p>
-<pre class="r"><code>midNet &lt;- network(midMat,directed=TRUE)
-  network.vertex.names(midNet) &lt;- states
-    summary(midNet)</code></pre>
-<pre><code>## Network attributes:
-##   vertices = 188
-##   directed = TRUE
-##   hyper = FALSE
-##   loops = FALSE
-##   multiple = FALSE
-##   bipartite = FALSE
-##  total edges = 1036 
-##    missing edges = 0 
-##    non-missing edges = 1036 
-##  density = 0.02946865 
-## 
-## Vertex attributes:
-##   vertex.names:
-##    character valued attribute
-##    188 valid vertex names
-## 
-## No edge attributes
-## 
-## Network edgelist matrix:
-##         [,1] [,2]
-##    [1,]    2    1
-##    [2,]    3    1
-##    [3,]    4    1
-##    [4,]    5    1
-##    [5,]    6    1
-##    [6,]    7    1
-##    [7,]   10    1
-##    [8,]   11    1
-##    [9,]   13    1
-##   [10,]   14    1
-##   [11,]   15    1
-##   [12,]   17    1
-##   [13,]   20    1
-##   [14,]   21    1
-##   [15,]   26    1
-##   [16,]   27    1
-##   [17,]   31    1
-##   [18,]   32    1
-##   [19,]   35    1
-##   [20,]   36    1
-##   [21,]   41    1
-##   [22,]   42    1
-##   [23,]   43    1
-##   [24,]   46    1
-##   [25,]   47    1
-##   [26,]   60    1
-##   [27,]   61    1
-##   [28,]   64    1
-##   [29,]   68    1
-##   [30,]   76    1
-##   [31,]   99    1
-##   [32,]  116    1
-##   [33,]  148    1
-##   [34,]    1    2
-##   [35,]    3    2
-##   [36,]    5    2
-##   [37,]    7    2
-##   [38,]   10    2
-##   [39,]   11    2
-##   [40,]   12    2
-##   [41,]   13    2
-##   [42,]   39    2
-##   [43,]   40    2
-##   [44,]   41    2
-##   [45,]   10    3
-##   [46,]   11    3
-##   [47,]   12    3
-##   [48,]   67    3
-##   [49,]  149    3
-##   [50,]    1    4
-##   [51,]    2    4
-##   [52,]    3    4
-##   [53,]    5    4
-##   [54,]    6    4
-##   [55,]    7    4
-##   [56,]    8    4
-##   [57,]   10    4
-##   [58,]   11    4
-##   [59,]   12    4
-##   [60,]   13    4
-##   [61,]   14    4
-##   [62,]   15    4
-##   [63,]   17    4
-##   [64,]   19    4
-##   [65,]   20    4
-##   [66,]   22    4
-##   [67,]   26    4
-##   [68,]   30    4
-##   [69,]   31    4
-##   [70,]   33    4
-##   [71,]   36    4
-##   [72,]   38    4
-##   [73,]   43    4
-##   [74,]   44    4
-##   [75,]   45    4
-##   [76,]   46    4
-##   [77,]   47    4
-##   [78,]   49    4
-##   [79,]   60    4
-##   [80,]   61    4
-##   [81,]   62    4
-##   [82,]   67    4
-##   [83,]   75    4
-##   [84,]   84    4
-##   [85,]  102    4
-##   [86,]    2    5
-##   [87,]    3    5
-##   [88,]    4    5
-##   [89,]    7    5
-##   [90,]   10    5
-##   [91,]   11    5
-##   [92,]   12    5
-##   [93,]   13    5
-##   [94,]   16    5
-##   [95,]   17    5
-##   [96,]   18    5
-##   [97,]   20    5
-##   [98,]   21    5
-##   [99,]   22    5
-##  [100,]   23    5
-##  [101,]   26    5
-##  [102,]   27    5
-##  [103,]   28    5
-##  [104,]   29    5
-##  [105,]   30    5
-##  [106,]   31    5
-##  [107,]   32    5
-##  [108,]   36    5
-##  [109,]   38    5
-##  [110,]   40    5
-##  [111,]   41    5
-##  [112,]   45    5
-##  [113,]   46    5
-##  [114,]   50    5
-##  [115,]   51    5
-##  [116,]   55    5
-##  [117,]   59    5
-##  [118,]   60    5
-##  [119,]   61    5
-##  [120,]   62    5
-##  [121,]   63    5
-##  [122,]   65    5
-##  [123,]   95    5
-##  [124,]   97    5
-##  [125,]  101    5
-##  [126,]  116    5
-##  [127,]  121    5
-##  [128,]  124    5
-##  [129,]    1    6
-##  [130,]    2    6
-##  [131,]    4    6
-##  [132,]    5    6
-##  [133,]    7    6
-##  [134,]    8    6
-##  [135,]   11    6
-##  [136,]   13    6
-##  [137,]   14    6
-##  [138,]   15    6
-##  [139,]   16    6
-##  [140,]   17    6
-##  [141,]   21    6
-##  [142,]   22    6
-##  [143,]   23    6
-##  [144,]   24    6
-##  [145,]   26    6
-##  [146,]   27    6
-##  [147,]   30    6
-##  [148,]   32    6
-##  [149,]   36    6
-##  [150,]   38    6
-##  [151,]   41    6
-##  [152,]   45    6
-##  [153,]   46    6
-##  [154,]   49    6
-##  [155,]   50    6
-##  [156,]   51    6
-##  [157,]   57    6
-##  [158,]   59    6
-##  [159,]   60    6
-##  [160,]   62    6
-##  [161,]   63    6
-##  [162,]   65    6
-##  [163,]   79    6
-##  [164,]  101    6
-##  [165,]  115    6
-##  [166,]  116    6
-##  [167,]  117    6
-##  [168,]  121    6
-##  [169,]    1    7
-##  [170,]    2    7
-##  [171,]    4    7
-##  [172,]    5    7
-##  [173,]    6    7
-##  [174,]    8    7
-##  [175,]   10    7
-##  [176,]   11    7
-##  [177,]   12    7
-##  [178,]   13    7
-##  [179,]   14    7
-##  [180,]   22    7
-##  [181,]   28    7
-##  [182,]   31    7
-##  [183,]   38    7
-##  [184,]   45    7
-##  [185,]   47    7
-##  [186,]   60    7
-##  [187,]   62    7
-##  [188,]   69    7
-##  [189,]   79    7
-##  [190,]   85    7
-##  [191,]   88    7
-##  [192,]   90    7
-##  [193,]   98    7
-##  [194,]   99    7
-##  [195,]  102    7
-##  [196,]  109    7
-##  [197,]  110    7
-##  [198,]  117    7
-##  [199,]  131    7
-##  [200,]  134    7
-##  [201,]  135    7
-##  [202,]  151    7
-##  [203,]    4    8
-##  [204,]    5    8
-##  [205,]    7    8
-##  [206,]   10    8
-##  [207,]   13    8
-##  [208,]   15    8
-##  [209,]   17    8
-##  [210,]   49    8
-##  [211,]   62    8
-##  [212,]   11    9
-##  [213,]   17    9
-##  [214,]   47    9
-##  [215,]   76    9
-##  [216,]    1   10
-##  [217,]    2   10
-##  [218,]    3   10
-##  [219,]    4   10
-##  [220,]    5   10
-##  [221,]    7   10
-##  [222,]    8   10
-##  [223,]   11   10
-##  [224,]   12   10
-##  [225,]   18   10
-##  [226,]   20   10
-##  [227,]   22   10
-##  [228,]   28   10
-##  [229,]   29   10
-##  [230,]   31   10
-##  [231,]   33   10
-##  [232,]   55   10
-##  [233,]   66   10
-##  [234,]   67   10
-##  [235,]   99   10
-##  [236,]  102   10
-##  [237,]  110   10
-##  [238,]  122   10
-##  [239,]  140   10
-##  [240,]  141   10
-##  [241,]    1   11
-##  [242,]    2   11
-##  [243,]    4   11
-##  [244,]    5   11
-##  [245,]    6   11
-##  [246,]    7   11
-##  [247,]    8   11
-##  [248,]    9   11
-##  [249,]   10   11
-##  [250,]   12   11
-##  [251,]   13   11
-##  [252,]   15   11
-##  [253,]   17   11
-##  [254,]   19   11
-##  [255,]   20   11
-##  [256,]   22   11
-##  [257,]   26   11
-##  [258,]   27   11
-##  [259,]   30   11
-##  [260,]   37   11
-##  [261,]   40   11
-##  [262,]   47   11
-##  [263,]   55   11
-##  [264,]   56   11
-##  [265,]   60   11
-##  [266,]   61   11
-##  [267,]   67   11
-##  [268,]   76   11
-##  [269,]   86   11
-##  [270,]   88   11
-##  [271,]   99   11
-##  [272,]  106   11
-##  [273,]  148   11
-##  [274,]    1   12
-##  [275,]    2   12
-##  [276,]    3   12
-##  [277,]    4   12
-##  [278,]    5   12
-##  [279,]    7   12
-##  [280,]   10   12
-##  [281,]   11   12
-##  [282,]   16   12
-##  [283,]   17   12
-##  [284,]   19   12
-##  [285,]   21   12
-##  [286,]   22   12
-##  [287,]   23   12
-##  [288,]   27   12
-##  [289,]   30   12
-##  [290,]   36   12
-##  [291,]   40   12
-##  [292,]   41   12
-##  [293,]   45   12
-##  [294,]   46   12
-##  [295,]   50   12
-##  [296,]   59   12
-##  [297,]   63   12
-##  [298,]   65   12
-##  [299,]   76   12
-##  [300,]  116   12
-##  [301,]  118   12
-##  [302,]    1   13
-##  [303,]    2   13
-##  [304,]    4   13
-##  [305,]    5   13
-##  [306,]    6   13
-##  [307,]    7   13
-##  [308,]   11   13
-##  [309,]   12   13
-##  [310,]   14   13
-##  [311,]   15   13
-##  [312,]   24   13
-##  [313,]   25   13
-##  [314,]   34   13
-##  [315,]   49   13
-##  [316,]   54   13
-##  [317,]   79   13
-##  [318,]   80   13
-##  [319,]  117   13
-##  [320,]    6   14
-##  [321,]   13   14
-##  [322,]   15   14
-##  [323,]   34   14
-##  [324,]   38   14
-##  [325,]    1   15
-##  [326,]    6   15
-##  [327,]   11   15
-##  [328,]   13   15
-##  [329,]   20   15
-##  [330,]   79   15
-##  [331,]  116   15
-##  [332,]   12   16
-##  [333,]   15   16
-##  [334,]   37   16
-##  [335,]   83   16
-##  [336,]   88   16
-##  [337,]  133   16
-##  [338,]    1   17
-##  [339,]    4   17
-##  [340,]   22   17
-##  [341,]   26   17
-##  [342,]   43   17
-##  [343,]   47   17
-##  [344,]   60   17
-##  [345,]   64   17
-##  [346,]  143   17
-##  [347,]    2   18
-##  [348,]    5   18
-##  [349,]    7   18
-##  [350,]    8   18
-##  [351,]   10   18
-##  [352,]   15   18
-##  [353,]   17   18
-##  [354,]   70   18
-##  [355,]    5   19
-##  [356,]    7   19
-##  [357,]   10   19
-##  [358,]   29   19
-##  [359,]   78   19
-##  [360,]  145   19
-##  [361,]    1   20
-##  [362,]    4   20
-##  [363,]    5   20
-##  [364,]    7   20
-##  [365,]   10   20
-##  [366,]   11   20
-##  [367,]   12   20
-##  [368,]   17   20
-##  [369,]   32   20
-##  [370,]   53   20
-##  [371,]   56   20
-##  [372,]   99   20
-##  [373,]  113   20
-##  [374,]    1   21
-##  [375,]    4   21
-##  [376,]    5   21
-##  [377,]   11   21
-##  [378,]   20   21
-##  [379,]   36   21
-##  [380,]    1   22
-##  [381,]    2   22
-##  [382,]    3   22
-##  [383,]    4   22
-##  [384,]    5   22
-##  [385,]    7   22
-##  [386,]   10   22
-##  [387,]   11   22
-##  [388,]   12   22
-##  [389,]   15   22
-##  [390,]   17   22
-##  [391,]   28   22
-##  [392,]   31   22
-##  [393,]   43   22
-##  [394,]   60   22
-##  [395,]   67   22
-##  [396,]  107   22
-##  [397,]  123   22
-##  [398,]   41   23
-##  [399,]  116   23
-##  [400,]   13   24
-##  [401,]   12   25
-##  [402,]   13   25
-##  [403,]   55   25
-##  [404,]   60   25
-##  [405,]   64   25
-##  [406,]   94   25
-##  [407,]  154   25
-##  [408,]  155   25
-##  [409,]    1   26
-##  [410,]    4   26
-##  [411,]    5   26
-##  [412,]   11   26
-##  [413,]   12   26
-##  [414,]   17   26
-##  [415,]   22   26
-##  [416,]   27   26
-##  [417,]   30   26
-##  [418,]   47   26
-##  [419,]   48   26
-##  [420,]   76   26
-##  [421,]   83   26
-##  [422,]   88   26
-##  [423,]  106   26
-##  [424,]    1   27
-##  [425,]   37   27
-##  [426,]   56   27
-##  [427,]   62   27
-##  [428,]   86   27
-##  [429,]    2   28
-##  [430,]    4   28
-##  [431,]    5   28
-##  [432,]    7   28
-##  [433,]   10   28
-##  [434,]   12   28
-##  [435,]   31   28
-##  [436,]   41   28
-##  [437,]   46   28
-##  [438,]   66   28
-##  [439,]   68   28
-##  [440,]  134   28
-##  [441,]    1   29
-##  [442,]    5   29
-##  [443,]    7   29
-##  [444,]   10   29
-##  [445,]   14   29
-##  [446,]   19   29
-##  [447,]   68   29
-##  [448,]   96   29
-##  [449,]    4   30
-##  [450,]   17   30
-##  [451,]   26   30
-##  [452,]   43   30
-##  [453,]   44   30
-##  [454,]   47   30
-##  [455,]   58   30
-##  [456,]   60   30
-##  [457,]  114   30
-##  [458,]  153   30
-##  [459,]    3   31
-##  [460,]    4   31
-##  [461,]    5   31
-##  [462,]    7   31
-##  [463,]   10   31
-##  [464,]   12   31
-##  [465,]   22   31
-##  [466,]   28   31
-##  [467,]   41   31
-##  [468,]   46   31
-##  [469,]   67   31
-##  [470,]  131   31
-##  [471,]    1   32
-##  [472,]   20   32
-##  [473,]   42   32
-##  [474,]   45   32
-##  [475,]   50   32
-##  [476,]   57   32
-##  [477,]   61   32
-##  [478,]   10   33
-##  [479,]   35   34
-##  [480,]   80   34
-##  [481,]    1   35
-##  [482,]   34   35
-##  [483,]   40   35
-##  [484,]   80   35
-##  [485,]  117   35
-##  [486,]    1   36
-##  [487,]    4   36
-##  [488,]   20   36
-##  [489,]   63   36
-##  [490,]  126   36
-##  [491,]    1   37
-##  [492,]   16   37
-##  [493,]   76   37
-##  [494,]   83   37
-##  [495,]    4   38
-##  [496,]    5   38
-##  [497,]   10   38
-##  [498,]   11   38
-##  [499,]   17   38
-##  [500,]   45   38
-##  [501,]   50   38
-##  [502,]   51   38
-##  [503,]   57   38
-##  [504,]   90   38
-##  [505,]  101   38
-##  [506,]    2   39
-##  [507,]   12   39
-##  [508,]    6   40
-##  [509,]    7   40
-##  [510,]   11   40
-##  [511,]   15   40
-##  [512,]   35   40
-##  [513,]   49   40
-##  [514,]   54   40
-##  [515,]   80   40
-##  [516,]  103   40
-##  [517,]  104   40
-##  [518,]    1   41
-##  [519,]   23   41
-##  [520,]   36   41
-##  [521,]   61   41
-##  [522,]   63   41
-##  [523,]   65   41
-##  [524,]   20   42
-##  [525,]   32   42
-##  [526,]   61   42
-##  [527,]    1   43
-##  [528,]   17   43
-##  [529,]   22   43
-##  [530,]   47   43
-##  [531,]   48   43
-##  [532,]    4   44
-##  [533,]   30   44
-##  [534,]   58   44
-##  [535,]    1   45
-##  [536,]    4   45
-##  [537,]    5   45
-##  [538,]   11   45
-##  [539,]   32   45
-##  [540,]   38   45
-##  [541,]   51   45
-##  [542,]    1   46
-##  [543,]    4   46
-##  [544,]    5   46
-##  [545,]   11   46
-##  [546,]   28   46
-##  [547,]   38   46
-##  [548,]   59   46
-##  [549,]   99   46
-##  [550,]    7   47
-##  [551,]   17   47
-##  [552,]   22   47
-##  [553,]   26   47
-##  [554,]   30   47
-##  [555,]   31   47
-##  [556,]   43   47
-##  [557,]   48   47
-##  [558,]   53   47
-##  [559,]  100   47
-##  [560,]   10   48
-##  [561,]   17   48
-##  [562,]   26   48
-##  [563,]   43   48
-##  [564,]   47   48
-##  [565,]    1   49
-##  [566,]   52   49
-##  [567,]   54   49
-##  [568,]   20   50
-##  [569,]   45   50
-##  [570,]   51   50
-##  [571,]   57   50
-##  [572,]    4   51
-##  [573,]   38   51
-##  [574,]   45   51
-##  [575,]   50   51
-##  [576,]   13   52
-##  [577,]   15   52
-##  [578,]   17   52
-##  [579,]   49   52
-##  [580,]   47   53
-##  [581,]   56   53
-##  [582,]   49   54
-##  [583,]  117   54
-##  [584,]    2   55
-##  [585,]    4   55
-##  [586,]    5   55
-##  [587,]    7   55
-##  [588,]   10   55
-##  [589,]   11   55
-##  [590,]   20   55
-##  [591,]   25   55
-##  [592,]   49   55
-##  [593,]   52   55
-##  [594,]   74   55
-##  [595,]   89   55
-##  [596,]   99   55
-##  [597,]    1   56
-##  [598,]   10   56
-##  [599,]   11   56
-##  [600,]   17   56
-##  [601,]   20   56
-##  [602,]   27   56
-##  [603,]   53   56
-##  [604,]  106   56
-##  [605,]    1   57
-##  [606,]    4   57
-##  [607,]    5   57
-##  [608,]   11   57
-##  [609,]   12   57
-##  [610,]   20   57
-##  [611,]   32   57
-##  [612,]   38   57
-##  [613,]   50   57
-##  [614,]    1   58
-##  [615,]   44   58
-##  [616,]   60   58
-##  [617,]    1   59
-##  [618,]   11   59
-##  [619,]   27   59
-##  [620,]   46   59
-##  [621,]    1   60
-##  [622,]    4   60
-##  [623,]    7   60
-##  [624,]   12   60
-##  [625,]   17   60
-##  [626,]   22   60
-##  [627,]   26   60
-##  [628,]   47   60
-##  [629,]   69   60
-##  [630,]  114   60
-##  [631,]  123   60
-##  [632,]  152   60
-##  [633,]    1   61
-##  [634,]    4   61
-##  [635,]    5   61
-##  [636,]    7   61
-##  [637,]   12   61
-##  [638,]   15   61
-##  [639,]   32   61
-##  [640,]   41   61
-##  [641,]   42   61
-##  [642,]   45   61
-##  [643,]   62   61
-##  [644,]    1   62
-##  [645,]    4   62
-##  [646,]    5   62
-##  [647,]    8   62
-##  [648,]   11   62
-##  [649,]   27   62
-##  [650,]   61   62
-##  [651,]    5   63
-##  [652,]   36   63
-##  [653,]   41   63
-##  [654,]   65   63
-##  [655,]  156   63
-##  [656,]    1   64
-##  [657,]   13   64
-##  [658,]   17   64
-##  [659,]   25   64
-##  [660,]   60   64
-##  [661,]   69   64
-##  [662,]    1   65
-##  [663,]   12   65
-##  [664,]   36   65
-##  [665,]   63   65
-##  [666,]   99   65
-##  [667,]    4   66
-##  [668,]    5   66
-##  [669,]    7   66
-##  [670,]   10   66
-##  [671,]   11   66
-##  [672,]   12   66
-##  [673,]   28   66
-##  [674,]   41   66
-##  [675,]   46   66
-##  [676,]  118   66
-##  [677,]    2   67
-##  [678,]    4   67
-##  [679,]    5   67
-##  [680,]    7   67
-##  [681,]   10   67
-##  [682,]   11   67
-##  [683,]   12   67
-##  [684,]   15   67
-##  [685,]   17   67
-##  [686,]   22   67
-##  [687,]   31   67
-##  [688,]    1   68
-##  [689,]    5   68
-##  [690,]    7   68
-##  [691,]   14   68
-##  [692,]   66   68
-##  [693,]    1   69
-##  [694,]    4   69
-##  [695,]    7   69
-##  [696,]   11   69
-##  [697,]   60   69
-##  [698,]   64   69
-##  [699,]  127   69
-##  [700,]  128   69
-##  [701,]  129   69
-##  [702,]  130   69
-##  [703,]  131   69
-##  [704,]   11   70
-##  [705,]   18   70
-##  [706,]   27   70
-##  [707,]   55   70
-##  [708,]   76   70
-##  [709,]   82   70
-##  [710,]   84   70
-##  [711,]   86   70
-##  [712,]   87   70
-##  [713,]  106   70
-##  [714,]  157   70
-##  [715,]   72   71
-##  [716,]   76   71
-##  [717,]   88   71
-##  [718,]  119   71
-##  [719,]   27   72
-##  [720,]  106   72
-##  [721,]   70   74
-##  [722,]  106   74
-##  [723,]    4   75
-##  [724,]   37   75
-##  [725,]   70   75
-##  [726,]   73   75
-##  [727,]   86   75
-##  [728,]   87   75
-##  [729,]   93   75
-##  [730,]    1   76
-##  [731,]    4   76
-##  [732,]    9   76
-##  [733,]   11   76
-##  [734,]   26   76
-##  [735,]   45   76
-##  [736,]   47   76
-##  [737,]  102   76
-##  [738,]   72   77
-##  [739,]  119   77
-##  [740,]   20   78
-##  [741,]    6   79
-##  [742,]    7   79
-##  [743,]   13   79
-##  [744,]   15   79
-##  [745,]   20   79
-##  [746,]    1   80
-##  [747,]   13   80
-##  [748,]   14   80
-##  [749,]   40   80
-##  [750,]   49   80
-##  [751,]   54   80
-##  [752,]  104   80
-##  [753,]  117   80
-##  [754,]   55   81
-##  [755,]   76   81
-##  [756,]   90   81
-##  [757,]   70   82
-##  [758,]   84   82
-##  [759,]   16   83
-##  [760,]   37   83
-##  [761,]   84   83
-##  [762,]  105   83
-##  [763,]   47   84
-##  [764,]   70   84
-##  [765,]   82   84
-##  [766,]   83   84
-##  [767,]   88   84
-##  [768,]   17   85
-##  [769,]   55   85
-##  [770,]   91   85
-##  [771,]   15   86
-##  [772,]   87   86
-##  [773,]   93   86
-##  [774,]  144   86
-##  [775,]   55   87
-##  [776,]   70   87
-##  [777,]   75   87
-##  [778,]   84   87
-##  [779,]   86   87
-##  [780,]  106   87
-##  [781,]    1   88
-##  [782,]   16   88
-##  [783,]   17   88
-##  [784,]   26   88
-##  [785,]   47   88
-##  [786,]   71   88
-##  [787,]   76   88
-##  [788,]   84   88
-##  [789,]  132   88
-##  [790,]  133   88
-##  [791,]  119   89
-##  [792,]  147   89
-##  [793,]   70   90
-##  [794,]   81   90
-##  [795,]  136   90
-##  [796,]   53   91
-##  [797,]   56   91
-##  [798,]   85   91
-##  [799,]   92   91
-##  [800,]   53   92
-##  [801,]   91   92
-##  [802,]  147   92
-##  [803,]   86   93
-##  [804,]  139   93
-##  [805,]   17   94
-##  [806,]   25   94
-##  [807,]  103   94
-##  [808,]    1   95
-##  [809,]    4   95
-##  [810,]    5   95
-##  [811,]    7   95
-##  [812,]   10   95
-##  [813,]   12   95
-##  [814,]    5   96
-##  [815,]    7   96
-##  [816,]   10   96
-##  [817,]    1   97
-##  [818,]    4   97
-##  [819,]    5   97
-##  [820,]   10   97
-##  [821,]   47   97
-##  [822,]    5   98
-##  [823,]    7   98
-##  [824,]   10   98
-##  [825,]    1   99
-##  [826,]    7   99
-##  [827,]   10   99
-##  [828,]   15   99
-##  [829,]   17   99
-##  [830,]   46   99
-##  [831,]  102   99
-##  [832,]   11  100
-##  [833,]   43  100
-##  [834,]   47  100
-##  [835,]    5  101
-##  [836,]   38  101
-##  [837,]    4  102
-##  [838,]    5  102
-##  [839,]    7  102
-##  [840,]   10  102
-##  [841,]   12  102
-##  [842,]   99  102
-##  [843,]  110  102
-##  [844,]   13  103
-##  [845,]   14  103
-##  [846,]   25  103
-##  [847,]   40  103
-##  [848,]   64  103
-##  [849,]   94  103
-##  [850,]    7  104
-##  [851,]   13  104
-##  [852,]   35  104
-##  [853,]   40  104
-##  [854,]   80  104
-##  [855,]   55  105
-##  [856,]   75  105
-##  [857,]   84  105
-##  [858,]   86  105
-##  [859,]  138  105
-##  [860,]   11  106
-##  [861,]   70  106
-##  [862,]   75  106
-##  [863,]   86  106
-##  [864,]   22  107
-##  [865,]   26  107
-##  [866,]    1  108
-##  [867,]   18  108
-##  [868,]    7  109
-##  [869,]   14  109
-##  [870,]   29  109
-##  [871,]   33  109
-##  [872,]   68  109
-##  [873,]  108  109
-##  [874,]    4  110
-##  [875,]    5  110
-##  [876,]    7  110
-##  [877,]   10  110
-##  [878,]   52  110
-##  [879,]  101  110
-##  [880,]  102  110
-##  [881,]  112  111
-##  [882,]   45  112
-##  [883,]   62  112
-##  [884,]  111  112
-##  [885,]    5  113
-##  [886,]   10  113
-##  [887,]   17  114
-##  [888,]   30  114
-##  [889,]   60  114
-##  [890,]   25  115
-##  [891,]   49  115
-##  [892,]    1  116
-##  [893,]    5  116
-##  [894,]   12  116
-##  [895,]   23  116
-##  [896,]   42  116
-##  [897,]   13  117
-##  [898,]   14  117
-##  [899,]   15  117
-##  [900,]   34  117
-##  [901,]   49  117
-##  [902,]   54  117
-##  [903,]   80  117
-##  [904,]  146  117
-##  [905,]    1  118
-##  [906,]    5  118
-##  [907,]   10  118
-##  [908,]   12  118
-##  [909,]   13  118
-##  [910,]   66  118
-##  [911,]   68  118
-##  [912,]   71  119
-##  [913,]   77  119
-##  [914,]    4  120
-##  [915,]    1  121
-##  [916,]   81  121
-##  [917,]  119  121
-##  [918,]  125  121
-##  [919,]   10  122
-##  [920,]   11  122
-##  [921,]   49  122
-##  [922,]   66  122
-##  [923,]   22  123
-##  [924,]  135  123
-##  [925,]    5  124
-##  [926,]    7  124
-##  [927,]   17  125
-##  [928,]   81  125
-##  [929,]   90  125
-##  [930,]  119  125
-##  [931,]   36  126
-##  [932,]  130  128
-##  [933,]  128  129
-##  [934,]  130  129
-##  [935,]  128  130
-##  [936,]  129  130
-##  [937,]   16  133
-##  [938,]   88  133
-##  [939,]  142  133
-##  [940,]    7  134
-##  [941,]   10  134
-##  [942,]  150  134
-##  [943,]    7  135
-##  [944,]   10  135
-##  [945,]   60  135
-##  [946,]  123  135
-##  [947,]   90  136
-##  [948,]   75  137
-##  [949,]   86  137
-##  [950,]   70  138
-##  [951,]   82  138
-##  [952,]  105  138
-##  [953,]   86  139
-##  [954,]    5  140
-##  [955,]   10  140
-##  [956,]   15  140
-##  [957,]   10  141
-##  [958,]  133  142
-##  [959,]   17  143
-##  [960,]   60  143
-##  [961,]   86  144
-##  [962,]   17  147
-##  [963,]   71  147
-##  [964,]   89  147
-##  [965,]   11  148
-##  [966,]   81  148
-##  [967,]  119  148
-##  [968,]  121  148
-##  [969,]    3  149
-##  [970,]   10  149
-##  [971,]    7  150
-##  [972,]  134  150
-##  [973,]    7  151
-##  [974,]   10  151
-##  [975,]  135  151
-##  [976,]   10  152
-##  [977,]   17  152
-##  [978,]   60  152
-##  [979,]   30  153
-##  [980,]  133  153
-##  [981,]   13  154
-##  [982,]   25  154
-##  [983,]   25  155
-##  [984,]   88  157
-##  [985,]    4  158
-##  [986,]    6  158
-##  [987,]    7  158
-##  [988,]    2  159
-##  [989,]    2  160
-##  [990,]   15  161
-##  [991,]    5  162
-##  [992,]   11  162
-##  [993,]   11  163
-##  [994,]    5  164
-##  [995,]   11  164
-##  [996,]   11  165
-##  [997,]   77  165
-##  [998,]   78  165
-##  [999,]    2  166
-## [1000,]    4  166
-## [1001,]   11  166
-## [1002,]   12  166
-## [1003,]    5  167
-## [1004,]    2  168
-## [1005,]    5  169
-## [1006,]    5  170
-## [1007,]   17  171
-## [1008,]   44  171
-## [1009,]   58  171
-## [1010,]   60  171
-## [1011,]   76  171
-## [1012,]  120  171
-## [1013,]   55  172
-## [1014,]   75  172
-## [1015,]   87  172
-## [1016,]   93  172
-## [1017,]   85  173
-## [1018,]   92  174
-## [1019,]   17  175
-## [1020,]   60  175
-## [1021,]  114  175
-## [1022,]    1  176
-## [1023,]   10  177
-## [1024,]  122  177
-## [1025,]   85  178
-## [1026,]   54  179
-## [1027,]  115  180
-## [1028,]   11  181
-## [1029,]   43  182
-## [1030,]  137  183
-## [1031,]   62  184
-## [1032,]   10  185
-## [1033,]   10  186
-## [1034,]  122  186
-## [1035,]   13  187
-## [1036,]   10  188</code></pre>
-<p>Now we are ready to plot the network. You will see that one starts to see the need for network measures as the visualization starts to get complicated to read. Note the arrows indicating directionality of MIDs.</p>
-<pre class="r"><code>gplot(midNet) # Basic</code></pre>
-<p><img src="week7_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<pre class="r"><code>gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;) # with information</code></pre>
-<p><img src="week7_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
-<pre class="r"><code>gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;,mode=&quot;circle&quot;) # as a circle</code></pre>
-<p><img src="week7_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
-<pre class="r"><code>#gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;,mode=&quot;target&quot;) # based on target. Might take a minute to run this line, but it gives a better visualization than the ones above.</code></pre>
+#install.packages(&quot;haven&quot;) 
+# this package teaches R how to read xls and xlsx sheets
+library(readxl)</code></pre>
 </div>
-<div id="centrality-measures" class="section level3">
-<h3>Centrality measures</h3>
-<p>Now we can use some of the centrality measures we head about in the lecture and apply these to the MID network.</p>
-<pre class="r"><code>in.n &lt;- degree(midNet,cmode=&quot;indegree&quot;)
+<div id="external-support-for-rebels-nag-data-from-belgin-san-akca"
+class="section level2">
+<h2>External support for rebels: NAG data from Belgin San Akca</h2>
+<p>The <a href="http://home.ku.edu.tr/~bakca/#complementary">State-NAG
+Cooperation Dataset</a> has information on 454 rebel groups, which
+emerged in the post-WWII period, and how they were supported by other
+governments. It includes descriptive information about ideational
+features and objectives of nonstate armed groups, their state
+supporters, type and duration of support, and all sources used for
+coding date. Sources and descriptive characteristics of NAGs are
+available on <a href="https://www.armedgroups.net/">project
+website</a>.</p>
+<p>We will be focusing on the key variables <code>tarnum</code> (the
+country code of the state targeted by the non-state actor),
+<code>psnum</code> (the country code of the state supporting the
+non-state actor) and the year of support. We will <em>not</em> focus on
+which rebel group is fighting which state but you could think of
+analyses on the rebel rather than state level for your assignments.</p>
+<p>The code below turns the whole NAG data into a network. This network
+links states supporting rebels (senders) to states being attacked by
+those rebels (receivers). The links between senders and receivers are
+external state support for the rebels in the receiving country.</p>
+<pre class="r"><code># read the data
+nag &lt;- read_dta(&quot;data_week7_new/BookFinalData.dta&quot;)
 
-  out.n &lt;- degree(midNet,cmode=&quot;outdegree&quot;)
+# recode the country codes into abbreviated state names
+nag$target &lt;- countrycode(nag$tarnum,origin=&quot;cown&quot;,destination = &quot;cowc&quot;) 
+nag$supporter &lt;- countrycode(nag$psnum,origin=&quot;cown&quot;,destination = &quot;cowc&quot;) 
 
-    close.n &lt;- closeness(midNet,gmode=&quot;graph&quot;)
+# clean up Germany that is often not identified (because of East and West Germany)
+nag$supporter &lt;- ifelse(nag$psnum==260, &quot;GER&quot;, nag$supporter) 
 
-      between.n &lt;- betweenness(midNet,gmode=&quot;graph&quot;)
+# selecting relevant variables
+nag &lt;-  select(nag, c(&quot;target&quot;,&quot;supporter&quot;,&quot;year&quot;))
 
-        info.n &lt;- infocent(midNet,gmode=&quot;graph&quot;)</code></pre>
-<p>We can also change the size of the nodes according to their indegree / outdegree and also create a table with indegree and outdegree for all states.</p>
-<pre class="r"><code>gplot(midNet,label=states, vertex.cex=log(in.n),edge.lwd=0.01,arrowhead.cex=0.5,edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;)</code></pre>
-<p><img src="week7_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<pre class="r"><code>gplot(midNet,label=states, vertex.cex=log(out.n),edge.lwd=0.01,arrowhead.cex=0.5,edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;)</code></pre>
-<p><img src="week7_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
-<pre class="r"><code>output &lt;- data.frame(states,in.n,out.n,round(close.n,digits=2),round(between.n,digits=2))
+# now the data is in a good shape to calculate network statistics
 
-names(output) &lt;- c(&quot;State&quot;,&quot;Indegree&quot;,&quot;Outdegree&quot;,&quot;Closeness&quot;,&quot;Betweenness&quot;)
+# get string of unique states in the data
+nag_states &lt;- unique(c(as.character(nag$target),
+                       as.character(nag$supporter)))
 
-arrange(output, desc(Indegree))</code></pre>
-<pre><code>##     State Indegree Outdegree Closeness Betweenness
-## 1     GMY       43        47      0.55     2069.10
-## 2     JPN       40        10      0.50      582.60
-## 3     UKG       36        40      0.54     1655.48
-## 4     RUS       34        41      0.53     2243.83
-## 5     USA       33        47      0.53     2121.43
-## 6     FRN       33        40      0.55     2067.97
-## 7     ITA       28        27      0.51      774.02
-## 8     YUG       25        44      0.48     1396.82
-## 9     CHN       18        22      0.45      922.76
-## 10    TUR       18        16      0.46      362.86
-## 11    EGY       15        13      0.45      404.07
-## 12    SPN       13        16      0.46      389.48
-## 13    POR       13        10      0.47      909.44
-## 14    ROM       12         7      0.41       39.16
-## 15    BUL       12         9      0.42       45.86
-## 16    IRN       12        19      0.46      568.05
-## 17    AUH       11        19      0.46      394.47
-## 18    ARG       11        10      0.44       91.52
-## 19    COL       11         8      0.42       76.99
-## 20    GRC       11         6      0.44        8.74
-## 21    AFG       11         3      0.42      366.17
-## 22    DRC       11         9      0.39      483.16
-## 23    SAU       10        10      0.43      299.45
-## 24    THI       10         8      0.42      272.43
-## 25    ISR       10        17      0.45      377.83
-## 26    HUN       10         5      0.42       24.41
-## 27    SUD       10         8      0.43      594.99
-## 28    NTH        9         7      0.45       21.88
-## 29    IRQ        9        33      0.47      628.59
-## 30    CHL        9         4      0.41       24.82
-## 31    BEL        8         4      0.43      116.21
-## 32    IND        8         8      0.39      491.07
-## 33    POL        8         4      0.40      111.85
-## 34    HAI        8        10      0.41       22.52
-## 35    MOR        8         5      0.42      172.89
-## 36    LIB        8        11      0.42      213.94
-## 37    DRV        8         6      0.38       70.72
-## 38    PHI        8         6      0.40      168.61
-## 39    PRK        7        20      0.44      435.80
-## 40    PER        7         8      0.39       32.91
-## 41    BRA        7        12      0.43      119.38
-## 42    VEN        7         9      0.42      170.09
-## 43    ZIM        7         6      0.38      374.18
-## 44    CAN        7         9      0.43       21.13
-## 45    DEN        7         6      0.41       20.23
-## 46    NOR        7         3      0.40       20.71
-## 47    AUS        7         2      0.40        4.88
-## 48    ETH        6         7      0.39      219.51
-## 49    LIT        6         4      0.42      188.00
-## 50    MEX        6         4      0.41        0.46
-## 51    NIC        6        11      0.40       44.84
-## 52    PAK        6         5      0.39      118.05
-## 53    ZAM        6         4      0.35       77.79
-## 54    SWD        6         1      0.41        0.09
-## 55    MYA        6         2      0.33       23.81
-## 56    GFR        6         1      0.36       92.01
-## 57    OMA        6         0      0.35        0.00
-## 58    ALB        5         9      0.42      102.14
-## 59    TAW        5        11      0.42       51.20
-## 60    CUB        5        11      0.43      164.44
-## 61    CAM        5         4      0.36       57.39
-## 62    GUA        5        10      0.40      183.00
-## 63    SYR        5         9      0.39       98.58
-## 64    JOR        5         3      0.36        7.03
-## 65    HON        5         6      0.37       97.90
-## 66    SAL        5         5      0.39        5.33
-## 67    CZE        5         5      0.40       16.61
-## 68    ROK        5         4      0.40        9.96
-## 69    UGA        5         7      0.38      183.92
-## 70    SWZ        5         1      0.40        0.92
-## 71    LAO        5         2      0.36        4.86
-## 72    TAZ        5         2      0.34      122.15
-## 73    PAN        5         6      0.39       68.42
-## 74    TUN        4         2      0.38        0.25
-## 75    SOM        4         5      0.39       69.53
-## 76    BOL        4         7      0.38       11.88
-## 77    PAR        4         5      0.38        4.19
-## 78    AUL        4         3      0.37        8.32
-## 79    DOM        4         4      0.40        0.21
-## 80    CHA        4         3      0.33      194.38
-## 81    KEN        4         4      0.33      187.15
-## 82    SAF        4        11      0.39      473.09
-## 83    MAA        4         2      0.31      128.82
-## 84    ANG        4         7      0.38      166.42
-## 85    LBR        4         3      0.39      160.29
-## 86    CRO        4         3      0.39       17.44
-## 87    SIE        4         1      0.34        1.84
-## 88    AZE        4         3      0.37       16.22
-## 89    CDI        4         2      0.38      156.54
-## 90    SIC        4         0      0.38        0.00
-## 91    MAW        4         0      0.33        0.00
-## 92    ECU        3         4      0.36        1.63
-## 93    YAR        3         4      0.36       18.05
-## 94    INS        3        12      0.41      173.69
-## 95    YPR        3         3      0.36        7.10
-## 96    GUI        3         4      0.34       44.33
-## 97    SEN        3         4      0.38      342.99
-## 98    GHA        3         5      0.38      218.74
-## 99    MLI        3         2      0.27       79.85
-## 100   BNG        3         2      0.34        6.38
-## 101   EST        3         1      0.38        0.00
-## 102   FIN        3         1      0.38        0.00
-## 103   LEB        3         1      0.36        1.13
-## 104   GUY        3         1      0.31       76.50
-## 105   QAT        3         3      0.34        2.60
-## 106   ERI        3         4      0.32      171.21
-## 107   UKR        3         3      0.36       90.43
-## 108   BUI        3         1      0.29        0.94
-## 109   LUX        3         1      0.38        0.64
-## 110   NIR        3         2      0.33      121.03
-## 111   GRG        3         1      0.36        0.00
-## 112   UAE        3         1      0.36        1.89
-## 113   KOR        3         0      0.38        0.00
-## 114   GAB        3         0      0.36        0.00
-## 115   BAH        3         0      0.33        0.00
-## 116   COS        2         5      0.37        0.38
-## 117   RVN        2         4      0.32        3.95
-## 118   PAP        2         1      0.35        0.00
-## 119   ALG        2         5      0.34       72.63
-## 120   MAL        2         6      0.32       78.65
-## 121   CEN        2         2      0.32       80.51
-## 122   CON        2         1      0.33       11.56
-## 123   CAO        2         2      0.28        8.46
-## 124   RWA        2         3      0.30        1.36
-## 125   BEN        2         2      0.33      109.85
-## 126   MZM        2         3      0.29       88.40
-## 127   URU        2         4      0.37        0.19
-## 128   CYP        2         1      0.33        0.40
-## 129   GDR        2         1      0.36        2.76
-## 130   IRE        2         1      0.37        0.00
-## 131   PNG        2         2      0.35       77.50
-## 132   NIG        2         6      0.31      112.56
-## 133   ARM        2         3      0.33        4.08
-## 134   LAT        2         1      0.37        0.00
-## 135   KYR        2         2      0.30        0.00
-## 136   UZB        2         3      0.30        0.50
-## 137   BOT        2         1      0.29       76.50
-## 138   KUW        2         1      0.33        0.00
-## 139   MAC        2         1      0.33        0.00
-## 140   MLD        2         1      0.35        0.00
-## 141   YEM        2         1      0.31        4.68
-## 142   NEP        2         1      0.32        0.00
-## 143   BAV        2         0      0.38        0.00
-## 144   WRT        2         0      0.38        0.00
-## 145   BOS        2         0      0.33        0.00
-## 146   SLV        2         0      0.33        0.00
-## 147   MON        1         2      0.34        0.00
-## 148   ICE        1         3      0.37        1.12
-## 149   EQG        1         2      0.32        1.24
-## 150   SUR        1         1      0.23        0.00
-## 151   USR        1         1      0.35        3.00
-## 152   BLZ        1         1      0.29        0.00
-## 153   TAJ        1         3      0.30        0.00
-## 154   TOG        1         1      0.27        0.00
-## 155   SWA        1         1      0.28        0.00
-## 156   CZR        1         1      0.33        0.00
-## 157   DJI        1         1      0.24        0.00
-## 158   LES        1         1      0.28        0.00
-## 159   SRI        1         1      0.28        0.00
-## 160   SSD        1         1      0.31        5.12
-## 161   MOD        1         0      0.32        0.00
-## 162   TUS        1         0      0.32        0.00
-## 163   NEW        1         0      0.31        0.00
-## 164   BAD        1         0      0.36        0.00
-## 165   HSE        1         0      0.35        0.00
-## 166   MEC        1         0      0.32        0.00
-## 167   SAX        1         0      0.35        0.00
-## 168   HAN        1         0      0.35        0.00
-## 169   GAM        1         0      0.28        0.00
-## 170   BFO        1         0      0.21        0.00
-## 171   GRN        1         0      0.35        0.00
-## 172   GNB        1         0      0.28        0.00
-## 173   SIN        1         0      0.24        0.00
-## 174   SOL        1         0      0.26        0.00
-## 175   COM        1         0      0.36        0.00
-## 176   MLT        1         0      0.28        0.00
-## 177   NAM        1         0      0.22        0.00
-## 178   TRI        1         0      0.30        0.00
-## 179   SLO        1         0      0.33        0.00
-## 180   BHU        1         0      0.31        0.00
-## 181   KOS        1         0      0.33        0.00
-## 182   MAG        0         1      0.28        0.00
-## 183   TKM        0         1      0.29        0.00
-## 184   KZK        0         3      0.35        0.00
-## 185   UGD        0         1      0.30        0.00
-## 186   BLR        0         1      0.30        0.00
-## 187   PAL        0         1      0.29        0.00
-## 188   JAM        0         1      0.27        0.00</code></pre>
-<pre class="r"><code>arrange(output, desc(Outdegree))</code></pre>
-<pre><code>##     State Indegree Outdegree Closeness Betweenness
-## 1     USA       33        47      0.53     2121.43
-## 2     GMY       43        47      0.55     2069.10
-## 3     YUG       25        44      0.48     1396.82
-## 4     RUS       34        41      0.53     2243.83
-## 5     UKG       36        40      0.54     1655.48
-## 6     FRN       33        40      0.55     2067.97
-## 7     IRQ        9        33      0.47      628.59
-## 8     ITA       28        27      0.51      774.02
-## 9     CHN       18        22      0.45      922.76
-## 10    PRK        7        20      0.44      435.80
-## 11    AUH       11        19      0.46      394.47
-## 12    IRN       12        19      0.46      568.05
-## 13    ISR       10        17      0.45      377.83
-## 14    SPN       13        16      0.46      389.48
-## 15    TUR       18        16      0.46      362.86
-## 16    EGY       15        13      0.45      404.07
-## 17    BRA        7        12      0.43      119.38
-## 18    INS        3        12      0.41      173.69
-## 19    TAW        5        11      0.42       51.20
-## 20    CUB        5        11      0.43      164.44
-## 21    NIC        6        11      0.40       44.84
-## 22    LIB        8        11      0.42      213.94
-## 23    SAF        4        11      0.39      473.09
-## 24    JPN       40        10      0.50      582.60
-## 25    SAU       10        10      0.43      299.45
-## 26    GUA        5        10      0.40      183.00
-## 27    ARG       11        10      0.44       91.52
-## 28    HAI        8        10      0.41       22.52
-## 29    POR       13        10      0.47      909.44
-## 30    ALB        5         9      0.42      102.14
-## 31    BUL       12         9      0.42       45.86
-## 32    SYR        5         9      0.39       98.58
-## 33    VEN        7         9      0.42      170.09
-## 34    DRC       11         9      0.39      483.16
-## 35    CAN        7         9      0.43       21.13
-## 36    IND        8         8      0.39      491.07
-## 37    PER        7         8      0.39       32.91
-## 38    THI       10         8      0.42      272.43
-## 39    COL       11         8      0.42       76.99
-## 40    SUD       10         8      0.43      594.99
-## 41    NTH        9         7      0.45       21.88
-## 42    ETH        6         7      0.39      219.51
-## 43    ROM       12         7      0.41       39.16
-## 44    BOL        4         7      0.38       11.88
-## 45    UGA        5         7      0.38      183.92
-## 46    ANG        4         7      0.38      166.42
-## 47    MAL        2         6      0.32       78.65
-## 48    HON        5         6      0.37       97.90
-## 49    GRC       11         6      0.44        8.74
-## 50    ZIM        7         6      0.38      374.18
-## 51    DRV        8         6      0.38       70.72
-## 52    DEN        7         6      0.41       20.23
-## 53    PAN        5         6      0.39       68.42
-## 54    PHI        8         6      0.40      168.61
-## 55    NIG        2         6      0.31      112.56
-## 56    COS        2         5      0.37        0.38
-## 57    SOM        4         5      0.39       69.53
-## 58    PAR        4         5      0.38        4.19
-## 59    ALG        2         5      0.34       72.63
-## 60    MOR        8         5      0.42      172.89
-## 61    PAK        6         5      0.39      118.05
-## 62    SAL        5         5      0.39        5.33
-## 63    HUN       10         5      0.42       24.41
-## 64    CZE        5         5      0.40       16.61
-## 65    GHA        3         5      0.38      218.74
-## 66    BEL        8         4      0.43      116.21
-## 67    LIT        6         4      0.42      188.00
-## 68    MEX        6         4      0.41        0.46
-## 69    POL        8         4      0.40      111.85
-## 70    RVN        2         4      0.32        3.95
-## 71    CAM        5         4      0.36       57.39
-## 72    ECU        3         4      0.36        1.63
-## 73    YAR        3         4      0.36       18.05
-## 74    CHL        9         4      0.41       24.82
-## 75    DOM        4         4      0.40        0.21
-## 76    ROK        5         4      0.40        9.96
-## 77    GUI        3         4      0.34       44.33
-## 78    KEN        4         4      0.33      187.15
-## 79    SEN        3         4      0.38      342.99
-## 80    ZAM        6         4      0.35       77.79
-## 81    URU        2         4      0.37        0.19
-## 82    ERI        3         4      0.32      171.21
-## 83    ICE        1         3      0.37        1.12
-## 84    JOR        5         3      0.36        7.03
-## 85    AUL        4         3      0.37        8.32
-## 86    YPR        3         3      0.36        7.10
-## 87    AFG       11         3      0.42      366.17
-## 88    CHA        4         3      0.33      194.38
-## 89    RWA        2         3      0.30        1.36
-## 90    MZM        2         3      0.29       88.40
-## 91    NOR        7         3      0.40       20.71
-## 92    QAT        3         3      0.34        2.60
-## 93    LBR        4         3      0.39      160.29
-## 94    CRO        4         3      0.39       17.44
-## 95    ARM        2         3      0.33        4.08
-## 96    TAJ        1         3      0.30        0.00
-## 97    UZB        2         3      0.30        0.50
-## 98    KZK        0         3      0.35        0.00
-## 99    UKR        3         3      0.36       90.43
-## 100   AZE        4         3      0.37       16.22
-## 101   TUN        4         2      0.38        0.25
-## 102   MON        1         2      0.34        0.00
-## 103   CEN        2         2      0.32       80.51
-## 104   CAO        2         2      0.28        8.46
-## 105   EQG        1         2      0.32        1.24
-## 106   BEN        2         2      0.33      109.85
-## 107   MAA        4         2      0.31      128.82
-## 108   MLI        3         2      0.27       79.85
-## 109   BNG        3         2      0.34        6.38
-## 110   MYA        6         2      0.33       23.81
-## 111   LAO        5         2      0.36        4.86
-## 112   TAZ        5         2      0.34      122.15
-## 113   PNG        2         2      0.35       77.50
-## 114   AUS        7         2      0.40        4.88
-## 115   KYR        2         2      0.30        0.00
-## 116   NIR        3         2      0.33      121.03
-## 117   CDI        4         2      0.38      156.54
-## 118   PAP        2         1      0.35        0.00
-## 119   MAG        0         1      0.28        0.00
-## 120   CON        2         1      0.33       11.56
-## 121   SWD        6         1      0.41        0.09
-## 122   EST        3         1      0.38        0.00
-## 123   SWZ        5         1      0.40        0.92
-## 124   FIN        3         1      0.38        0.00
-## 125   LEB        3         1      0.36        1.13
-## 126   CYP        2         1      0.33        0.40
-## 127   GDR        2         1      0.36        2.76
-## 128   GFR        6         1      0.36       92.01
-## 129   SUR        1         1      0.23        0.00
-## 130   GUY        3         1      0.31       76.50
-## 131   IRE        2         1      0.37        0.00
-## 132   USR        1         1      0.35        3.00
-## 133   LAT        2         1      0.37        0.00
-## 134   SIE        4         1      0.34        1.84
-## 135   BLZ        1         1      0.29        0.00
-## 136   TKM        0         1      0.29        0.00
-## 137   UGD        0         1      0.30        0.00
-## 138   TOG        1         1      0.27        0.00
-## 139   BOT        2         1      0.29       76.50
-## 140   BUI        3         1      0.29        0.94
-## 141   SWA        1         1      0.28        0.00
-## 142   LUX        3         1      0.38        0.64
-## 143   CZR        1         1      0.33        0.00
-## 144   DJI        1         1      0.24        0.00
-## 145   KUW        2         1      0.33        0.00
-## 146   LES        1         1      0.28        0.00
-## 147   BLR        0         1      0.30        0.00
-## 148   PAL        0         1      0.29        0.00
-## 149   MAC        2         1      0.33        0.00
-## 150   MLD        2         1      0.35        0.00
-## 151   GRG        3         1      0.36        0.00
-## 152   UAE        3         1      0.36        1.89
-## 153   YEM        2         1      0.31        4.68
-## 154   NEP        2         1      0.32        0.00
-## 155   SRI        1         1      0.28        0.00
-## 156   JAM        0         1      0.27        0.00
-## 157   SSD        1         1      0.31        5.12
-## 158   KOR        3         0      0.38        0.00
-## 159   MOD        1         0      0.32        0.00
-## 160   TUS        1         0      0.32        0.00
-## 161   NEW        1         0      0.31        0.00
-## 162   BAV        2         0      0.38        0.00
-## 163   BAD        1         0      0.36        0.00
-## 164   WRT        2         0      0.38        0.00
-## 165   GAB        3         0      0.36        0.00
-## 166   SIC        4         0      0.38        0.00
-## 167   HSE        1         0      0.35        0.00
-## 168   MEC        1         0      0.32        0.00
-## 169   SAX        1         0      0.35        0.00
-## 170   HAN        1         0      0.35        0.00
-## 171   OMA        6         0      0.35        0.00
-## 172   MAW        4         0      0.33        0.00
-## 173   GAM        1         0      0.28        0.00
-## 174   BFO        1         0      0.21        0.00
-## 175   BAH        3         0      0.33        0.00
-## 176   GRN        1         0      0.35        0.00
-## 177   BOS        2         0      0.33        0.00
-## 178   GNB        1         0      0.28        0.00
-## 179   SIN        1         0      0.24        0.00
-## 180   SOL        1         0      0.26        0.00
-## 181   COM        1         0      0.36        0.00
-## 182   MLT        1         0      0.28        0.00
-## 183   NAM        1         0      0.22        0.00
-## 184   TRI        1         0      0.30        0.00
-## 185   SLO        1         0      0.33        0.00
-## 186   SLV        2         0      0.33        0.00
-## 187   BHU        1         0      0.31        0.00
-## 188   KOS        1         0      0.33        0.00</code></pre>
-<pre class="r"><code>arrange(output, desc(Closeness))</code></pre>
-<pre><code>##     State Indegree Outdegree Closeness Betweenness
-## 1     GMY       43        47      0.55     2069.10
-## 2     FRN       33        40      0.55     2067.97
-## 3     UKG       36        40      0.54     1655.48
-## 4     USA       33        47      0.53     2121.43
-## 5     RUS       34        41      0.53     2243.83
-## 6     ITA       28        27      0.51      774.02
-## 7     JPN       40        10      0.50      582.60
-## 8     YUG       25        44      0.48     1396.82
-## 9     IRQ        9        33      0.47      628.59
-## 10    POR       13        10      0.47      909.44
-## 11    AUH       11        19      0.46      394.47
-## 12    SPN       13        16      0.46      389.48
-## 13    TUR       18        16      0.46      362.86
-## 14    IRN       12        19      0.46      568.05
-## 15    NTH        9         7      0.45       21.88
-## 16    CHN       18        22      0.45      922.76
-## 17    EGY       15        13      0.45      404.07
-## 18    ISR       10        17      0.45      377.83
-## 19    PRK        7        20      0.44      435.80
-## 20    ARG       11        10      0.44       91.52
-## 21    GRC       11         6      0.44        8.74
-## 22    BEL        8         4      0.43      116.21
-## 23    CUB        5        11      0.43      164.44
-## 24    SAU       10        10      0.43      299.45
-## 25    BRA        7        12      0.43      119.38
-## 26    SUD       10         8      0.43      594.99
-## 27    CAN        7         9      0.43       21.13
-## 28    ALB        5         9      0.42      102.14
-## 29    TAW        5        11      0.42       51.20
-## 30    LIT        6         4      0.42      188.00
-## 31    BUL       12         9      0.42       45.86
-## 32    THI       10         8      0.42      272.43
-## 33    MOR        8         5      0.42      172.89
-## 34    COL       11         8      0.42       76.99
-## 35    VEN        7         9      0.42      170.09
-## 36    HUN       10         5      0.42       24.41
-## 37    AFG       11         3      0.42      366.17
-## 38    LIB        8        11      0.42      213.94
-## 39    MEX        6         4      0.41        0.46
-## 40    ROM       12         7      0.41       39.16
-## 41    HAI        8        10      0.41       22.52
-## 42    INS        3        12      0.41      173.69
-## 43    CHL        9         4      0.41       24.82
-## 44    SWD        6         1      0.41        0.09
-## 45    DEN        7         6      0.41       20.23
-## 46    POL        8         4      0.40      111.85
-## 47    GUA        5        10      0.40      183.00
-## 48    NIC        6        11      0.40       44.84
-## 49    DOM        4         4      0.40        0.21
-## 50    CZE        5         5      0.40       16.61
-## 51    ROK        5         4      0.40        9.96
-## 52    SWZ        5         1      0.40        0.92
-## 53    NOR        7         3      0.40       20.71
-## 54    PHI        8         6      0.40      168.61
-## 55    AUS        7         2      0.40        4.88
-## 56    ETH        6         7      0.39      219.51
-## 57    IND        8         8      0.39      491.07
-## 58    PER        7         8      0.39       32.91
-## 59    SOM        4         5      0.39       69.53
-## 60    SYR        5         9      0.39       98.58
-## 61    PAK        6         5      0.39      118.05
-## 62    SAL        5         5      0.39        5.33
-## 63    DRC       11         9      0.39      483.16
-## 64    SAF        4        11      0.39      473.09
-## 65    PAN        5         6      0.39       68.42
-## 66    LBR        4         3      0.39      160.29
-## 67    CRO        4         3      0.39       17.44
-## 68    TUN        4         2      0.38        0.25
-## 69    BOL        4         7      0.38       11.88
-## 70    PAR        4         5      0.38        4.19
-## 71    ZIM        7         6      0.38      374.18
-## 72    DRV        8         6      0.38       70.72
-## 73    UGA        5         7      0.38      183.92
-## 74    SEN        3         4      0.38      342.99
-## 75    GHA        3         5      0.38      218.74
-## 76    EST        3         1      0.38        0.00
-## 77    FIN        3         1      0.38        0.00
-## 78    ANG        4         7      0.38      166.42
-## 79    LUX        3         1      0.38        0.64
-## 80    CDI        4         2      0.38      156.54
-## 81    KOR        3         0      0.38        0.00
-## 82    BAV        2         0      0.38        0.00
-## 83    WRT        2         0      0.38        0.00
-## 84    SIC        4         0      0.38        0.00
-## 85    COS        2         5      0.37        0.38
-## 86    ICE        1         3      0.37        1.12
-## 87    AUL        4         3      0.37        8.32
-## 88    HON        5         6      0.37       97.90
-## 89    URU        2         4      0.37        0.19
-## 90    IRE        2         1      0.37        0.00
-## 91    LAT        2         1      0.37        0.00
-## 92    AZE        4         3      0.37       16.22
-## 93    CAM        5         4      0.36       57.39
-## 94    ECU        3         4      0.36        1.63
-## 95    YAR        3         4      0.36       18.05
-## 96    JOR        5         3      0.36        7.03
-## 97    YPR        3         3      0.36        7.10
-## 98    LEB        3         1      0.36        1.13
-## 99    LAO        5         2      0.36        4.86
-## 100   GDR        2         1      0.36        2.76
-## 101   GFR        6         1      0.36       92.01
-## 102   UKR        3         3      0.36       90.43
-## 103   GRG        3         1      0.36        0.00
-## 104   UAE        3         1      0.36        1.89
-## 105   BAD        1         0      0.36        0.00
-## 106   GAB        3         0      0.36        0.00
-## 107   COM        1         0      0.36        0.00
-## 108   PAP        2         1      0.35        0.00
-## 109   ZAM        6         4      0.35       77.79
-## 110   PNG        2         2      0.35       77.50
-## 111   USR        1         1      0.35        3.00
-## 112   KZK        0         3      0.35        0.00
-## 113   MLD        2         1      0.35        0.00
-## 114   HSE        1         0      0.35        0.00
-## 115   SAX        1         0      0.35        0.00
-## 116   HAN        1         0      0.35        0.00
-## 117   OMA        6         0      0.35        0.00
-## 118   GRN        1         0      0.35        0.00
-## 119   MON        1         2      0.34        0.00
-## 120   ALG        2         5      0.34       72.63
-## 121   GUI        3         4      0.34       44.33
-## 122   BNG        3         2      0.34        6.38
-## 123   TAZ        5         2      0.34      122.15
-## 124   QAT        3         3      0.34        2.60
-## 125   SIE        4         1      0.34        1.84
-## 126   CHA        4         3      0.33      194.38
-## 127   CON        2         1      0.33       11.56
-## 128   KEN        4         4      0.33      187.15
-## 129   BEN        2         2      0.33      109.85
-## 130   MYA        6         2      0.33       23.81
-## 131   CYP        2         1      0.33        0.40
-## 132   ARM        2         3      0.33        4.08
-## 133   CZR        1         1      0.33        0.00
-## 134   KUW        2         1      0.33        0.00
-## 135   NIR        3         2      0.33      121.03
-## 136   MAC        2         1      0.33        0.00
-## 137   MAW        4         0      0.33        0.00
-## 138   BAH        3         0      0.33        0.00
-## 139   BOS        2         0      0.33        0.00
-## 140   SLO        1         0      0.33        0.00
-## 141   SLV        2         0      0.33        0.00
-## 142   KOS        1         0      0.33        0.00
-## 143   RVN        2         4      0.32        3.95
-## 144   MAL        2         6      0.32       78.65
-## 145   CEN        2         2      0.32       80.51
-## 146   EQG        1         2      0.32        1.24
-## 147   ERI        3         4      0.32      171.21
-## 148   NEP        2         1      0.32        0.00
-## 149   MOD        1         0      0.32        0.00
-## 150   TUS        1         0      0.32        0.00
-## 151   MEC        1         0      0.32        0.00
-## 152   MAA        4         2      0.31      128.82
-## 153   GUY        3         1      0.31       76.50
-## 154   NIG        2         6      0.31      112.56
-## 155   YEM        2         1      0.31        4.68
-## 156   SSD        1         1      0.31        5.12
-## 157   NEW        1         0      0.31        0.00
-## 158   BHU        1         0      0.31        0.00
-## 159   RWA        2         3      0.30        1.36
-## 160   TAJ        1         3      0.30        0.00
-## 161   KYR        2         2      0.30        0.00
-## 162   UZB        2         3      0.30        0.50
-## 163   UGD        0         1      0.30        0.00
-## 164   BLR        0         1      0.30        0.00
-## 165   TRI        1         0      0.30        0.00
-## 166   MZM        2         3      0.29       88.40
-## 167   BLZ        1         1      0.29        0.00
-## 168   TKM        0         1      0.29        0.00
-## 169   BOT        2         1      0.29       76.50
-## 170   BUI        3         1      0.29        0.94
-## 171   PAL        0         1      0.29        0.00
-## 172   MAG        0         1      0.28        0.00
-## 173   CAO        2         2      0.28        8.46
-## 174   SWA        1         1      0.28        0.00
-## 175   LES        1         1      0.28        0.00
-## 176   SRI        1         1      0.28        0.00
-## 177   GAM        1         0      0.28        0.00
-## 178   GNB        1         0      0.28        0.00
-## 179   MLT        1         0      0.28        0.00
-## 180   MLI        3         2      0.27       79.85
-## 181   TOG        1         1      0.27        0.00
-## 182   JAM        0         1      0.27        0.00
-## 183   SOL        1         0      0.26        0.00
-## 184   DJI        1         1      0.24        0.00
-## 185   SIN        1         0      0.24        0.00
-## 186   SUR        1         1      0.23        0.00
-## 187   NAM        1         0      0.22        0.00
-## 188   BFO        1         0      0.21        0.00</code></pre>
-<pre class="r"><code>arrange(output, desc(Betweenness))</code></pre>
-<pre><code>##     State Indegree Outdegree Closeness Betweenness
-## 1     RUS       34        41      0.53     2243.83
-## 2     USA       33        47      0.53     2121.43
-## 3     GMY       43        47      0.55     2069.10
-## 4     FRN       33        40      0.55     2067.97
-## 5     UKG       36        40      0.54     1655.48
-## 6     YUG       25        44      0.48     1396.82
-## 7     CHN       18        22      0.45      922.76
-## 8     POR       13        10      0.47      909.44
-## 9     ITA       28        27      0.51      774.02
-## 10    IRQ        9        33      0.47      628.59
-## 11    SUD       10         8      0.43      594.99
-## 12    JPN       40        10      0.50      582.60
-## 13    IRN       12        19      0.46      568.05
-## 14    IND        8         8      0.39      491.07
-## 15    DRC       11         9      0.39      483.16
-## 16    SAF        4        11      0.39      473.09
-## 17    PRK        7        20      0.44      435.80
-## 18    EGY       15        13      0.45      404.07
-## 19    AUH       11        19      0.46      394.47
-## 20    SPN       13        16      0.46      389.48
-## 21    ISR       10        17      0.45      377.83
-## 22    ZIM        7         6      0.38      374.18
-## 23    AFG       11         3      0.42      366.17
-## 24    TUR       18        16      0.46      362.86
-## 25    SEN        3         4      0.38      342.99
-## 26    SAU       10        10      0.43      299.45
-## 27    THI       10         8      0.42      272.43
-## 28    ETH        6         7      0.39      219.51
-## 29    GHA        3         5      0.38      218.74
-## 30    LIB        8        11      0.42      213.94
-## 31    CHA        4         3      0.33      194.38
-## 32    LIT        6         4      0.42      188.00
-## 33    KEN        4         4      0.33      187.15
-## 34    UGA        5         7      0.38      183.92
-## 35    GUA        5        10      0.40      183.00
-## 36    INS        3        12      0.41      173.69
-## 37    MOR        8         5      0.42      172.89
-## 38    ERI        3         4      0.32      171.21
-## 39    VEN        7         9      0.42      170.09
-## 40    PHI        8         6      0.40      168.61
-## 41    ANG        4         7      0.38      166.42
-## 42    CUB        5        11      0.43      164.44
-## 43    LBR        4         3      0.39      160.29
-## 44    CDI        4         2      0.38      156.54
-## 45    MAA        4         2      0.31      128.82
-## 46    TAZ        5         2      0.34      122.15
-## 47    NIR        3         2      0.33      121.03
-## 48    BRA        7        12      0.43      119.38
-## 49    PAK        6         5      0.39      118.05
-## 50    BEL        8         4      0.43      116.21
-## 51    NIG        2         6      0.31      112.56
-## 52    POL        8         4      0.40      111.85
-## 53    BEN        2         2      0.33      109.85
-## 54    ALB        5         9      0.42      102.14
-## 55    SYR        5         9      0.39       98.58
-## 56    HON        5         6      0.37       97.90
-## 57    GFR        6         1      0.36       92.01
-## 58    ARG       11        10      0.44       91.52
-## 59    UKR        3         3      0.36       90.43
-## 60    MZM        2         3      0.29       88.40
-## 61    CEN        2         2      0.32       80.51
-## 62    MLI        3         2      0.27       79.85
-## 63    MAL        2         6      0.32       78.65
-## 64    ZAM        6         4      0.35       77.79
-## 65    PNG        2         2      0.35       77.50
-## 66    COL       11         8      0.42       76.99
-## 67    GUY        3         1      0.31       76.50
-## 68    BOT        2         1      0.29       76.50
-## 69    ALG        2         5      0.34       72.63
-## 70    DRV        8         6      0.38       70.72
-## 71    SOM        4         5      0.39       69.53
-## 72    PAN        5         6      0.39       68.42
-## 73    CAM        5         4      0.36       57.39
-## 74    TAW        5        11      0.42       51.20
-## 75    BUL       12         9      0.42       45.86
-## 76    NIC        6        11      0.40       44.84
-## 77    GUI        3         4      0.34       44.33
-## 78    ROM       12         7      0.41       39.16
-## 79    PER        7         8      0.39       32.91
-## 80    CHL        9         4      0.41       24.82
-## 81    HUN       10         5      0.42       24.41
-## 82    MYA        6         2      0.33       23.81
-## 83    HAI        8        10      0.41       22.52
-## 84    NTH        9         7      0.45       21.88
-## 85    CAN        7         9      0.43       21.13
-## 86    NOR        7         3      0.40       20.71
-## 87    DEN        7         6      0.41       20.23
-## 88    YAR        3         4      0.36       18.05
-## 89    CRO        4         3      0.39       17.44
-## 90    CZE        5         5      0.40       16.61
-## 91    AZE        4         3      0.37       16.22
-## 92    BOL        4         7      0.38       11.88
-## 93    CON        2         1      0.33       11.56
-## 94    ROK        5         4      0.40        9.96
-## 95    GRC       11         6      0.44        8.74
-## 96    CAO        2         2      0.28        8.46
-## 97    AUL        4         3      0.37        8.32
-## 98    YPR        3         3      0.36        7.10
-## 99    JOR        5         3      0.36        7.03
-## 100   BNG        3         2      0.34        6.38
-## 101   SAL        5         5      0.39        5.33
-## 102   SSD        1         1      0.31        5.12
-## 103   AUS        7         2      0.40        4.88
-## 104   LAO        5         2      0.36        4.86
-## 105   YEM        2         1      0.31        4.68
-## 106   PAR        4         5      0.38        4.19
-## 107   ARM        2         3      0.33        4.08
-## 108   RVN        2         4      0.32        3.95
-## 109   USR        1         1      0.35        3.00
-## 110   GDR        2         1      0.36        2.76
-## 111   QAT        3         3      0.34        2.60
-## 112   UAE        3         1      0.36        1.89
-## 113   SIE        4         1      0.34        1.84
-## 114   ECU        3         4      0.36        1.63
-## 115   RWA        2         3      0.30        1.36
-## 116   EQG        1         2      0.32        1.24
-## 117   LEB        3         1      0.36        1.13
-## 118   ICE        1         3      0.37        1.12
-## 119   BUI        3         1      0.29        0.94
-## 120   SWZ        5         1      0.40        0.92
-## 121   LUX        3         1      0.38        0.64
-## 122   UZB        2         3      0.30        0.50
-## 123   MEX        6         4      0.41        0.46
-## 124   CYP        2         1      0.33        0.40
-## 125   COS        2         5      0.37        0.38
-## 126   TUN        4         2      0.38        0.25
-## 127   DOM        4         4      0.40        0.21
-## 128   URU        2         4      0.37        0.19
-## 129   SWD        6         1      0.41        0.09
-## 130   MON        1         2      0.34        0.00
-## 131   PAP        2         1      0.35        0.00
-## 132   MAG        0         1      0.28        0.00
-## 133   EST        3         1      0.38        0.00
-## 134   FIN        3         1      0.38        0.00
-## 135   SUR        1         1      0.23        0.00
-## 136   IRE        2         1      0.37        0.00
-## 137   LAT        2         1      0.37        0.00
-## 138   BLZ        1         1      0.29        0.00
-## 139   TKM        0         1      0.29        0.00
-## 140   TAJ        1         3      0.30        0.00
-## 141   KYR        2         2      0.30        0.00
-## 142   KZK        0         3      0.35        0.00
-## 143   UGD        0         1      0.30        0.00
-## 144   TOG        1         1      0.27        0.00
-## 145   SWA        1         1      0.28        0.00
-## 146   CZR        1         1      0.33        0.00
-## 147   DJI        1         1      0.24        0.00
-## 148   KUW        2         1      0.33        0.00
-## 149   LES        1         1      0.28        0.00
-## 150   BLR        0         1      0.30        0.00
-## 151   PAL        0         1      0.29        0.00
-## 152   MAC        2         1      0.33        0.00
-## 153   MLD        2         1      0.35        0.00
-## 154   GRG        3         1      0.36        0.00
-## 155   NEP        2         1      0.32        0.00
-## 156   SRI        1         1      0.28        0.00
-## 157   JAM        0         1      0.27        0.00
-## 158   KOR        3         0      0.38        0.00
-## 159   MOD        1         0      0.32        0.00
-## 160   TUS        1         0      0.32        0.00
-## 161   NEW        1         0      0.31        0.00
-## 162   BAV        2         0      0.38        0.00
-## 163   BAD        1         0      0.36        0.00
-## 164   WRT        2         0      0.38        0.00
-## 165   GAB        3         0      0.36        0.00
-## 166   SIC        4         0      0.38        0.00
-## 167   HSE        1         0      0.35        0.00
-## 168   MEC        1         0      0.32        0.00
-## 169   SAX        1         0      0.35        0.00
-## 170   HAN        1         0      0.35        0.00
-## 171   OMA        6         0      0.35        0.00
-## 172   MAW        4         0      0.33        0.00
-## 173   GAM        1         0      0.28        0.00
-## 174   BFO        1         0      0.21        0.00
-## 175   BAH        3         0      0.33        0.00
-## 176   GRN        1         0      0.35        0.00
-## 177   BOS        2         0      0.33        0.00
-## 178   GNB        1         0      0.28        0.00
-## 179   SIN        1         0      0.24        0.00
-## 180   SOL        1         0      0.26        0.00
-## 181   COM        1         0      0.36        0.00
-## 182   MLT        1         0      0.28        0.00
-## 183   NAM        1         0      0.22        0.00
-## 184   TRI        1         0      0.30        0.00
-## 185   SLO        1         0      0.33        0.00
-## 186   SLV        2         0      0.33        0.00
-## 187   BHU        1         0      0.31        0.00
-## 188   KOS        1         0      0.33        0.00</code></pre>
+# make an empty matrix
+nagMat &lt;- matrix(0,nrow=length(nag_states),ncol=length(nag_states)) 
+rownames(nagMat) &lt;-     nag_states
+colnames(nagMat) &lt;-     nag_states
+
+# fill the empty matrix
+for(i in 1:dim(nag)[1]){
+    nagMat[as.character(nag$supporter[i]),as.character(nag$target[i])] &lt;-
+      nagMat[as.character(nag$supporter[i]),as.character(nag$target[i])]+1
+}
+
+# tell R to understand this matrix as a network
+nagNet &lt;- network(nagMat,
+                  directed=TRUE)
+network.vertex.names(nagNet) &lt;- nag_states</code></pre>
+<p>Based on this network of external rebel support, we can try to
+identify the countries that send support to a lot of different rebels in
+different states (<em>outdegree centrality</em>) but also which states
+are heavily targeted through external rebel support by various other
+states (<em>indegree centrality</em>). Also revise the other centrality
+measures!</p>
+<pre class="r fold-hide"><code># which states target other states the most by supporting rebels (outdegree centrality)
+out.n &lt;- degree(nagNet,cmode=&quot;outdegree&quot;)
+
+# which starts are the most targeted through other states&#39; support of rebels (indegree centrality)
+in.n &lt;- degree(nagNet,cmode=&quot;indegree&quot;)
+
+centrality &lt;- data.frame(state=nag_states,
+                         indegree = in.n,
+                         outdegree = out.n)</code></pre>
+<p><strong>Countries with the highest outdegree centrality:</strong></p>
+<pre class="r fold-hide"><code># Outdegree: USA, UK, FR, Rus, China
+centrality |&gt; arrange(-outdegree) |&gt; head()</code></pre>
+<pre><code>##   state indegree outdegree
+## 1   USA      200       103
+## 2   UKG      198       103
+## 3   FRN      116       103
+## 4   RUS      198       103
+## 5   CHN      199       100
+## 6   JPN        0        67</code></pre>
+<p><strong>Countries with the highest indegree centrality:</strong></p>
+<pre class="r fold-hide"><code># Indegree: USA, China, UK, Russia, France
+centrality |&gt; arrange(-indegree) |&gt; head()</code></pre>
+<pre><code>##   state indegree outdegree
+## 1   USA      200       103
+## 2   CHN      199       100
+## 3   UKG      198       103
+## 4   RUS      198       103
+## 5   FRN      116       103
+## 6   YUG       17        10</code></pre>
+<p>To make the network a little bit less overwhelming for visual
+inspection, I only plot ties if a state supported at least 20 rebel
+groups across all years counting separately. You can do this by
+manipulating the <code>thres</code> argument in the
+<code>gplot</code>function. I also display countries with a high
+indegree centrality as bigger.</p>
+<pre class="r fold-hide"><code>gplot(nagNet,
+      label=nag_states, 
+      vertex.cex=log(in.n),
+      edge.lwd=0.0001,
+      thres&gt;20,
+      vertex.col =&quot;slateblue&quot;, vertex.border = &quot;slateblue&quot;,
+      edge.col=&quot;gray&quot;,gmode=&quot;digraph&quot;)</code></pre>
+<p><img src="week7_new_files/figure-html/rebels-visual-1.png" width="672" /></p>
 </div>
+<div
+id="external-support-for-governments-ucdp-external-support-dataset."
+class="section level2">
+<h2>External support for governments: UCDP External Support
+dataset.</h2>
+<p>The second dataset, the <a
+href="https://ucdp.uu.se/downloads/index.html#externalsupport">UCDP
+External Support dataset</a> provides information on the existence,
+type, and provider of external support for all warring parties
+(non-state and governments) coded as active in UCDP data, on an annual
+basis, between 1975 and 2017. The triadic version of the datata
+constains the warring-party-supporter-opponent-year (or triad-year) as
+units of analysis.</p>
+<p>While we could use this data to analyse both support for rebels or
+governments, we will focus in this second network only on states
+supporting other governments that currently fight a rebel group in a
+domestic conflict. Again we will read the data, clean it and bring it in
+network shape. We remove observations of support for non-state actors
+with the help of <code>ext_nonstate</code> (whether the sender state is
+a state) and <code>actor_nonstate</code> (whether the receiving actor is
+a state).</p>
+<p>The relevant variables we will focus on are <code>ext_name</code>
+(the name of the actor providing support to the government),
+<code>actor_name</code> (the name of the warring party receiving
+support) and the year of support given.</p>
+<pre class="r"><code>ucdp &lt;- read_xlsx(&quot;data_week7_new/ucdp-esd-ty-181.xlsx&quot;)
+
+# sender of foreign support must be a state!
+ucdp &lt;- filter(ucdp, ext_nonstate == 0)
+
+# recipient of foreign support must be a government!
+ucdp &lt;- filter(ucdp, actor_nonstate == 0)
+
+# select relevant columns
+ucdp &lt;- select(ucdp, c(&quot;ext_name&quot;,&quot;actor_name&quot;,&quot;year&quot;))
+
+# give them more intuitive names
+names(ucdp) &lt;- c(&quot;supporter&quot;,&quot;recipient&quot;,&quot;year&quot;)
+
+# fix double-entries
+ucdp &lt;- separate_rows(ucdp,&quot;recipient&quot;,sep = &quot;,&quot;)
+
+# turn country codes into names
+ucdp$recipient &lt;- countrycode(ucdp$recipient,origin=&quot;country.name&quot;,
+                              destination = &quot;cowc&quot;) 
+ucdp$supporter &lt;- countrycode(ucdp$supporter,origin=&quot;country.name&quot;,
+                              destination = &quot;cowc&quot;) 
+
+# remove entry that seem wrong
+ucdp &lt;- filter(ucdp, supporter != &quot;Emirati elements&quot;)
+
+# get string of unique states in the data
+ucdp_states &lt;- unique(c(as.character(ucdp$supporter),
+                       as.character(ucdp$recipient)))
+
+# make an empty matrix
+ucdpMat &lt;- matrix(0,nrow=length(ucdp_states),ncol=length(ucdp_states)) 
+rownames(ucdpMat) &lt;-    ucdp_states
+colnames(ucdpMat) &lt;-    ucdp_states
+
+# fill the empty matrix
+for(i in 1:dim(ucdp)[1]){
+    ucdpMat[as.character(ucdp$supporter[i]),as.character(ucdp$recipient[i])] &lt;-
+      ucdpMat[as.character(ucdp$supporter[i]),as.character(ucdp$recipient[i])]+1
+}
+
+# tell R to understand this matrix as a network
+ucdpNet &lt;- network(ucdpMat,
+                  directed=TRUE)
+network.vertex.names(ucdpNet) &lt;- ucdp_states</code></pre>
+<p>Based on this network of external government support, we can try to
+identify the countries that send support to a lot of different
+governments in different states (<em>outdegree centrality</em>) but also
+which states are heavy receivers of external support by various other
+states (<em>indegree centrality</em>).</p>
+<pre class="r fold-hide"><code># which states target other states the most by supporting rebels (outdegree centrality)
+out.n &lt;- degree(ucdpNet,cmode=&quot;outdegree&quot;)
+
+# which starts are the most targeted through other states&#39; support of rebels (indegree centrality)
+in.n &lt;- degree(ucdpNet,cmode=&quot;indegree&quot;)
+
+centrality &lt;- data.frame(state=ucdp_states,
+                         indegree = in.n,
+                         outdegree = out.n)</code></pre>
+<p><strong>Countries with the highest outdegree centrality:</strong></p>
+<pre class="r fold-hide"><code># Outdegree: USA, France, Russia, UK
+centrality |&gt; arrange(-outdegree) |&gt; head()</code></pre>
+<pre><code>##   state indegree outdegree
+## 1   USA       72        56
+## 2   FRN        0        29
+## 3   RUS        1        28
+## 4   UKG       60        22
+## 5   CHN        0        16
+## 6   GMY        0        14</code></pre>
+<p><strong>Countries with the highest indegree centrality:</strong></p>
+<pre class="r fold-hide"><code># Indegree: Mali, USA, Afghanistan, UK, Iraq
+centrality |&gt; arrange(-indegree) |&gt; head()</code></pre>
+<pre><code>##   state indegree outdegree
+## 1   MLI       75         5
+## 2   USA       72        56
+## 3   AFG       69         4
+## 4   UKG       60        22
+## 5   IRQ       58         5
+## 6   AUL       45        10</code></pre>
+<p>To visualise the network, I plot the size of the nodes bigger for
+higher levels of indegree centrality.</p>
+<pre class="r fold-hide"><code>gplot(ucdpNet,
+      label=ucdp_states, 
+      vertex.cex=log(in.n),
+      edge.lwd=0.001,
+      vertex.col =&quot;goldenrod3&quot;,vertex.border = &quot;goldenrod3&quot;,
+      edge.col=&quot;gray&quot;,
+      gmode=&quot;digraph&quot;)</code></pre>
+<p><img src="week7_new_files/figure-html/ucdp-visual-1.png" width="672" /></p>
 </div>
 
 
@@ -2452,6 +587,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
