@@ -228,3 +228,166 @@ gplot(ucdpNet,
       gmode="digraph")
 ```
 
+## Example of Syria
+
+In the seminar, we worked together on plotting the network of support to NAGs from external states in Syria. We also worked on plotting a network of support for the government of Syria. You can access the results and the coding below.
+
+**Which states support NAGs in Syria?**
+
+The network below plots the states that ever supported directly some opposition group in Syria. 
+```{r  syria-opp, class.source = 'fold-hide'}
+
+# who supports some NAG in Syria
+syriaopp <- filter(nag, target == "SYR") |> pull(supporter)
+syriaopp <- unique(c(syriaopp, "SYR"))
+
+# subset the data to Syria plus all countries that support NAGs in Syria
+syria_opposition <- filter(nag, target == "SYR" & supporter %in% syriaopp)
+
+syria_opp_states <- unique(c(syria_opposition$target,syria_opposition$supporter))
+
+# make an empty matrix and fill it
+syriaoppMat <- matrix(0,nrow=length(syria_opp_states),
+                      ncol=length(syria_opp_states)) 
+rownames(syriaoppMat) <- 	syria_opp_states
+colnames(syriaoppMat) <- 	syria_opp_states
+
+for(i in 1:dim(syria_opposition)[1]){
+	syriaoppMat[as.character(syria_opposition$supporter[i]),
+	            as.character(syria_opposition$target[i])] <-
+	  syriaoppMat[as.character(syria_opposition$supporter[i]),
+	              as.character(syria_opposition$target[i])]+1
+}
+
+syriaoppNet <- network(syriaoppMat,directed=TRUE)
+network.vertex.names(syriaoppNet) <- syria_opp_states
+
+gplot(syriaoppNet,
+      label= syria_opp_states,
+      edge.lwd=0.001,
+      vertex.col ="slateblue",vertex.border = "slateblue",
+      edge.col="gray",
+      gmode="digraph")
+```
+
+**Do states that support NAGs in Syria also support opposition movements in other states that support the Syrian opposition?**
+
+In the network below, we added complexity by checking if states that support the opposition in Syria also support the opposition in other states that support the Syrian opposition. As an example, if the US supports some opposition in Syria and Lebanon does the same, we would expect that the US and the Lebanese government are on the same page. However, it could also be that the US is inconsistent and supports the opposition in Lebanon *despite* the fact that they both support the opposition in Syria. From the plot, we can see that this actually seems to be quite common. 
+
+```{r  syria-opp2, class.source = 'fold-hide'}
+
+# subset the data to Syria plus all countries that support NAGs in Syria
+syria_opposition2 <- filter(nag, target %in% syriaopp & supporter %in% syriaopp)
+
+syria_opp_states2 <- unique(c(syria_opposition2$target,syria_opposition2$supporter))
+
+# make an empty matrix and fill it
+syriaoppMat2 <- matrix(0,nrow=length(syria_opp_states2),
+                      ncol=length(syria_opp_states2)) 
+rownames(syriaoppMat2) <- 	syria_opp_states2
+colnames(syriaoppMat2) <- 	syria_opp_states2
+
+for(i in 1:dim(syria_opposition2)[1]){
+	syriaoppMat2[as.character(syria_opposition2$supporter[i]),
+	            as.character(syria_opposition2$target[i])] <-
+	  syriaoppMat2[as.character(syria_opposition2$supporter[i]),
+	              as.character(syria_opposition2$target[i])]+1
+}
+
+# better weighting
+syriaoppMat2 <- syriaoppMat2/22
+syriaoppNet2 <- network(syriaoppMat2,directed=TRUE,ignore.eval=FALSE,
+                  names.eval='weight')
+network.vertex.names(syriaoppNet2) <- syria_opp_states2
+
+plot(syriaoppNet2, displaylabels=TRUE, 
+     vertex.col = "slateblue",vertex.border = "slateblue",
+     edge.col ="gray",
+     label.cex=.75,label.col="black",edge.lwd="weight", vertex.cex=2) 
+
+```
+
+
+**Which states support the government in Syria?**
+
+The network below plots the states that ever supported directly the government in Syria. 
+
+```{r syria-gov, class.source = 'fold-hide'}
+
+# who supports the government in Syria
+syriagov <- filter(ucdp, recipient == "SYR") |> pull(supporter)
+syriagov <- unique(c(syriagov, "SYR"))
+
+# subset the data to Syria plus all countries that the  Syrian gov
+syria_government <- filter(ucdp, recipient == "SYR" & supporter %in% syriagov)
+
+syria_gov_states <- unique(c(syria_government$recipient,
+                             syria_government$supporter))
+
+# make an empty matrix
+syriagovMat <- matrix(0,nrow=length(syria_gov_states),
+                      ncol=length(syria_gov_states)) 
+rownames(syriagovMat) <- 	syria_gov_states
+colnames(syriagovMat) <- 	syria_gov_states
+
+# fill the empty matrix
+for(i in 1:dim(syria_government)[1]){
+	syriagovMat[as.character(syria_government$supporter[i]),
+	        as.character(syria_government$recipient[i])] <-
+	  syriagovMat[as.character(syria_government$supporter[i]),
+	          as.character(syria_government$recipient[i])]+1
+}
+
+# tell R to understand this matrix as a network
+syriagovNet <- network(syriagovMat,
+                  directed=TRUE)
+network.vertex.names(syriagovNet) <- syria_gov_states 
+
+gplot(syriagovNet,
+      label= syria_gov_states,
+      edge.lwd=0.001,
+      vertex.col ="goldenrod3",vertex.border = "goldenrod3",
+      edge.col="gray",
+      gmode="digraph")
+```
+
+
+**Which other states do states support that support the Syrian government?**
+
+In the plot below, we map the core states that support the Syrian government (Iraq, Russia, Iran) and we map out all other states that those three actors are supporting. 
+
+```{r syria-gov2, class.source = 'fold-hide'}
+
+# subset the data to Syria plus all countries that the  Syrian gov
+syria_government2 <- filter(ucdp, supporter %in% syriagov)
+
+syria_gov_states2 <- unique(c(syria_government2$recipient,
+                             syria_government2$supporter))
+
+# make an empty matrix
+syriagovMat2 <- matrix(0,nrow=length(syria_gov_states2),
+                      ncol=length(syria_gov_states2)) 
+rownames(syriagovMat2) <- 	syria_gov_states2
+colnames(syriagovMat2) <- 	syria_gov_states2
+
+
+# fill the empty matrix
+for(i in 1:dim(syria_government2)[1]){
+	syriagovMat2[as.character(syria_government2$supporter[i]),
+	        as.character(syria_government2$recipient[i])] <-
+	  syriagovMat2[as.character(syria_government2$supporter[i]),
+	          as.character(syria_government2$recipient[i])]+1
+}
+
+# for better weighting
+syriagovMat2 <- syriagovMat2/5
+syriagovNet2 <- network(syriagovMat2,directed=TRUE,ignore.eval=FALSE,
+                  names.eval='weight')
+network.vertex.names(syriagovNet2) <- syria_gov_states2
+
+plot(syriagovNet2, displaylabels=TRUE, 
+      vertex.col ="goldenrod3",vertex.border = "goldenrod3",
+     edge.col ="gray",
+     label.cex=.75,label.col="black",edge.lwd="weight", vertex.cex=2) 
+
+```
