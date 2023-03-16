@@ -37,7 +37,7 @@ diag(adj.matrix) <- 0 #need to set the diagonal to 0
 head(adj.matrix)
 ```
 
-Now let us work a bit more on the visualization of the network. Here is also a nice cheat sheet for the gplot function [Cheat Sheet](https://www.uni-due.de/hummell/man/sna/.sna.gplot.pdf)
+Now let us work a bit more on the visualization of the network. Here are also some additional resources for [plotting interactive networks](https://jtr13.github.io/cc21fall2/network-visualization-in-r.html#social-network-analysis) and for using the ``igraph`` or ``ggraph`` package for [network visualisation](https://kateto.net/network-visualization).
 
 ```{r }
 adjNet <- network(adj.matrix,directed=FALSE)
@@ -64,7 +64,7 @@ gplot(adjNet, displaylabels=TRUE, edge.col="blue",vertex.col = "orange",
 ###Using militarized interstate dispute data
 
 ```{r }
-mid <- read.csv("~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv") #First we load the data. You will need to change the path to do this.
+mid <- read.csv("C:/Users/sigri/Dropbox/8_Teaching/Spread of Conflict in Int. Relations/Week 2/Data/dyadic_mid_4.02.csv") #First we load the data. You will need to change the path to do this.
 ```
 
 You should now be able to see the dataset. Take a minute and look at the variables. We will only need the statea, stateeb, and the strtyr of the MID. statea and stateb are the COW numeric codes that match the cshape distance matrix We also only need the directed instances of MIDs.
