@@ -14,7 +14,7 @@
 
 <title>Week 10</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -61,6 +61,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -81,6 +82,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -138,11 +142,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -171,8 +179,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -180,16 +188,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -233,7 +234,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -285,16 +286,34 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Week 10</h1>
-<h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid Weber</h4>
+<h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid
+Weber</h4>
 <h4 class="date">2022/23</h4>
 
 </div>
 
 
-<div id="inferential-network-analysis-in-r-part-3" class="section level2">
+<div id="inferential-network-analysis-in-r-part-3"
+class="section level2">
 <h2>Inferential Network Analysis in R (Part 3)</h2>
-<p>This week we look at the second major approach to estimating networks: Latent network models. These are different to ERGMs as they are more concerned about unbiased estimatation of sender, receiver, and dyad effects in the presence of third-order network effects, rather than actually testing which third-order network effects are present. In a sense, latent network models are complicated random effects models, where we try to account for unobserved (e.g. unmeasured third order network effects). We will use the MID and contiguity data to explore this method, but using the MID count as an outcome. Hence, whereas in the past weeks we have focused mostly on binary outcomes, we will now work with weighted network. Since, some of you might have weighted networks, we also will plot and them and introduce the stength of ties as an additional measure.</p>
-<p>This week we also use two additional packages. Igraph: which is an alternative to statnet and has its own plotting and network statistics functions. We will only use it to calculate the strength of ties. Then there is the amen package by Peter Hoff, which allows us to estimate latent network models.</p>
+<p>This week we look at the second major approach to estimating
+networks: Latent network models. These are different to ERGMs as they
+are more concerned about unbiased estimatation of sender, receiver, and
+dyad effects in the presence of third-order network effects, rather than
+actually testing which third-order network effects are present. In a
+sense, latent network models are complicated random effects models,
+where we try to account for unobserved (e.g. unmeasured third order
+network effects). We will use the MID and contiguity data to explore
+this method, but using the MID count as an outcome. Hence, whereas in
+the past weeks we have focused mostly on binary outcomes, we will now
+work with weighted network. Since, some of you might have weighted
+networks, we also will plot and them and introduce the stength of ties
+as an additional measure.</p>
+<p>This week we also use two additional packages. Igraph: which is an
+alternative to statnet and has its own plotting and network statistics
+functions. We will only use it to calculate the strength of ties. Then
+there is the amen package by Peter Hoff, which allows us to estimate
+latent network models.</p>
 <pre class="r"><code>library(igraph)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;igraph&#39;</code></pre>
@@ -312,15 +331,11 @@ $(document).ready(function () {
 <pre><code>## Loading required package: tergm</code></pre>
 <pre><code>## Loading required package: ergm</code></pre>
 <pre><code>## Loading required package: network</code></pre>
-<pre><code>## network: Classes for Relational Data
-## Version 1.16.0 created on 2019-11-30.
-## copyright (c) 2005, Carter T. Butts, University of California-Irvine
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Martina Morris, University of Washington
-##                     Skye Bender-deMoll, University of Washington
-##  For citation information, type citation(&quot;network&quot;).
-##  Type help(&quot;network-package&quot;) to get started.</code></pre>
+<pre><code>## 
+## &#39;network&#39; 1.18.1 (2023-01-24), part of the Statnet Project
+## * &#39;news(package=&quot;network&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;network&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;network&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:igraph&#39;:
@@ -330,85 +345,50 @@ $(document).ready(function () {
 ##     is.directed, list.edge.attributes, list.vertex.attributes,
 ##     set.edge.attribute, set.vertex.attribute</code></pre>
 <pre><code>## 
-## ergm: version 3.10.4, created on 2019-06-10
-## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Steven M. Goodreau, University of Washington
-##                     Pavel N. Krivitsky, University of Wollongong
-##                     Martina Morris, University of Washington
-##                     with contributions from
-##                     Li Wang
-##                     Kirk Li, University of Washington
-##                     Skye Bender-deMoll, University of Washington
-##                     Chad Klumb
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;ergm&quot;).</code></pre>
-<pre><code>## NOTE: Versions before 3.6.1 had a bug in the implementation of the bd()
-## constriant which distorted the sampled distribution somewhat. In
-## addition, Sampson&#39;s Monks datasets had mislabeled vertices. See the
-## NEWS and the documentation for more details.</code></pre>
-<pre><code>## NOTE: Some common term arguments pertaining to vertex attribute and
-## level selection have changed in 3.10.0. See terms help for more
-## details. Use &#39;options(ergm.term=list(version=&quot;3.9.4&quot;))&#39; to use old
-## behavior.</code></pre>
+## &#39;ergm&#39; 4.3.2 (2022-11-21), part of the Statnet Project
+## * &#39;news(package=&quot;ergm&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;ergm&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
+<pre><code>## &#39;ergm&#39; 4 is a major update that introduces some backwards-incompatible
+## changes. Please type &#39;news(package=&quot;ergm&quot;)&#39; for a list of major
+## changes.</code></pre>
 <pre><code>## Loading required package: networkDynamic</code></pre>
 <pre><code>## 
-## networkDynamic: version 0.10.1, created on 2020-01-16
-## Copyright (c) 2020, Carter T. Butts, University of California -- Irvine
-##                     Ayn Leslie-Cook, University of Washington
-##                     Pavel N. Krivitsky, University of Wollongong
-##                     Skye Bender-deMoll, University of Washington
-##                     with contributions from
-##                     Zack Almquist, University of California -- Irvine
-##                     David R. Hunter, Penn State University
-##                     Li Wang
-##                     Kirk Li, University of Washington
-##                     Steven M. Goodreau, University of Washington
-##                     Jeffrey Horner
-##                     Martina Morris, University of Washington
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;networkDynamic&quot;).</code></pre>
+## &#39;networkDynamic&#39; 0.11.2 (2022-05-04), part of the Statnet Project
+## * &#39;news(package=&quot;networkDynamic&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;networkDynamic&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;tergm&#39;:
+##   method                   from
+##   simulate_formula.network ergm</code></pre>
 <pre><code>## 
-## tergm: version 3.6.1, created on 2019-06-12
-## Copyright (c) 2019, Pavel N. Krivitsky, University of Wollongong
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     with contributions from
-##                     David R. Hunter, Penn State University
-##                     Steven M. Goodreau, University of Washington
-##                     Martina Morris, University of Washington
-##                     Nicole Bohme Carnegie, New York University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Ayn Leslie-Cook, University of Washington
-##                     Skye Bender-deMoll
-##                     Li Wang
-##                     Kirk Li, University of Washington
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;tergm&quot;).</code></pre>
+## &#39;tergm&#39; 4.1.1 (2022-11-07), part of the Statnet Project
+## * &#39;news(package=&quot;tergm&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;tergm&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
+<pre><code>## 
+## Attaching package: &#39;tergm&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ergm&#39;:
+## 
+##     snctrl</code></pre>
 <pre><code>## Loading required package: ergm.count</code></pre>
 <pre><code>## 
-## ergm.count: version 3.4.0, created on 2019-05-15
-## Copyright (c) 2019, Pavel N. Krivitsky, University of Wollongong
-##                     with contributions from
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;ergm.count&quot;).</code></pre>
-<pre><code>## NOTE: The form of the term &#39;CMP&#39; has been changed in version 3.2 of
-## &#39;ergm.count&#39;. See the news or help(&#39;CMP&#39;) for more information.</code></pre>
+## &#39;ergm.count&#39; 4.1.1 (2022-05-24), part of the Statnet Project
+## * &#39;news(package=&quot;ergm.count&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;ergm.count&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
 <pre><code>## Loading required package: sna</code></pre>
 <pre><code>## Loading required package: statnet.common</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;statnet.common&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:base&#39;:
+<pre><code>## The following object is masked from &#39;package:ergm&#39;:
 ## 
-##     order</code></pre>
+##     snctrl</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     attr, order</code></pre>
 <pre><code>## sna: Tools for Social Network Analysis
-## Version 2.5 created on 2019-12-09.
+## Version 2.7-1 created on 2023-01-24.
 ## copyright (c) 2005, Carter T. Butts, University of California-Irvine
 ##  For citation information, type citation(&quot;sna&quot;).
 ##  Type help(package=&quot;sna&quot;) to get started.</code></pre>
@@ -420,30 +400,26 @@ $(document).ready(function () {
 ##     evcent, hierarchy, is.connected, neighborhood, triad.census</code></pre>
 <pre><code>## Loading required package: tsna</code></pre>
 <pre><code>## 
-## statnet: version 2019.6, created on 2019-06-13
-## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Steven M. Goodreau, University of Washington
-##                     Pavel N. Krivitsky, University of Wollongong
-##                     Skye Bender-deMoll
-##                     Martina Morris, University of Washington
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;statnet&quot;).</code></pre>
+## &#39;statnet&#39; 2019.6 (2019-06-13), part of the Statnet Project
+## * &#39;news(package=&quot;statnet&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;statnet&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
 <pre><code>## unable to reach CRAN</code></pre>
 <pre class="r"><code>library(amen)</code></pre>
 </div>
 <div id="preparing-the-data" class="section level2">
 <h2>Preparing the data</h2>
-<p>We now load the MID data and construct our border adjacency matrix. This is similar to last week, but we stop at the matrix stage. This is because amen simply takes matrices and arrays as input and not network objects like ERGMs did last week.</p>
+<p>We now load the MID data and construct our border adjacency matrix.
+This is similar to last week, but we stop at the matrix stage. This is
+because amen simply takes matrices and arrays as input and not network
+objects like ERGMs did last week.</p>
 <pre class="r"><code>#Distance matrix
 dist.matrix &lt;- distmatrix(date=as.Date(&quot;2002-1-1&quot;),type = &quot;mindist&quot;,useGW = FALSE)
   adj.matrix &lt;- ifelse(dist.matrix==0,1,0)
     diag(adj.matrix) &lt;- 0 #need to set the diagonal to 0
 
 #MID matrix
-mid &lt;- read.csv(&quot;~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv&quot;) #First we load the data. You will need to change the path to do this.
+mid &lt;- read.csv(&quot;C:/Users/sigri/Dropbox/8_Teaching/Spread of Conflict in Int. Relations/networkCourse/data_week4/dyadic_mid_4.02.csv&quot;) #First we load the data. You will need to change the path to do this.
 mid &lt;- mid[mid$rolea==1,c(&quot;statea&quot;,&quot;stateb&quot;,&quot;strtyr&quot;)]
 
 states &lt;- unique(c(as.character(mid$statea),as.character(mid$stateb)))
@@ -463,12 +439,18 @@ adj.matrix &lt;- adj.matrix[joint.states,joint.states]</code></pre>
 </div>
 <div id="estimating-with-amen" class="section level2">
 <h2>Estimating with amen</h2>
-<p>Now that we have the our outcome and our independent variable, we are ready to estimate a latent network model with amen. First, we define our outcome Y (count of MIDs). Second, we define our main explanatory variable Xdyad (whether or not two states share a border). In amen, we can also specify sender, receiver, and additional dyadic explanatory variables, but in this example we only have one observed explanatory variable (matrix).</p>
+<p>Now that we have the our outcome and our independent variable, we are
+ready to estimate a latent network model with amen. First, we define our
+outcome Y (count of MIDs). Second, we define our main explanatory
+variable Xdyad (whether or not two states share a border). In amen, we
+can also specify sender, receiver, and additional dyadic explanatory
+variables, but in this example we only have one observed explanatory
+variable (matrix).</p>
 <pre class="r"><code>#outcome
 Y &lt;- midMat
 Xdyad &lt;- adj.matrix
 
-fit_ar1&lt;-ame(Y,Xdyad,model=&quot;nrm&quot;,plot=FALSE,R=2,nscan =
+fit_ar1&lt;-ame(Y,Xdyad,family=&quot;nrm&quot;,plot=FALSE,R=2,nscan =
 1000, burn = 200, odens = 10)
 
 summary(fit_ar1)
@@ -482,9 +464,16 @@ plot(fit_ar1$U) # sender network</code></pre>
 <pre class="r"><code>plot(fit_ar1$V) # receiver network</code></pre>
 <p><img src="week10_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
 </div>
-<div id="plotting-and-measuring-strength-of-ties" class="section level2">
+<div id="plotting-and-measuring-strength-of-ties"
+class="section level2">
 <h2>Plotting and measuring strength of ties</h2>
-<p>In the past weeks, we mainly dealt with binary variables or at least treated them as such. Now we will look at weighed networks. Let us start with a matrix of five nodes and add some weighted links. The important bit here is that once we have the weighted matrix, we need to slightly change the options in the network function to tell R that the matrix should be treated as a weighted network. Note that we are using the plot and not the gplot function in this example.</p>
+<p>In the past weeks, we mainly dealt with binary variables or at least
+treated them as such. Now we will look at weighed networks. Let us start
+with a matrix of five nodes and add some weighted links. The important
+bit here is that once we have the weighted matrix, we need to slightly
+change the options in the network function to tell R that the matrix
+should be treated as a weighted network. Note that we are using the plot
+and not the gplot function in this example.</p>
 <pre class="r"><code>my.matrix &lt;- matrix(data=0,nrow=5,ncol=5)
   colnames(my.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
     rownames(my.matrix) &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)
@@ -552,7 +541,12 @@ summary(my.net)</code></pre>
 <pre class="r"><code>plot(my.net, displaylabels=TRUE,
  label.cex=.75,label.col=&quot;black&quot;,edge.lwd=&quot;weight&quot;, edge.col=&quot;weight&quot;,vertex.cex=2) # Edges color and line width according to weight</code></pre>
 <p><img src="week10_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
-<p>Now we would also like to calculate the strength of ties for each node. This is similar to the nodal degree, but now accounting for the weight of the ties. If, e.g., a node has two links and each link has a value of 2 the strength would be 2x2. For this measure, we will use the igraph packages. Reading a matrix to a graph is a bit different, but once you have it, you can use the strength function.</p>
+<p>Now we would also like to calculate the strength of ties for each
+node. This is similar to the nodal degree, but now accounting for the
+weight of the ties. If, e.g., a node has two links and each link has a
+value of 2 the strength would be 2x2. For this measure, we will use the
+igraph packages. Reading a matrix to a graph is a bit different, but
+once you have it, you can use the strength function.</p>
 <pre class="r"><code>g1 &lt;- graph_from_adjacency_matrix(my.matrix, mode = &quot;undirected&quot;, diag = FALSE, weighted=TRUE)
 
 strength(g1)</code></pre>
@@ -561,7 +555,11 @@ strength(g1)</code></pre>
 </div>
 <div id="plotting-nodal-characteristics" class="section level2">
 <h2>Plotting nodal characteristics</h2>
-<p>Here is a little extra on how to plot nodal characteristics. You can use the set.vertex.attribute function to include vertex/node attributes. Once you have defined them, you can use them to plot, e.g., the node color accordingly. Note that we are using the plot not the gplot function in this example.</p>
+<p>Here is a little extra on how to plot nodal characteristics. You can
+use the set.vertex.attribute function to include vertex/node attributes.
+Once you have defined them, you can use them to plot, e.g., the node
+color accordingly. Note that we are using the plot not the gplot
+function in this example.</p>
 <pre class="r"><code>#edgelist
 my.list &lt;- rbind(c(1,2), #AB
                 c(1,4), #AD
