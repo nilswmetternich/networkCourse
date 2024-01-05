@@ -1,7 +1,6 @@
 ---
 title: "Week 10"
 author: "Nils W Metternich, Luis Schenoni, and Sigrid Weber"
-date: "2022/23"
 output: html_document
 ---
 
@@ -32,7 +31,7 @@ dist.matrix <- distmatrix(date=as.Date("2002-1-1"),type = "mindist",useGW = FALS
     diag(adj.matrix) <- 0 #need to set the diagonal to 0
 
 #MID matrix
-mid <- read.csv("C:/Users/sigri/Dropbox/8_Teaching/Spread of Conflict in Int. Relations/networkCourse/data_week4/dyadic_mid_4.02.csv") #First we load the data. You will need to change the path to do this.
+mid <- read.csv("~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv") #First we load the data. You will need to change the path to do this.
 mid <- mid[mid$rolea==1,c("statea","stateb","strtyr")]
 
 states <- unique(c(as.character(mid$statea),as.character(mid$stateb)))

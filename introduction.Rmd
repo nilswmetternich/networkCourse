@@ -1,7 +1,6 @@
 ---
 title: "Week 1 Part 1"
 author: "Nils W Metternich, Luis Schenoni, and Sigrid Weber"
-date: "2022/23"
 ---
 
 

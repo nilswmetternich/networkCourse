@@ -14,7 +14,7 @@
 
 <title>Week 4</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -248,7 +248,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-   <a href="index.html">Home</a>
+  <a href="index.html">Home</a>
 </li>
 <li>
   <a href="introduction.html">Week 1 Part 1</a>
@@ -300,7 +300,6 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">Week 4</h1>
 <h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid
 Weber</h4>
-<h4 class="date">2022/23</h4>
 
 </div>
 
@@ -384,7 +383,7 @@ variables <code>DR_at_1</code> and <code>DR_at_2</code>). I am also
 adding a string variable with state names to the data because I find
 numeric state codes hard to remember.</p>
 <pre class="r"><code># read the data
-diplo &lt;- read.csv(&quot;data_week4/Diplomatic_Exchange_2006v1.csv&quot;)
+diplo &lt;- read.csv(&quot;~/Dropbox/UCL/courses/networks/data/Diplomatic_Exchange_2006v1.csv&quot;)
 
 # reduce to only entries in which at least one side was represented in the other side
 diplo &lt;- filter(diplo, DE == 1)
@@ -466,7 +465,7 @@ time since 2000. I also limit the dataset to only links in which
 countries have a higher trade relation with each other than the average
 recorded between 2000 and 2014.</p>
 <pre class="r"><code># read the data
-trade &lt;- read.csv(&quot;data_week4/Dyadic_COW_4.0.csv&quot;)
+trade &lt;- read.csv(&quot;~/Dropbox/UCL/courses/networks/data/Dyadic_COW_4.0.csv&quot;)
 
 # selecting relevant variables
 trade &lt;- select(trade, c(&quot;importer1&quot;,&quot;importer2&quot;,&quot;year&quot;,&quot;flow1&quot;,&quot;flow2&quot;, &quot;smoothtotrade&quot;))
@@ -538,7 +537,7 @@ pact</li>
 <p>I have decided to limit this data to only alliances that are
 currently active (right_censored) but you could think about many other
 approaches with this data.</p>
-<pre class="r"><code>ally &lt;- read.csv(&quot;data_week4/alliance_v4.1_by_directed.csv&quot;)
+<pre class="r"><code>ally &lt;- read.csv(&quot;~/Dropbox/UCL/courses/networks/data/alliance_v4.1_by_directed.csv&quot;)
 
 ally &lt;- select(ally, c(&quot;ccode1&quot;,&quot;state_name1&quot;,&quot;ccode2&quot;,&quot;state_name2&quot;,
                         &quot;dyad_st_year&quot;, &quot;dyad_end_year&quot;, &quot;right_censor&quot;,
@@ -613,7 +612,7 @@ tightly working together in multiple IGOs and which ones are active in
 less IGOs. This dataset is trickier because it is not in a long format
 that list all IGO memberships as individual rows but we can turn it into
 the right shape.</p>
-<pre class="r"><code>igo &lt;- read.csv(&quot;data_week4/dyadic_formatv3.csv&quot;)
+<pre class="r"><code>igo &lt;- read.csv(&quot;~/Dropbox/UCL/courses/networks/data/dyadic_formatv3.csv&quot;)
 
 # only focus on igo memberships in 2014 and for joint EU members
 igo &lt;- filter(igo, year == 2014 &amp; EU == 1)
@@ -688,7 +687,7 @@ MID dataset again. In this example, I have decided to plot all
 militarised interstate disputes in the dataset that are directed and in
 which state A sought to gain territory from the militarised interstate
 dispute.</p>
-<pre class="r"><code>mid &lt;- read.csv( &quot;data_week4/dyadic_mid_4.02.csv&quot;) 
+<pre class="r"><code>mid &lt;- read.csv(&quot;~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv&quot;) 
 
 # filter data to directed instances
 mid &lt;- filter(mid,rolea==1)

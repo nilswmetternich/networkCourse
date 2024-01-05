@@ -1,7 +1,6 @@
 ---
 title: "Week 3"
 author: "Nils W Metternich, Luis Schenoni, and Sigrid Weber"
-date: "2022/23"
 ---
 
 ```{r setup, include=FALSE}
@@ -25,7 +24,7 @@ In today's session, we will continue to work with the Militarized Interstate Dis
 Please load the raw data we used last week and that you will need again for your network analysis. As last week, you will need to adjust the file path to your dataset depending on where you downloaded and saved it. 
 
 ```{r }
-mid <- read.csv( "C:/Users/sigri/Dropbox/8_Teaching/Spread of Conflict in Int. Relations/Week 2/Data/dyadic_mid_4.02.csv") 
+mid <- read.csv("~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv") 
 
 ```
 

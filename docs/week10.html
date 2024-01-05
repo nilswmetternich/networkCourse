@@ -14,7 +14,7 @@
 
 <title>Week 10</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -288,7 +288,6 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">Week 10</h1>
 <h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid
 Weber</h4>
-<h4 class="date">2022/23</h4>
 
 </div>
 
@@ -324,9 +323,14 @@ latent network models.</p>
 ## 
 ##     union</code></pre>
 <pre class="r"><code>library(cshapes)</code></pre>
-<pre><code>## Registered S3 method overwritten by &#39;dplyr&#39;:
-##   method         from       
-##   print.location geojsonlint</code></pre>
+<pre><code>## The legacy packages maptools, rgdal, and rgeos, underpinning the sp package,
+## which was just loaded, will retire in October 2023.
+## Please refer to R-spatial evolution reports for details, especially
+## https://r-spatial.org/r/2023/05/15/evolution4.html.
+## It may be desirable to make the sf package available;
+## package maintainers should consider adding sf to Suggests:.
+## The sp package is now running under evolution status 2
+##      (status 2 uses the sf package in place of rgdal)</code></pre>
 <pre class="r"><code>library(statnet)</code></pre>
 <pre><code>## Loading required package: tergm</code></pre>
 <pre><code>## Loading required package: ergm</code></pre>
@@ -345,7 +349,7 @@ latent network models.</p>
 ##     is.directed, list.edge.attributes, list.vertex.attributes,
 ##     set.edge.attribute, set.vertex.attribute</code></pre>
 <pre><code>## 
-## &#39;ergm&#39; 4.3.2 (2022-11-21), part of the Statnet Project
+## &#39;ergm&#39; 4.5.0 (2023-05-27), part of the Statnet Project
 ## * &#39;news(package=&quot;ergm&quot;)&#39; for changes since last version
 ## * &#39;citation(&quot;ergm&quot;)&#39; for citation information
 ## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
@@ -354,7 +358,7 @@ latent network models.</p>
 ## changes.</code></pre>
 <pre><code>## Loading required package: networkDynamic</code></pre>
 <pre><code>## 
-## &#39;networkDynamic&#39; 0.11.2 (2022-05-04), part of the Statnet Project
+## &#39;networkDynamic&#39; 0.11.3 (2023-02-15), part of the Statnet Project
 ## * &#39;news(package=&quot;networkDynamic&quot;)&#39; for changes since last version
 ## * &#39;citation(&quot;networkDynamic&quot;)&#39; for citation information
 ## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
@@ -362,7 +366,7 @@ latent network models.</p>
 ##   method                   from
 ##   simulate_formula.network ergm</code></pre>
 <pre><code>## 
-## &#39;tergm&#39; 4.1.1 (2022-11-07), part of the Statnet Project
+## &#39;tergm&#39; 4.2.0 (2023-05-30), part of the Statnet Project
 ## * &#39;news(package=&quot;tergm&quot;)&#39; for changes since last version
 ## * &#39;citation(&quot;tergm&quot;)&#39; for citation information
 ## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
@@ -419,7 +423,7 @@ dist.matrix &lt;- distmatrix(date=as.Date(&quot;2002-1-1&quot;),type = &quot;min
     diag(adj.matrix) &lt;- 0 #need to set the diagonal to 0
 
 #MID matrix
-mid &lt;- read.csv(&quot;C:/Users/sigri/Dropbox/8_Teaching/Spread of Conflict in Int. Relations/networkCourse/data_week4/dyadic_mid_4.02.csv&quot;) #First we load the data. You will need to change the path to do this.
+mid &lt;- read.csv(&quot;~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv&quot;) #First we load the data. You will need to change the path to do this.
 mid &lt;- mid[mid$rolea==1,c(&quot;statea&quot;,&quot;stateb&quot;,&quot;strtyr&quot;)]
 
 states &lt;- unique(c(as.character(mid$statea),as.character(mid$stateb)))

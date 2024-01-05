@@ -14,7 +14,7 @@
 
 <title>Week 1 Part 1</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -288,7 +288,6 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">Week 1 Part 1</h1>
 <h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid
 Weber</h4>
-<h4 class="date">2022/23</h4>
 
 </div>
 
@@ -323,16 +322,17 @@ consider two examples. First, let us randomly draw 20 values from a
 normal distribution, 20 values from a uniform distribution, and then 20
 values from a binomial distribution:</p>
 <pre class="r"><code>rnorm(20, mean=0, sd=1)</code></pre>
-<pre><code>##  [1]  0.002826832  0.134442019  0.863670505 -0.550428290 -0.613132092
-##  [6]  0.719699626 -0.682439866 -0.964305329  0.661161356 -0.422317277
-## [11]  0.666731129  0.060640947  0.148039580 -1.606024824  0.537216554
-## [16] -0.724661480 -1.016626644 -0.078000901  0.448256985  2.249224955</code></pre>
+<pre><code>##  [1]  1.04386669  1.94519258  0.03519886  0.03950281 -0.30313535 -0.82753973
+##  [7]  1.52324575  0.45214416 -0.48994437 -1.05119097 -0.02838014  0.01566939
+## [13]  0.76496436  2.26290552  0.09648256  0.34010018  0.47669466  0.27449138
+## [19]  0.45049013  1.65164159</code></pre>
 <pre class="r"><code>runif(20, min=0, max=1)</code></pre>
-<pre><code>##  [1] 0.4624941 0.2640971 0.1040135 0.3834171 0.8009351 0.7871035 0.8754635
-##  [8] 0.1892706 0.9698430 0.4080554 0.9161916 0.1749175 0.1663440 0.1234568
-## [15] 0.1376365 0.1715761 0.3981696 0.3495021 0.8957720 0.2795688</code></pre>
+<pre><code>##  [1] 0.006734123 0.473380371 0.223480627 0.520573740 0.342517911 0.151087002
+##  [7] 0.640473321 0.285799950 0.628868178 0.723311691 0.361469178 0.407166880
+## [13] 0.882706800 0.506671203 0.187736191 0.718261086 0.090815436 0.942176973
+## [19] 0.144811178 0.942117896</code></pre>
 <pre class="r"><code>rbinom(20,size=1, prob=0.5)</code></pre>
-<pre><code>##  [1] 0 0 0 1 0 1 1 0 0 1 0 0 0 1 1 1 1 0 0 0</code></pre>
+<pre><code>##  [1] 0 1 0 0 0 0 0 0 1 0 1 0 0 0 0 1 0 0 1 1</code></pre>
 </div>
 <div id="assignment" class="section level3">
 <h3>Assignment</h3>
@@ -352,10 +352,10 @@ examples above, but storing results as objects.</p>
 <p>Here another example:</p>
 <pre class="r"><code>random.draw &lt;- rnorm(20, mean=0, sd=1)
 random.draw</code></pre>
-<pre><code>##  [1]  1.55647681 -0.43525041 -0.57213818 -0.46257722 -2.38319442 -0.24125310
-##  [7] -1.39330829 -0.66942470 -0.39902522 -1.00880670 -0.25718754  0.88732807
-## [13] -0.06436515 -0.38875807  0.84666930 -0.86633938 -0.19479899  0.26160203
-## [19]  0.09642683  0.98981065</code></pre>
+<pre><code>##  [1] -0.2536610  1.7867367  0.7286530  0.7990095 -0.1474372  1.2117795
+##  [7]  1.7080470 -0.2952025 -1.4602276  0.1225946 -0.2861446 -0.4135261
+## [13] -1.1850602 -0.6615213 -0.9807529  0.9809854  0.9182220 -0.2310611
+## [19] -1.0594141 -0.3435204</code></pre>
 <p>We can of course also just input our own data. Let us imagine we have
 five countries:</p>
 <pre class="r"><code>country.names &lt;- c(&quot;A&quot;,&quot;B&quot;,&quot;C&quot;,&quot;D&quot;,&quot;E&quot;)

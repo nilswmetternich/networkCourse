@@ -14,7 +14,7 @@
 
 <title>Week 1 Part 2</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -288,7 +288,6 @@ $(document).ready(function () {
 <h1 class="title toc-ignore">Week 1 Part 2</h1>
 <h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid
 Weber</h4>
-<h4 class="date">2022/23</h4>
 
 </div>
 
@@ -311,7 +310,7 @@ the library.</p>
 ## * &#39;citation(&quot;network&quot;)&#39; for citation information
 ## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
 <pre><code>## 
-## &#39;ergm&#39; 4.3.2 (2022-11-21), part of the Statnet Project
+## &#39;ergm&#39; 4.5.0 (2023-05-27), part of the Statnet Project
 ## * &#39;news(package=&quot;ergm&quot;)&#39; for changes since last version
 ## * &#39;citation(&quot;ergm&quot;)&#39; for citation information
 ## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
@@ -320,7 +319,7 @@ the library.</p>
 ## changes.</code></pre>
 <pre><code>## Loading required package: networkDynamic</code></pre>
 <pre><code>## 
-## &#39;networkDynamic&#39; 0.11.2 (2022-05-04), part of the Statnet Project
+## &#39;networkDynamic&#39; 0.11.3 (2023-02-15), part of the Statnet Project
 ## * &#39;news(package=&quot;networkDynamic&quot;)&#39; for changes since last version
 ## * &#39;citation(&quot;networkDynamic&quot;)&#39; for citation information
 ## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
@@ -328,7 +327,7 @@ the library.</p>
 ##   method                   from
 ##   simulate_formula.network ergm</code></pre>
 <pre><code>## 
-## &#39;tergm&#39; 4.1.1 (2022-11-07), part of the Statnet Project
+## &#39;tergm&#39; 4.2.0 (2023-05-30), part of the Statnet Project
 ## * &#39;news(package=&quot;tergm&quot;)&#39; for changes since last version
 ## * &#39;citation(&quot;tergm&quot;)&#39; for citation information
 ## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
@@ -423,10 +422,10 @@ provided and whether or not it is bipartite. In addition to the
 summary() function we can now also use the plot() function for this
 initial network:</p>
 <pre class="r"><code>plot(md.net)</code></pre>
-<p><img src="week6_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="week1_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>The final step now is to use another plotting function gplot()</p>
 <pre class="r"><code>gplot(md.net)</code></pre>
-<p><img src="week6_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="week1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>So let us now focus on some other the concepts from the lecture:
 Cutpoints and Bridges. Let us identify the cutpoint in our network</p>
 <pre class="r"><code>c.points &lt;- cutpoints(md.net,mode=&quot;graph&quot;, return.indicator = TRUE)
@@ -435,7 +434,7 @@ c.points</code></pre>
 ##  TRUE FALSE FALSE FALSE FALSE</code></pre>
 <pre class="r"><code>#Check whether this is right by plotting c.points as vertex.col
 gplot(md.net,vertex.col=c.points)</code></pre>
-<p><img src="week6_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="week1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 </div>
 

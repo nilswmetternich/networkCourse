@@ -14,7 +14,7 @@
 
 <title>Week 2</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -61,6 +61,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -81,6 +82,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -138,11 +142,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -171,8 +179,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -180,16 +188,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -233,7 +234,7 @@ $(document).ready(function () {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -243,7 +244,7 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-   <a href="index.html">Home</a>
+  <a href="index.html">Home</a>
 </li>
 <li>
   <a href="introduction.html">Week 1 Part 1</a>
@@ -285,165 +286,141 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Week 2</h1>
-<h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid Weber</h4>
-<h4 class="date">2022/23</h4>
+<h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid
+Weber</h4>
 
 </div>
 
 
 <div id="centrality-in-r" class="section level2">
 <h2>Centrality in R</h2>
-<p>This code replicates most parts of the lecture in R. This will allow you to see how the the theoretical network concepts translate into the empirical analysis. For the following exercise we will be using the library statnet. You can install this package by typing install.packages(“statnet”) into the R Console. After that you can call the library.</p>
+<p>This code replicates most parts of the lecture in R. This will allow
+you to see how the the theoretical network concepts translate into the
+empirical analysis. For the following exercise we will be using the
+library statnet. You can install this package by typing
+install.packages(“statnet”) into the R Console. After that you can call
+the library.</p>
 <pre class="r"><code>library(statnet)</code></pre>
 <pre><code>## Loading required package: tergm</code></pre>
 <pre><code>## Loading required package: ergm</code></pre>
 <pre><code>## Loading required package: network</code></pre>
-<pre><code>## network: Classes for Relational Data
-## Version 1.16.0 created on 2019-11-30.
-## copyright (c) 2005, Carter T. Butts, University of California-Irvine
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Martina Morris, University of Washington
-##                     Skye Bender-deMoll, University of Washington
-##  For citation information, type citation(&quot;network&quot;).
-##  Type help(&quot;network-package&quot;) to get started.</code></pre>
 <pre><code>## 
-## ergm: version 3.10.4, created on 2019-06-10
-## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Steven M. Goodreau, University of Washington
-##                     Pavel N. Krivitsky, University of Wollongong
-##                     Martina Morris, University of Washington
-##                     with contributions from
-##                     Li Wang
-##                     Kirk Li, University of Washington
-##                     Skye Bender-deMoll, University of Washington
-##                     Chad Klumb
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;ergm&quot;).</code></pre>
-<pre><code>## NOTE: Versions before 3.6.1 had a bug in the implementation of the bd()
-## constriant which distorted the sampled distribution somewhat. In
-## addition, Sampson&#39;s Monks datasets had mislabeled vertices. See the
-## NEWS and the documentation for more details.</code></pre>
-<pre><code>## NOTE: Some common term arguments pertaining to vertex attribute and
-## level selection have changed in 3.10.0. See terms help for more
-## details. Use &#39;options(ergm.term=list(version=&quot;3.9.4&quot;))&#39; to use old
-## behavior.</code></pre>
+## &#39;network&#39; 1.18.1 (2023-01-24), part of the Statnet Project
+## * &#39;news(package=&quot;network&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;network&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
+<pre><code>## 
+## &#39;ergm&#39; 4.5.0 (2023-05-27), part of the Statnet Project
+## * &#39;news(package=&quot;ergm&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;ergm&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
+<pre><code>## &#39;ergm&#39; 4 is a major update that introduces some backwards-incompatible
+## changes. Please type &#39;news(package=&quot;ergm&quot;)&#39; for a list of major
+## changes.</code></pre>
 <pre><code>## Loading required package: networkDynamic</code></pre>
 <pre><code>## 
-## networkDynamic: version 0.10.1, created on 2020-01-16
-## Copyright (c) 2020, Carter T. Butts, University of California -- Irvine
-##                     Ayn Leslie-Cook, University of Washington
-##                     Pavel N. Krivitsky, University of Wollongong
-##                     Skye Bender-deMoll, University of Washington
-##                     with contributions from
-##                     Zack Almquist, University of California -- Irvine
-##                     David R. Hunter, Penn State University
-##                     Li Wang
-##                     Kirk Li, University of Washington
-##                     Steven M. Goodreau, University of Washington
-##                     Jeffrey Horner
-##                     Martina Morris, University of Washington
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;networkDynamic&quot;).</code></pre>
+## &#39;networkDynamic&#39; 0.11.3 (2023-02-15), part of the Statnet Project
+## * &#39;news(package=&quot;networkDynamic&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;networkDynamic&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;tergm&#39;:
+##   method                   from
+##   simulate_formula.network ergm</code></pre>
 <pre><code>## 
-## tergm: version 3.6.1, created on 2019-06-12
-## Copyright (c) 2019, Pavel N. Krivitsky, University of Wollongong
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     with contributions from
-##                     David R. Hunter, Penn State University
-##                     Steven M. Goodreau, University of Washington
-##                     Martina Morris, University of Washington
-##                     Nicole Bohme Carnegie, New York University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Ayn Leslie-Cook, University of Washington
-##                     Skye Bender-deMoll
-##                     Li Wang
-##                     Kirk Li, University of Washington
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;tergm&quot;).</code></pre>
+## &#39;tergm&#39; 4.2.0 (2023-05-30), part of the Statnet Project
+## * &#39;news(package=&quot;tergm&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;tergm&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
+<pre><code>## 
+## Attaching package: &#39;tergm&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ergm&#39;:
+## 
+##     snctrl</code></pre>
 <pre><code>## Loading required package: ergm.count</code></pre>
 <pre><code>## 
-## ergm.count: version 3.4.0, created on 2019-05-15
-## Copyright (c) 2019, Pavel N. Krivitsky, University of Wollongong
-##                     with contributions from
-##                     Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;ergm.count&quot;).</code></pre>
-<pre><code>## NOTE: The form of the term &#39;CMP&#39; has been changed in version 3.2 of
-## &#39;ergm.count&#39;. See the news or help(&#39;CMP&#39;) for more information.</code></pre>
+## &#39;ergm.count&#39; 4.1.1 (2022-05-24), part of the Statnet Project
+## * &#39;news(package=&quot;ergm.count&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;ergm.count&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
 <pre><code>## Loading required package: sna</code></pre>
 <pre><code>## Loading required package: statnet.common</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;statnet.common&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:base&#39;:
+<pre><code>## The following object is masked from &#39;package:ergm&#39;:
 ## 
-##     order</code></pre>
+##     snctrl</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     attr, order</code></pre>
 <pre><code>## sna: Tools for Social Network Analysis
-## Version 2.5 created on 2019-12-09.
+## Version 2.7-1 created on 2023-01-24.
 ## copyright (c) 2005, Carter T. Butts, University of California-Irvine
 ##  For citation information, type citation(&quot;sna&quot;).
 ##  Type help(package=&quot;sna&quot;) to get started.</code></pre>
 <pre><code>## Loading required package: tsna</code></pre>
 <pre><code>## 
-## statnet: version 2019.6, created on 2019-06-13
-## Copyright (c) 2019, Mark S. Handcock, University of California -- Los Angeles
-##                     David R. Hunter, Penn State University
-##                     Carter T. Butts, University of California -- Irvine
-##                     Steven M. Goodreau, University of Washington
-##                     Pavel N. Krivitsky, University of Wollongong
-##                     Skye Bender-deMoll
-##                     Martina Morris, University of Washington
-## Based on &quot;statnet&quot; project software (statnet.org).
-## For license and citation information see statnet.org/attribution
-## or type citation(&quot;statnet&quot;).</code></pre>
+## &#39;statnet&#39; 2019.6 (2019-06-13), part of the Statnet Project
+## * &#39;news(package=&quot;statnet&quot;)&#39; for changes since last version
+## * &#39;citation(&quot;statnet&quot;)&#39; for citation information
+## * &#39;https://statnet.org&#39; for help, support, and other information</code></pre>
 <pre><code>## unable to reach CRAN</code></pre>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✔ ggplot2 3.3.5     ✔ purrr   0.3.4
-## ✔ tibble  3.1.0     ✔ dplyr   1.0.8
-## ✔ tidyr   1.1.3     ✔ stringr 1.4.0
-## ✔ readr   1.4.0     ✔ forcats 0.5.1</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.3     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.4     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.2</code></pre>
 <pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 <div id="directed-graphs" class="section level3">
 <h3>Directed Graphs</h3>
-<p>In today’s session we will be working with the Militarized Interstate Dispute Dataset (MID). The dataset that we will be using is dyadic, whic means it records militarized interstate disputes between pairs of states. We can use this data to create a matrix, which we will in turn use to create network object. Please go to <a href="https://correlatesofwar.org/data-sets/MIDs" title="MID Homepage">MID Homepage</a> and familiarize yourself with the data.</p>
-<p>In the following we will be using MID Dyadic Version 4.02. There is also a lot of information about the intensity of MIDs, but we will just focus on the occurence of MIDs in the time period of the dataset 1816-2014. The great thing is that the dataset is directed, so we can distingish sender and receiver of the militarized behavior. We subset the data such that we have all occurences of direcected MIDs. The dataset is on the Moodle page and once you can load the data into R (you will see currently in the code is my path which you will need to update) then you can run the rest of the code.</p>
+<p>In today’s session we will be working with the Militarized Interstate
+Dispute Dataset (MID). The dataset that we will be using is dyadic, whic
+means it records militarized interstate disputes between pairs of
+states. We can use this data to create a matrix, which we will in turn
+use to create network object. Please go to <a
+href="https://correlatesofwar.org/data-sets/MIDs"
+title="MID Homepage">MID Homepage</a> and familiarize yourself with the
+data.</p>
+<p>In the following we will be using MID Dyadic Version 4.02. There is
+also a lot of information about the intensity of MIDs, but we will just
+focus on the occurence of MIDs in the time period of the dataset
+1816-2014. The great thing is that the dataset is directed, so we can
+distingish sender and receiver of the militarized behavior. We subset
+the data such that we have all occurences of direcected MIDs. The
+dataset is on the Moodle page and once you can load the data into R (you
+will see currently in the code is my path which you will need to update)
+then you can run the rest of the code.</p>
 <pre class="r"><code>mid &lt;- read.csv(&quot;~/Dropbox/UCL/courses/networks/data/Dyadic MIDs 4/dyadic_mid_4.02.csv&quot;) #First we load the data. You will need to change the path to do this.
 
 summary(mid)</code></pre>
-<pre><code>##      disno         dyindex             statea          namea     
-##  Min.   :   2   Min.   :   2.001   Min.   :  2.0   RUS    : 643  
-##  1st Qu.:1006   1st Qu.:1006.002   1st Qu.:230.0   USA    : 548  
-##  Median :2244   Median :2244.002   Median :385.0   CHN    : 489  
-##  Mean   :2346   Mean   :2345.618   Mean   :448.7   UKG    : 406  
-##  3rd Qu.:3957   3rd Qu.:3957.019   3rd Qu.:666.0   GMY    : 370  
-##  Max.   :4726   Max.   :4726.001   Max.   :986.0   TUR    : 335  
-##                                                    (Other):7567  
-##      stateb          nameb         strtday         strtmnth          strtyr    
-##  Min.   :  2.0   RUS    : 643   Min.   : 1.00   Min.   : 1.000   Min.   :1816  
-##  1st Qu.:230.0   USA    : 548   1st Qu.: 6.00   1st Qu.: 4.000   1st Qu.:1937  
-##  Median :385.0   CHN    : 489   Median :14.00   Median : 7.000   Median :1964  
-##  Mean   :448.7   UKG    : 406   Mean   :14.04   Mean   : 6.681   Mean   :1956  
-##  3rd Qu.:666.0   GMY    : 370   3rd Qu.:22.00   3rd Qu.:10.000   3rd Qu.:1992  
-##  Max.   :986.0   TUR    : 335   Max.   :31.00   Max.   :12.000   Max.   :2014  
-##                  (Other):7567                                                  
-##      endday         endmnth          endyear        outcome     
-##  Min.   : 1.00   Min.   : 1.000   Min.   :1816   Min.   :0.000  
-##  1st Qu.: 9.00   1st Qu.: 4.000   1st Qu.:1938   1st Qu.:0.000  
-##  Median :19.00   Median : 7.000   Median :1966   Median :5.000  
-##  Mean   :17.84   Mean   : 6.586   Mean   :1957   Mean   :3.255  
-##  3rd Qu.:27.00   3rd Qu.:10.000   3rd Qu.:1993   3rd Qu.:5.000  
-##  Max.   :31.00   Max.   :12.000   Max.   :2014   Max.   :8.000  
-##                                                                 
+<pre><code>##      disno         dyindex             statea         namea          
+##  Min.   :   2   Min.   :   2.001   Min.   :  2.0   Length:10358      
+##  1st Qu.:1006   1st Qu.:1006.002   1st Qu.:230.0   Class :character  
+##  Median :2244   Median :2244.002   Median :385.0   Mode  :character  
+##  Mean   :2346   Mean   :2345.618   Mean   :448.7                     
+##  3rd Qu.:3957   3rd Qu.:3957.019   3rd Qu.:666.0                     
+##  Max.   :4726   Max.   :4726.001   Max.   :986.0                     
+##                                                                      
+##      stateb         nameb              strtday         strtmnth     
+##  Min.   :  2.0   Length:10358       Min.   : 1.00   Min.   : 1.000  
+##  1st Qu.:230.0   Class :character   1st Qu.: 6.00   1st Qu.: 4.000  
+##  Median :385.0   Mode  :character   Median :14.00   Median : 7.000  
+##  Mean   :448.7                      Mean   :14.04   Mean   : 6.681  
+##  3rd Qu.:666.0                      3rd Qu.:22.00   3rd Qu.:10.000  
+##  Max.   :986.0                      Max.   :31.00   Max.   :12.000  
+##                                                                     
+##      strtyr         endday         endmnth          endyear        outcome     
+##  Min.   :1816   Min.   : 1.00   Min.   : 1.000   Min.   :1816   Min.   :0.000  
+##  1st Qu.:1937   1st Qu.: 9.00   1st Qu.: 4.000   1st Qu.:1938   1st Qu.:0.000  
+##  Median :1964   Median :19.00   Median : 7.000   Median :1966   Median :5.000  
+##  Mean   :1956   Mean   :17.84   Mean   : 6.586   Mean   :1957   Mean   :3.255  
+##  3rd Qu.:1992   3rd Qu.:27.00   3rd Qu.:10.000   3rd Qu.:1993   3rd Qu.:5.000  
+##  Max.   :2014   Max.   :31.00   Max.   :12.000   Max.   :2014   Max.   :8.000  
+##                                                                                
 ##     settlmnt         fatlev           highact          hihost    
 ##  Min.   :0.000   Min.   :-9.0000   Min.   : 2.00   Min.   :2.00  
 ##  1st Qu.:0.000   1st Qu.: 0.0000   1st Qu.:13.00   1st Qu.:3.00  
@@ -540,19 +517,24 @@ summary(mid)</code></pre>
 ##  3rd Qu.:1.0000   3rd Qu.:0.0000  
 ##  Max.   :1.0000   Max.   :1.0000  
 ## </code></pre>
-<p>You should now be able to see the dataset. Take a minute and look at the variables. We will only need the namea, nameb, and the strtyr of the MID. We also only need the directed instances of MIDs.</p>
+<p>You should now be able to see the dataset. Take a minute and look at
+the variables. We will only need the namea, nameb, and the strtyr of the
+MID. We also only need the directed instances of MIDs.</p>
 <pre class="r"><code>mid &lt;- mid[mid$rolea==1,c(&quot;namea&quot;,&quot;nameb&quot;,&quot;strtyr&quot;)]
 
 summary(mid)</code></pre>
-<pre><code>##      namea          nameb          strtyr    
-##  RUS    : 362   USA    : 209   Min.   :1816  
-##  USA    : 254   CHN    : 203   1st Qu.:1937  
-##  UKG    : 169   RUS    : 159   Median :1967  
-##  GMY    : 161   JPN    : 148   Mean   :1957  
-##  PRK    : 146   TUR    : 148   3rd Qu.:1993  
-##  CHN    : 142   UKG    : 144   Max.   :2014  
-##  (Other):2978   (Other):3201</code></pre>
-<p>Now we only have a subset of the data that we actually need to creat the MID matrix. We will do this in the following way. Step 1: Find all unique states in the data. Step 2: Create a matrix with the dimension of the states in the data. Step 3: Give the matrix row and column names accordingly.</p>
+<pre><code>##     namea              nameb               strtyr    
+##  Length:4212        Length:4212        Min.   :1816  
+##  Class :character   Class :character   1st Qu.:1937  
+##  Mode  :character   Mode  :character   Median :1967  
+##                                        Mean   :1957  
+##                                        3rd Qu.:1993  
+##                                        Max.   :2014</code></pre>
+<p>Now we only have a subset of the data that we actually need to creat
+the MID matrix. We will do this in the following way. Step 1: Find all
+unique states in the data. Step 2: Create a matrix with the dimension of
+the states in the data. Step 3: Give the matrix row and column names
+accordingly.</p>
 <pre class="r"><code>states &lt;- unique(c(as.character(mid$namea),as.character(mid$nameb)))
 
 midMat &lt;- matrix(0,nrow=length(states),ncol=length(states)) # 
@@ -561,11 +543,18 @@ midMat &lt;- matrix(0,nrow=length(states),ncol=length(states)) #
 
 dim(midMat)</code></pre>
 <pre><code>## [1] 188 188</code></pre>
-<p>The final step is that we need to go through the dataset with a loop (will explain more in the seminar). With this loop we go through each line of the mid dataset, take namea and nameb of each line and add an entry in midMat accordingly. Again, I wil speak about this a bit more in the seminars, but this will be a basic way for you to take a dyadic dataset and turn it into a network</p>
+<p>The final step is that we need to go through the dataset with a loop
+(will explain more in the seminar). With this loop we go through each
+line of the mid dataset, take namea and nameb of each line and add an
+entry in midMat accordingly. Again, I wil speak about this a bit more in
+the seminars, but this will be a basic way for you to take a dyadic
+dataset and turn it into a network</p>
 <pre class="r"><code>for(i in 1:dim(mid)[1]){
     midMat[as.character(mid$namea[i]),as.character(mid$nameb[i])] &lt;- midMat[as.character(mid$namea[i]),as.character(mid$nameb[i])]+1
 }</code></pre>
-<p>Once you have the matrix midMat, we can simply tell R we want this matrix to be understood as a network. Also use the summary to get some insights to the network. You will also get the edgelist.</p>
+<p>Once you have the matrix midMat, we can simply tell R we want this
+matrix to be understood as a network. Also use the summary to get some
+insights to the network. You will also get the edgelist.</p>
 <pre class="r"><code>midNet &lt;- network(midMat,directed=TRUE)
   network.vertex.names(midNet) &lt;- states
     summary(midNet)</code></pre>
@@ -1626,18 +1615,22 @@ dim(midMat)</code></pre>
 ## [1034,]  122  186
 ## [1035,]   13  187
 ## [1036,]   10  188</code></pre>
-<p>Now we are ready to plot the network. You will see that one starts to see the need for network measures as the visualization starts to get complicated to read. Note the arrows indicating directionality of MIDs.</p>
+<p>Now we are ready to plot the network. You will see that one starts to
+see the need for network measures as the visualization starts to get
+complicated to read. Note the arrows indicating directionality of
+MIDs.</p>
 <pre class="r"><code>gplot(midNet) # Basic</code></pre>
-<p><img src="week7_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="week2_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;) # with information</code></pre>
-<p><img src="week7_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<p><img src="week2_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
 <pre class="r"><code>gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;,mode=&quot;circle&quot;) # as a circle</code></pre>
-<p><img src="week7_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
+<p><img src="week2_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
 <pre class="r"><code>#gplot(midNet,label=states, vertex.cex=0.5,edge.lwd=0.01,arrowhead.cex=0.5,edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;,mode=&quot;target&quot;) # based on target. Might take a minute to run this line, but it gives a better visualization than the ones above.</code></pre>
 </div>
 <div id="centrality-measures" class="section level3">
 <h3>Centrality measures</h3>
-<p>Now we can use some of the centrality measures we head about in the lecture and apply these to the MID network.</p>
+<p>Now we can use some of the centrality measures we head about in the
+lecture and apply these to the MID network.</p>
 <pre class="r"><code>in.n &lt;- degree(midNet,cmode=&quot;indegree&quot;)
 
   out.n &lt;- degree(midNet,cmode=&quot;outdegree&quot;)
@@ -1647,11 +1640,13 @@ dim(midMat)</code></pre>
       between.n &lt;- betweenness(midNet,gmode=&quot;graph&quot;)
 
         info.n &lt;- infocent(midNet,gmode=&quot;graph&quot;)</code></pre>
-<p>We can also change the size of the nodes according to their indegree / outdegree and also create a table with indegree and outdegree for all states.</p>
+<p>We can also change the size of the nodes according to their indegree
+/ outdegree and also create a table with indegree and outdegree for all
+states.</p>
 <pre class="r"><code>gplot(midNet,label=states, vertex.cex=log(in.n),edge.lwd=0.01,arrowhead.cex=0.5,edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;)</code></pre>
-<p><img src="week7_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="week2_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r"><code>gplot(midNet,label=states, vertex.cex=log(out.n),edge.lwd=0.01,arrowhead.cex=0.5,edge.col=&quot;grey&quot;,gmode=&quot;digraph&quot;)</code></pre>
-<p><img src="week7_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
+<p><img src="week2_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
 <pre class="r"><code>output &lt;- data.frame(states,in.n,out.n,round(close.n,digits=2),round(between.n,digits=2))
 
 names(output) &lt;- c(&quot;State&quot;,&quot;Indegree&quot;,&quot;Outdegree&quot;,&quot;Closeness&quot;,&quot;Betweenness&quot;)
