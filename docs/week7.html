@@ -14,7 +14,7 @@
 
 <title>Week 7: International involvement in domestic conflict</title>
 
-<script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.23/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -301,7 +301,6 @@ $(document).ready(function () {
 domestic conflict</h1>
 <h4 class="author">Nils W Metternich, Luis Schenoni, and Sigrid
 Weber</h4>
-<h4 class="date">2022/23</h4>
 
 </div>
 
@@ -312,7 +311,7 @@ fight each other in domestic conflict. During domestic conflict or
 intra-state conflict, we usually have one or more rebel groups fighting
 the government. Foreign governments can either decide to support the
 rebels or they can decide to support the government.</p>
-<p>We will be using two different datasets to look at these networks of
+<p>We will be using the UCDP dataset to look at these networks of
 support. On the one hand, we want to understand in which states we saw
 rebels fighting that were supported by external states. On the other
 hand, we want to understand where governments at war with rebels
@@ -334,119 +333,75 @@ library(haven)
 #install.packages(&quot;haven&quot;) 
 # this package teaches R how to read xls and xlsx sheets
 library(readxl)</code></pre>
-</div>
-<div id="external-support-for-rebels-nag-data-from-belgin-san-akca"
-class="section level2">
-<h2>External support for rebels: NAG data from Belgin San Akca</h2>
-<p>The <a href="http://home.ku.edu.tr/~bakca/#complementary">State-NAG
-Cooperation Dataset</a> has information on 454 rebel groups, which
-emerged in the post-WWII period, and how they were supported by other
-governments. It includes descriptive information about ideational
-features and objectives of nonstate armed groups, their state
-supporters, type and duration of support, and all sources used for
-coding date. Sources and descriptive characteristics of NAGs are
-available on <a href="https://www.armedgroups.net/">project
-website</a>.</p>
-<p>We will be focusing on the key variables <code>tarnum</code> (the
-country code of the state targeted by the non-state actor),
-<code>psnum</code> (the country code of the state supporting the
-non-state actor) and the year of support. We will <em>not</em> focus on
-which rebel group is fighting which state but you could think of
-analyses on the rebel rather than state level for your assignments.</p>
-<p>The code below turns the whole NAG data into a network. This network
-links states supporting rebels (senders) to states being attacked by
-those rebels (receivers). The links between senders and receivers are
-external state support for the rebels in the receiving country.</p>
-<pre class="r"><code># read the data
-nag &lt;- read_dta(&quot;data_week7_new/BookFinalData.dta&quot;)
-
-# recode the country codes into abbreviated state names
-nag$target &lt;- countrycode(nag$tarnum,origin=&quot;cown&quot;,destination = &quot;cowc&quot;) 
-nag$supporter &lt;- countrycode(nag$psnum,origin=&quot;cown&quot;,destination = &quot;cowc&quot;) 
-
-# clean up Germany that is often not identified (because of East and West Germany)
-nag$supporter &lt;- ifelse(nag$psnum==260, &quot;GER&quot;, nag$supporter) 
-
-# selecting relevant variables
-nag &lt;-  select(nag, c(&quot;target&quot;,&quot;supporter&quot;,&quot;year&quot;))
-
-# now the data is in a good shape to calculate network statistics
-
-# get string of unique states in the data
-nag_states &lt;- unique(c(as.character(nag$target),
-                       as.character(nag$supporter)))
-
-# make an empty matrix
-nagMat &lt;- matrix(0,nrow=length(nag_states),ncol=length(nag_states)) 
-rownames(nagMat) &lt;-     nag_states
-colnames(nagMat) &lt;-     nag_states
-
-# fill the empty matrix
-for(i in 1:dim(nag)[1]){
-    nagMat[as.character(nag$supporter[i]),as.character(nag$target[i])] &lt;-
-      nagMat[as.character(nag$supporter[i]),as.character(nag$target[i])]+1
-}
-
-# tell R to understand this matrix as a network
-nagNet &lt;- network(nagMat,
-                  directed=TRUE)
-network.vertex.names(nagNet) &lt;- nag_states</code></pre>
-<p>Based on this network of external rebel support, we can try to
-identify the countries that send support to a lot of different rebels in
-different states (<em>outdegree centrality</em>) but also which states
-are heavily targeted through external rebel support by various other
-states (<em>indegree centrality</em>). Also revise the other centrality
-measures!</p>
-<pre class="r fold-hide"><code># which states target other states the most by supporting rebels (outdegree centrality)
-out.n &lt;- degree(nagNet,cmode=&quot;outdegree&quot;)
-
-# which starts are the most targeted through other states&#39; support of rebels (indegree centrality)
-in.n &lt;- degree(nagNet,cmode=&quot;indegree&quot;)
-
-centrality &lt;- data.frame(state=nag_states,
-                         indegree = in.n,
-                         outdegree = out.n)</code></pre>
-<p><strong>Countries with the highest outdegree centrality:</strong></p>
-<pre class="r fold-hide"><code># Outdegree: USA, UK, FR, Rus, China
-centrality |&gt; arrange(-outdegree) |&gt; head()</code></pre>
-<pre><code>##   state indegree outdegree
-## 1   USA      200       103
-## 2   UKG      198       103
-## 3   FRN      116       103
-## 4   RUS      198       103
-## 5   CHN      199       100
-## 6   JPN        0        67</code></pre>
-<p><strong>Countries with the highest indegree centrality:</strong></p>
-<pre class="r fold-hide"><code># Indegree: USA, China, UK, Russia, France
-centrality |&gt; arrange(-indegree) |&gt; head()</code></pre>
-<pre><code>##   state indegree outdegree
-## 1   USA      200       103
-## 2   CHN      199       100
-## 3   UKG      198       103
-## 4   RUS      198       103
-## 5   FRN      116       103
-## 6   YUG       17        10</code></pre>
-<p>To make the network a little bit less overwhelming for visual
-inspection, I only plot ties if a state supported at least 20 rebel
-groups across all years counting separately. You can do this by
-manipulating the <code>thres</code> argument in the
-<code>gplot</code>function. I also display countries with a high
-indegree centrality as bigger.</p>
-<pre class="r fold-hide"><code>gplot(nagNet,
-      label=nag_states, 
-      vertex.cex=log(in.n),
-      edge.lwd=0.0001,
-      thres&gt;20,
-      vertex.col =&quot;slateblue&quot;, vertex.border = &quot;slateblue&quot;,
-      edge.col=&quot;gray&quot;,gmode=&quot;digraph&quot;)</code></pre>
-<p><img src="week7_files/figure-html/rebels-visual-1.png" width="672" /></p>
+<!-- ## External support for rebels: NAG data from Belgin San Akca -->
+<!-- The [State-NAG Cooperation Dataset](http://home.ku.edu.tr/~bakca/#complementary) has information on 454 rebel groups, which emerged in the post-WWII period, and how they were supported by other governments. It includes descriptive information about ideational features and objectives of nonstate armed groups, their state supporters, type and duration of support, and all sources used for coding date. Sources and descriptive characteristics of NAGs are available on [project website](https://www.armedgroups.net/).  -->
+<!-- We will be focusing on the key variables `tarnum` (the country code of the state targeted by the non-state actor), `psnum` (the country code of the state supporting the non-state actor) and the year of support. We will *not* focus on which rebel group is fighting which state but you could think of analyses on the rebel rather than state level for your assignments. -->
+<!-- The code below turns the whole NAG data into a network. This network links states supporting rebels (senders) to states being attacked by those rebels (receivers). The links between senders and receivers are external state support for the rebels in the receiving country.  -->
+<!-- ```{r networks-rebels} -->
+<!-- # read the data -->
+<!-- nag <- read_dta("data_week7_new/BookFinalData.dta") -->
+<!-- # recode the country codes into abbreviated state names -->
+<!-- nag$target <- countrycode(nag$tarnum,origin="cown",destination = "cowc")  -->
+<!-- nag$supporter <- countrycode(nag$psnum,origin="cown",destination = "cowc")  -->
+<!-- # clean up Germany that is often not identified (because of East and West Germany) -->
+<!-- nag$supporter <- ifelse(nag$psnum==260, "GER", nag$supporter)  -->
+<!-- # selecting relevant variables -->
+<!-- nag <-  select(nag, c("target","supporter","year")) -->
+<!-- # now the data is in a good shape to calculate network statistics -->
+<!-- # get string of unique states in the data -->
+<!-- nag_states <- unique(c(as.character(nag$target), -->
+<!--                        as.character(nag$supporter))) -->
+<!-- # make an empty matrix -->
+<!-- nagMat <- matrix(0,nrow=length(nag_states),ncol=length(nag_states))  -->
+<!-- rownames(nagMat) <-    nag_states -->
+<!-- colnames(nagMat) <-    nag_states -->
+<!-- # fill the empty matrix -->
+<!-- for(i in 1:dim(nag)[1]){ -->
+<!--    nagMat[as.character(nag$supporter[i]),as.character(nag$target[i])] <- -->
+<!--      nagMat[as.character(nag$supporter[i]),as.character(nag$target[i])]+1 -->
+<!-- } -->
+<!-- # tell R to understand this matrix as a network -->
+<!-- nagNet <- network(nagMat, -->
+<!--                   directed=TRUE) -->
+<!-- network.vertex.names(nagNet) <- nag_states -->
+<!-- ``` -->
+<!-- Based on this network of external rebel support, we can try to identify the countries that send support to a lot of different rebels in different states (*outdegree centrality*) but also which states are heavily targeted through external rebel support by various other states (*indegree centrality*). Also revise the other centrality measures!  -->
+<!-- ```{r rebels-centrality , class.source = 'fold-hide'} -->
+<!-- # which states target other states the most by supporting rebels (outdegree centrality) -->
+<!-- out.n <- degree(nagNet,cmode="outdegree") -->
+<!-- # which starts are the most targeted through other states' support of rebels (indegree centrality) -->
+<!-- in.n <- degree(nagNet,cmode="indegree") -->
+<!-- centrality <- data.frame(state=nag_states, -->
+<!--                          indegree = in.n, -->
+<!--                          outdegree = out.n) -->
+<!-- ``` -->
+<!-- **Countries with the highest outdegree centrality:** -->
+<!-- ```{r rebels-outentrality , class.source = 'fold-hide'} -->
+<!-- # Outdegree: USA, UK, FR, Rus, China -->
+<!-- centrality |> arrange(-outdegree) |> head() -->
+<!-- ``` -->
+<!-- **Countries with the highest indegree centrality:** -->
+<!-- ```{r rebels-incentrality , class.source = 'fold-hide'} -->
+<!-- # Indegree: USA, China, UK, Russia, France -->
+<!-- centrality |> arrange(-indegree) |> head() -->
+<!-- ``` -->
+<!-- To make the network a little bit less overwhelming for visual inspection, I only plot ties if a state supported at least 20 rebel groups across all years counting separately. You can do this by manipulating the `thres` argument in the `gplot`function. I also display countries with a high indegree centrality as bigger.  -->
+<!-- ```{r rebels-visual, class.source = 'fold-hide'} -->
+<!-- gplot(nagNet, -->
+<!--       label=nag_states,  -->
+<!--       vertex.cex=log(in.n), -->
+<!--       edge.lwd=0.0001, -->
+<!--       thres>20, -->
+<!--       vertex.col ="slateblue", vertex.border = "slateblue", -->
+<!--       edge.col="gray",gmode="digraph") -->
+<!-- ``` -->
 </div>
 <div
 id="external-support-for-governments-ucdp-external-support-dataset."
 class="section level2">
 <h2>External support for governments: UCDP External Support
 dataset.</h2>
-<p>The second dataset, the <a
+<p>The <a
 href="https://ucdp.uu.se/downloads/index.html#externalsupport">UCDP
 External Support dataset</a> provides information on the existence,
 type, and provider of external support for all warring parties
@@ -466,7 +421,7 @@ a state).</p>
 (the name of the actor providing support to the government),
 <code>actor_name</code> (the name of the warring party receiving
 support) and the year of support given.</p>
-<pre class="r"><code>ucdp &lt;- read_xlsx(&quot;data_week7_new/ucdp-esd-ty-181.xlsx&quot;)
+<pre class="r"><code>ucdp &lt;- read_xlsx(&quot;~/Desktop/temp/ucdp-esd-ty-181.xlsx&quot;)
 
 # sender of foreign support must be a state!
 ucdp &lt;- filter(ucdp, ext_nonstate == 0)
@@ -555,165 +510,168 @@ higher levels of indegree centrality.</p>
       edge.col=&quot;gray&quot;,
       gmode=&quot;digraph&quot;)</code></pre>
 <p><img src="week7_files/figure-html/ucdp-visual-1.png" width="672" /></p>
-</div>
-<div id="example-of-syria" class="section level2">
-<h2>Example of Syria</h2>
-<p>In the seminar, we worked together on plotting the network of support
-to NAGs from external states in Syria. We also worked on plotting a
-network of support for the government of Syria. You can access the
-results and the coding below.</p>
-<p><strong>Which states support NAGs in Syria?</strong></p>
-<p>The network below plots the states that ever supported directly some
-opposition group in Syria.</p>
-<pre class="r fold-hide"><code># who supports some NAG in Syria
-syriaopp &lt;- filter(nag, target == &quot;SYR&quot;) |&gt; pull(supporter)
-syriaopp &lt;- unique(c(syriaopp, &quot;SYR&quot;))
-
-# subset the data to Syria plus all countries that support NAGs in Syria
-syria_opposition &lt;- filter(nag, target == &quot;SYR&quot; &amp; supporter %in% syriaopp)
-
-syria_opp_states &lt;- unique(c(syria_opposition$target,syria_opposition$supporter))
-
-# make an empty matrix and fill it
-syriaoppMat &lt;- matrix(0,nrow=length(syria_opp_states),
-                      ncol=length(syria_opp_states)) 
-rownames(syriaoppMat) &lt;-    syria_opp_states
-colnames(syriaoppMat) &lt;-    syria_opp_states
-
-for(i in 1:dim(syria_opposition)[1]){
-    syriaoppMat[as.character(syria_opposition$supporter[i]),
-                as.character(syria_opposition$target[i])] &lt;-
-      syriaoppMat[as.character(syria_opposition$supporter[i]),
-                  as.character(syria_opposition$target[i])]+1
-}
-
-syriaoppNet &lt;- network(syriaoppMat,directed=TRUE)
-network.vertex.names(syriaoppNet) &lt;- syria_opp_states
-
-gplot(syriaoppNet,
-      label= syria_opp_states,
-      edge.lwd=0.001,
-      vertex.col =&quot;slateblue&quot;,vertex.border = &quot;slateblue&quot;,
-      edge.col=&quot;gray&quot;,
-      gmode=&quot;digraph&quot;)</code></pre>
-<p><img src="week7_files/figure-html/syria-opp-1.png" width="672" /></p>
-<p><strong>Do states that support NAGs in Syria also support opposition
-movements in other states that support the Syrian
-opposition?</strong></p>
-<p>In the network below, we added complexity by checking if states that
-support the opposition in Syria also support the opposition in other
-states that support the Syrian opposition. As an example, if the US
-supports some opposition in Syria and Lebanon does the same, we would
-expect that the US and the Lebanese government are on the same page.
-However, it could also be that the US is inconsistent and supports the
-opposition in Lebanon <em>despite</em> the fact that they both support
-the opposition in Syria. From the plot, we can see that this actually
-seems to be quite common.</p>
-<pre class="r fold-hide"><code># subset the data to Syria plus all countries that support NAGs in Syria
-syria_opposition2 &lt;- filter(nag, target %in% syriaopp &amp; supporter %in% syriaopp)
-
-syria_opp_states2 &lt;- unique(c(syria_opposition2$target,syria_opposition2$supporter))
-
-# make an empty matrix and fill it
-syriaoppMat2 &lt;- matrix(0,nrow=length(syria_opp_states2),
-                      ncol=length(syria_opp_states2)) 
-rownames(syriaoppMat2) &lt;-   syria_opp_states2
-colnames(syriaoppMat2) &lt;-   syria_opp_states2
-
-for(i in 1:dim(syria_opposition2)[1]){
-    syriaoppMat2[as.character(syria_opposition2$supporter[i]),
-                as.character(syria_opposition2$target[i])] &lt;-
-      syriaoppMat2[as.character(syria_opposition2$supporter[i]),
-                  as.character(syria_opposition2$target[i])]+1
-}
-
-# better weighting
-syriaoppMat2 &lt;- syriaoppMat2/22
-syriaoppNet2 &lt;- network(syriaoppMat2,directed=TRUE,ignore.eval=FALSE,
-                  names.eval=&#39;weight&#39;)
-network.vertex.names(syriaoppNet2) &lt;- syria_opp_states2
-
-plot(syriaoppNet2, displaylabels=TRUE, 
-     vertex.col = &quot;slateblue&quot;,vertex.border = &quot;slateblue&quot;,
-     edge.col =&quot;gray&quot;,
-     label.cex=.75,label.col=&quot;black&quot;,edge.lwd=&quot;weight&quot;, vertex.cex=2) </code></pre>
-<p><img src="week7_files/figure-html/syria-opp2-1.png" width="672" /></p>
-<p><strong>Which states support the government in Syria?</strong></p>
-<p>The network below plots the states that ever supported directly the
-government in Syria.</p>
-<pre class="r fold-hide"><code># who supports the government in Syria
-syriagov &lt;- filter(ucdp, recipient == &quot;SYR&quot;) |&gt; pull(supporter)
-syriagov &lt;- unique(c(syriagov, &quot;SYR&quot;))
-
-# subset the data to Syria plus all countries that the  Syrian gov
-syria_government &lt;- filter(ucdp, recipient == &quot;SYR&quot; &amp; supporter %in% syriagov)
-
-syria_gov_states &lt;- unique(c(syria_government$recipient,
-                             syria_government$supporter))
-
-# make an empty matrix
-syriagovMat &lt;- matrix(0,nrow=length(syria_gov_states),
-                      ncol=length(syria_gov_states)) 
-rownames(syriagovMat) &lt;-    syria_gov_states
-colnames(syriagovMat) &lt;-    syria_gov_states
-
-# fill the empty matrix
-for(i in 1:dim(syria_government)[1]){
-    syriagovMat[as.character(syria_government$supporter[i]),
-            as.character(syria_government$recipient[i])] &lt;-
-      syriagovMat[as.character(syria_government$supporter[i]),
-              as.character(syria_government$recipient[i])]+1
-}
-
-# tell R to understand this matrix as a network
-syriagovNet &lt;- network(syriagovMat,
-                  directed=TRUE)
-network.vertex.names(syriagovNet) &lt;- syria_gov_states 
-
-gplot(syriagovNet,
-      label= syria_gov_states,
-      edge.lwd=0.001,
-      vertex.col =&quot;goldenrod3&quot;,vertex.border = &quot;goldenrod3&quot;,
-      edge.col=&quot;gray&quot;,
-      gmode=&quot;digraph&quot;)</code></pre>
-<p><img src="week7_files/figure-html/syria-gov-1.png" width="672" /></p>
-<p><strong>Which other states do states support that support the Syrian
-government?</strong></p>
-<p>In the plot below, we map the core states that support the Syrian
-government (Iraq, Russia, Iran) and we map out all other states that
-those three actors are supporting.</p>
-<pre class="r fold-hide"><code># subset the data to Syria plus all countries that the  Syrian gov
-syria_government2 &lt;- filter(ucdp, supporter %in% syriagov)
-
-syria_gov_states2 &lt;- unique(c(syria_government2$recipient,
-                             syria_government2$supporter))
-
-# make an empty matrix
-syriagovMat2 &lt;- matrix(0,nrow=length(syria_gov_states2),
-                      ncol=length(syria_gov_states2)) 
-rownames(syriagovMat2) &lt;-   syria_gov_states2
-colnames(syriagovMat2) &lt;-   syria_gov_states2
-
-
-# fill the empty matrix
-for(i in 1:dim(syria_government2)[1]){
-    syriagovMat2[as.character(syria_government2$supporter[i]),
-            as.character(syria_government2$recipient[i])] &lt;-
-      syriagovMat2[as.character(syria_government2$supporter[i]),
-              as.character(syria_government2$recipient[i])]+1
-}
-
-# for better weighting
-syriagovMat2 &lt;- syriagovMat2/5
-syriagovNet2 &lt;- network(syriagovMat2,directed=TRUE,ignore.eval=FALSE,
-                  names.eval=&#39;weight&#39;)
-network.vertex.names(syriagovNet2) &lt;- syria_gov_states2
-
-plot(syriagovNet2, displaylabels=TRUE, 
-      vertex.col =&quot;goldenrod3&quot;,vertex.border = &quot;goldenrod3&quot;,
-     edge.col =&quot;gray&quot;,
-     label.cex=.75,label.col=&quot;black&quot;,edge.lwd=&quot;weight&quot;, vertex.cex=2) </code></pre>
-<p><img src="week7_files/figure-html/syria-gov2-1.png" width="672" /></p>
+<!-- # ## Example of Syria -->
+<!-- #  -->
+<!-- # In the seminar, we worked together on plotting the network of support to NAGs from external states in Syria. We also worked on plotting a network of support for the government of Syria. You can access the results and the coding below. -->
+<!-- #  -->
+<!-- # **Which states support NAGs in Syria?** -->
+<!-- #  -->
+<!-- # The network below plots the states that ever supported directly some opposition group in Syria.  -->
+<!-- # ```{r  syria-opp, class.source = 'fold-hide'} -->
+<!-- #  -->
+<!-- # # who supports some NAG in Syria -->
+<!-- # syriaopp <- filter(nag, target == "SYR") |> pull(supporter) -->
+<!-- # syriaopp <- unique(c(syriaopp, "SYR")) -->
+<!-- #  -->
+<!-- # # subset the data to Syria plus all countries that support NAGs in Syria -->
+<!-- # syria_opposition <- filter(nag, target == "SYR" & supporter %in% syriaopp) -->
+<!-- #  -->
+<!-- # syria_opp_states <- unique(c(syria_opposition$target,syria_opposition$supporter)) -->
+<!-- #  -->
+<!-- # # make an empty matrix and fill it -->
+<!-- # syriaoppMat <- matrix(0,nrow=length(syria_opp_states), -->
+<!-- #                       ncol=length(syria_opp_states))  -->
+<!-- # rownames(syriaoppMat) <-     syria_opp_states -->
+<!-- # colnames(syriaoppMat) <-     syria_opp_states -->
+<!-- #  -->
+<!-- # for(i in 1:dim(syria_opposition)[1]){ -->
+<!-- #  syriaoppMat[as.character(syria_opposition$supporter[i]), -->
+<!-- #              as.character(syria_opposition$target[i])] <- -->
+<!-- #    syriaoppMat[as.character(syria_opposition$supporter[i]), -->
+<!-- #                as.character(syria_opposition$target[i])]+1 -->
+<!-- # } -->
+<!-- #  -->
+<!-- # syriaoppNet <- network(syriaoppMat,directed=TRUE) -->
+<!-- # network.vertex.names(syriaoppNet) <- syria_opp_states -->
+<!-- #  -->
+<!-- # gplot(syriaoppNet, -->
+<!-- #       label= syria_opp_states, -->
+<!-- #       edge.lwd=0.001, -->
+<!-- #       vertex.col ="slateblue",vertex.border = "slateblue", -->
+<!-- #       edge.col="gray", -->
+<!-- #       gmode="digraph") -->
+<!-- # ``` -->
+<!-- #  -->
+<!-- # **Do states that support NAGs in Syria also support opposition movements in other states that support the Syrian opposition?** -->
+<!-- #  -->
+<!-- # In the network below, we added complexity by checking if states that support the opposition in Syria also support the opposition in other states that support the Syrian opposition. As an example, if the US supports some opposition in Syria and Lebanon does the same, we would expect that the US and the Lebanese government are on the same page. However, it could also be that the US is inconsistent and supports the opposition in Lebanon *despite* the fact that they both support the opposition in Syria. From the plot, we can see that this actually seems to be quite common.  -->
+<!-- #  -->
+<!-- # ```{r  syria-opp2, class.source = 'fold-hide'} -->
+<!-- #  -->
+<!-- # # subset the data to Syria plus all countries that support NAGs in Syria -->
+<!-- # syria_opposition2 <- filter(nag, target %in% syriaopp & supporter %in% syriaopp) -->
+<!-- #  -->
+<!-- # syria_opp_states2 <- unique(c(syria_opposition2$target,syria_opposition2$supporter)) -->
+<!-- #  -->
+<!-- # # make an empty matrix and fill it -->
+<!-- # syriaoppMat2 <- matrix(0,nrow=length(syria_opp_states2), -->
+<!-- #                       ncol=length(syria_opp_states2))  -->
+<!-- # rownames(syriaoppMat2) <-    syria_opp_states2 -->
+<!-- # colnames(syriaoppMat2) <-    syria_opp_states2 -->
+<!-- #  -->
+<!-- # for(i in 1:dim(syria_opposition2)[1]){ -->
+<!-- #  syriaoppMat2[as.character(syria_opposition2$supporter[i]), -->
+<!-- #              as.character(syria_opposition2$target[i])] <- -->
+<!-- #    syriaoppMat2[as.character(syria_opposition2$supporter[i]), -->
+<!-- #                as.character(syria_opposition2$target[i])]+1 -->
+<!-- # } -->
+<!-- #  -->
+<!-- # # better weighting -->
+<!-- # syriaoppMat2 <- syriaoppMat2/22 -->
+<!-- # syriaoppNet2 <- network(syriaoppMat2,directed=TRUE,ignore.eval=FALSE, -->
+<!-- #                   names.eval='weight') -->
+<!-- # network.vertex.names(syriaoppNet2) <- syria_opp_states2 -->
+<!-- #  -->
+<!-- # plot(syriaoppNet2, displaylabels=TRUE,  -->
+<!-- #      vertex.col = "slateblue",vertex.border = "slateblue", -->
+<!-- #      edge.col ="gray", -->
+<!-- #      label.cex=.75,label.col="black",edge.lwd="weight", vertex.cex=2)  -->
+<!-- #  -->
+<!-- # ``` -->
+<!-- #  -->
+<!-- #  -->
+<!-- # **Which states support the government in Syria?** -->
+<!-- #  -->
+<!-- # The network below plots the states that ever supported directly the government in Syria.  -->
+<!-- #  -->
+<!-- # ```{r syria-gov, class.source = 'fold-hide'} -->
+<!-- #  -->
+<!-- # # who supports the government in Syria -->
+<!-- # syriagov <- filter(ucdp, recipient == "SYR") |> pull(supporter) -->
+<!-- # syriagov <- unique(c(syriagov, "SYR")) -->
+<!-- #  -->
+<!-- # # subset the data to Syria plus all countries that the  Syrian gov -->
+<!-- # syria_government <- filter(ucdp, recipient == "SYR" & supporter %in% syriagov) -->
+<!-- #  -->
+<!-- # syria_gov_states <- unique(c(syria_government$recipient, -->
+<!-- #                              syria_government$supporter)) -->
+<!-- #  -->
+<!-- # # make an empty matrix -->
+<!-- # syriagovMat <- matrix(0,nrow=length(syria_gov_states), -->
+<!-- #                       ncol=length(syria_gov_states))  -->
+<!-- # rownames(syriagovMat) <-     syria_gov_states -->
+<!-- # colnames(syriagovMat) <-     syria_gov_states -->
+<!-- #  -->
+<!-- # # fill the empty matrix -->
+<!-- # for(i in 1:dim(syria_government)[1]){ -->
+<!-- #  syriagovMat[as.character(syria_government$supporter[i]), -->
+<!-- #          as.character(syria_government$recipient[i])] <- -->
+<!-- #    syriagovMat[as.character(syria_government$supporter[i]), -->
+<!-- #            as.character(syria_government$recipient[i])]+1 -->
+<!-- # } -->
+<!-- #  -->
+<!-- # # tell R to understand this matrix as a network -->
+<!-- # syriagovNet <- network(syriagovMat, -->
+<!-- #                   directed=TRUE) -->
+<!-- # network.vertex.names(syriagovNet) <- syria_gov_states  -->
+<!-- #  -->
+<!-- # gplot(syriagovNet, -->
+<!-- #       label= syria_gov_states, -->
+<!-- #       edge.lwd=0.001, -->
+<!-- #       vertex.col ="goldenrod3",vertex.border = "goldenrod3", -->
+<!-- #       edge.col="gray", -->
+<!-- #       gmode="digraph") -->
+<!-- # ``` -->
+<!-- #  -->
+<!-- #  -->
+<!-- # **Which other states do states support that support the Syrian government?** -->
+<!-- #  -->
+<!-- # In the plot below, we map the core states that support the Syrian government (Iraq, Russia, Iran) and we map out all other states that those three actors are supporting.  -->
+<!-- #  -->
+<!-- # ```{r syria-gov2, class.source = 'fold-hide'} -->
+<!-- #  -->
+<!-- # # subset the data to Syria plus all countries that the  Syrian gov -->
+<!-- # syria_government2 <- filter(ucdp, supporter %in% syriagov) -->
+<!-- #  -->
+<!-- # syria_gov_states2 <- unique(c(syria_government2$recipient, -->
+<!-- #                              syria_government2$supporter)) -->
+<!-- #  -->
+<!-- # # make an empty matrix -->
+<!-- # syriagovMat2 <- matrix(0,nrow=length(syria_gov_states2), -->
+<!-- #                       ncol=length(syria_gov_states2))  -->
+<!-- # rownames(syriagovMat2) <-    syria_gov_states2 -->
+<!-- # colnames(syriagovMat2) <-    syria_gov_states2 -->
+<!-- #  -->
+<!-- #  -->
+<!-- # # fill the empty matrix -->
+<!-- # for(i in 1:dim(syria_government2)[1]){ -->
+<!-- #  syriagovMat2[as.character(syria_government2$supporter[i]), -->
+<!-- #          as.character(syria_government2$recipient[i])] <- -->
+<!-- #    syriagovMat2[as.character(syria_government2$supporter[i]), -->
+<!-- #            as.character(syria_government2$recipient[i])]+1 -->
+<!-- # } -->
+<!-- #  -->
+<!-- # # for better weighting -->
+<!-- # syriagovMat2 <- syriagovMat2/5 -->
+<!-- # syriagovNet2 <- network(syriagovMat2,directed=TRUE,ignore.eval=FALSE, -->
+<!-- #                   names.eval='weight') -->
+<!-- # network.vertex.names(syriagovNet2) <- syria_gov_states2 -->
+<!-- #  -->
+<!-- # plot(syriagovNet2, displaylabels=TRUE,  -->
+<!-- #       vertex.col ="goldenrod3",vertex.border = "goldenrod3", -->
+<!-- #      edge.col ="gray", -->
+<!-- #      label.cex=.75,label.col="black",edge.lwd="weight", vertex.cex=2)  -->
+<!-- ``` -->
 </div>
 
 
